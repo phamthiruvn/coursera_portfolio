@@ -1,4 +1,393 @@
+/** @format */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-    background-color: #d7d7d7;
-    color: black;
+  color: black;
+  font-family: "Courier New", Courier, monospace;
+  font-size: clamp(0.5rem, 0.25rem + 1.5vw, 1.5rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 2.5% 5%;
+  gap: clamp(0.75rem, 0.25rem + 2.75vw, 2.75rem);
+  font-size: clamp(0.5rem, 0.2rem + 1.2vw, 5rem);
+  min-width: 500px;
+}
+
+main {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: clamp(1rem, 0.5rem + 2.5vw, 2.75rem);
+}
+
+button {
+  border: solid 0.1em;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 1.25em;
+}
+
+h2 {
+  font-size: 1em;
+  font-weight: 650;
+}
+
+h3 {
+  font-size: 0.75em;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.themes {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  bottom: 45%;
+  right: 1%;
+  width: 2em;
+  gap: 0.5em;
+  z-index: 100;
+}
+
+.themes button {
+  width: 100%;
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+  line-height: 1;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.desaturate {
+  filter: grayscale(100%) brightness(1);
+  display: inline;
+  /* Needed for filter to apply properly */
+  mix-blend-mode: screen;
+  /* or difference, overlay, etc. */
+}
+
+.container {
+  aspect-ratio: 2/1;
+  width: 100%;
+  position: relative;
+  /* opacity: 50%; */
+}
+
+#information {
+  position: absolute;
+  top: 5%;
+  right: 2.5%;
+  width: 25%;
+  font-size: 0.75em;
+  font-weight: 700;
+  text-align: justify;
+  background: none;
+}
+
+#information::after {
+  content: "";
+  display: inline-block;
+  width: 100%;
+}
+
+#like-info {
+  position: absolute;
+  padding: 0 !important;
+  bottom: 5%;
+  right: 2.5%;
+  width: 10%;
+  aspect-ratio: 1/1;
+  font-size: 2.5em;
+}
+
+#my-info {
+  position: absolute;
+  height: 80%;
+  width: 65%;
+  top: 20%;
+  padding: 5% 5% 5%;
+}
+
+.about-me {
+  padding: 0;
+  border-radius: 0 !important;
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2em;
+  padding: 1em 1em;
+}
+
+.border-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2em;
+  border: 0.1em solid;
+  padding: 0em 1em;
+}
+
+#skill-sorfwares {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+#skill {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  /* distribute free space between items */
+  flex-direction: column;
+  padding: 1.75em 2.5em;
+  transition: transform 0.3s;
+}
+
+[class^="loading-"] {
+  position: absolute;
+  left: 0 !important;
+  height: 100%;
+  width: 100%;
+  opacity: 0.5;
+  background-color: #ffffff;
+  transition: transform 0.3s;
+  clip-path: polygon(0 0, 45% 0, 45% 100%, 0% 100%);
+}
+
+#skill [id^="skill-"] {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  gap: 0.2em;
+  padding: 0.2em 1em;
+  cursor: pointer;
+  flex: 0 1 auto;
+  /* don't grow by default */
+  transition: flex-grow 0.2s ease-in-out, flex-basis 0.2s ease-in-out,
+    padding 0.3s ease-in-out;
+}
+
+#skill .unselected:hover {
+  padding: 0.5em 1em;
+}
+
+.software-icons {
+  display: flex;
+  flex-direction: row !important;
+  /* horizontal */
+  gap: 1em !important;
+  /* space between icons */
+  align-items: center;
+  /* vertical alignment */
+  padding: 0 !important;
+  z-index: 2;
+}
+
+.selected {
+  padding: 1em 1em !important;
+  flex: 10 0 100%;
+  /* grow a lot, base 50% height */
+  width: 100%;
+}
+
+.unselected p {
+  display: none;
+}
+
+#skill span {
+  display: none;
+}
+
+#sorfwares {
+  width: 50%;
+  height: 80%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  /* distribute free space between items */
+  flex-direction: column;
+  padding: 1.75em 2.5em;
+  transition: transform 0.3s;
+}
+
+#sorfwares [id^="sorfware-"] {
+  display: grid;
+  justify-content: end;
+  /* align the whole grid block to the right */
+  direction: rtl;
+  /* makes items flow from right to left */
+
+  grid-template-columns: repeat(4, 1fr);
+  /* 4 equal columns */
+  grid-template-rows: repeat(3, 1fr);
+  /* 3 rows, height auto */
+  width: 100%;
+  height: 85%;
+  gap: 2.5%;
+}
+
+.value-style {
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.75em;
+  font-weight: 700;
+}
+
+.software-item .value-style {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* prevent blocking clicks */
+}
+
+.software-item:hover .value-style {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.software-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  border: 0.1em solid;
+  transition: transform 0.3s ease-out;
+}
+
+#formula{
+  position: absolute;
+  top: 57.5%;
+  right: 25%;
+  width: 27.5%;
+  font-size: 0.5em;
+  line-height: 0.75em;
+  font-weight: 700;
+  text-align: justify;
+}
+
+.software-item:hover {
+  transform: scale(1.2);
+  /* scale up on hover */
+}
+
+.software-item img {
+  width: 2em;
+  /* adjust size as needed */
+  height: 2em;
+  z-index: 2;
+}
+
+.software-item .circle-shape {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  background-color: #ffffff;
+  border-radius: 50%;
+  z-index: 1;
+  transform: rotate(135deg);
+  transform-origin: center center;
+}
+
+.software-item .circle-shape:hover {
+  opacity: 0.75;
+  transition: opacity 0.3s ease;
+}
+
+#search {
+  width: 60%;
+  height: 15%;
+  transition: width 0.2s ease;
+}
+
+#search-box {
+  width: 100%;
+  font-size: 1em;
+  border: none;
+  outline: none;
+  background-color: inherit;
+  /* smooth animation */
+}
+
+.box .search-icon {
+  margin: 0.5%;
+}
+
+#search-box::placeholder {
+  color: #ffffff;
+  /* your custom color */
+  opacity: 0.5;
+  /* ensure it’s not faded */
+}
+
+.round-corner {
+  border-radius: 0.75em;
+}
+
+.round {
+  border-radius: 50%;
+}
+
+/* Navbar styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 2.5em;
+}
+
+.logo {
+  font-weight: bold;
+  width: 17.5%;
+}
+
+.nav-links {
+  list-style: none;
+  width: 77.5%;
+  justify-content: space-around;
+}
+
+.nav-links a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.25em;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
 }
