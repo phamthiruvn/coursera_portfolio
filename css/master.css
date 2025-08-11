@@ -1,37 +1,56 @@
 /** @format */
 
+/* ==========================================================================
+  1. Root and Variables
+  ========================================================================== */
+:root {
+  --text-color: rgb(255, 255, 255);
+  --background-color: transparent;
+  --white: #fff;
+  --font-family-main: "Courier New", Courier, monospace;
+  --font-size-body: clamp(0.5rem, 0.25rem + 1.5vw, 1.5rem);
+  --border-thin: solid 0.1em;
+  --border-radius-large: 2em;
+  --border-radius-medium: 0.75em;
+  --border-radius-round: 50%;
+  --gap-large: clamp(1rem, 0.5rem + 2.5vw, 2.75rem);
+  --gap-medium: clamp(0.75rem, 0.25rem + 2.75vw, 2.75rem);
+  --line-width: 2;
+  --line-cap: round;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: var(--font-family-main);
 }
 
 body {
-  color: black;
-  font-family: "Courier New", Courier, monospace;
-  font-size: clamp(0.5rem, 0.25rem + 1.5vw, 1.5rem);
+  color: var(--text-color);
+  font-family: var(--font-family-main);
+  font-size: clamp(0.5rem, 0.2rem + 1.2vw, 5rem);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
   padding: 2.5% 5%;
-  gap: clamp(0.75rem, 0.25rem + 2.75vw, 2.75rem);
-  font-size: clamp(0.5rem, 0.2rem + 1.2vw, 5rem);
+  gap: var(--gap-medium);
   min-width: 500px;
 }
 
 main {
   display: flex;
-  width: 100%;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
-  gap: clamp(1rem, 0.5rem + 2.5vw, 2.75rem);
+  width: 100%;
+  gap: var(--gap-large);
 }
 
 button {
-  border: solid 0.1em;
-  background-color: transparent;
+  border: var(--border-thin);
+  background: var(--background-color);
   cursor: pointer;
 }
 
@@ -76,19 +95,16 @@ h3 {
   padding: 0;
 }
 
-.desaturate {
+/* .desaturate {
   filter: grayscale(100%) brightness(1);
   display: inline;
-  /* Needed for filter to apply properly */
   mix-blend-mode: screen;
-  /* or difference, overlay, etc. */
-}
+} */
 
 .container {
   aspect-ratio: 2/1;
   width: 100%;
   position: relative;
-  /* opacity: 50%; */
 }
 
 #information {
@@ -123,7 +139,7 @@ h3 {
   height: 80%;
   width: 65%;
   top: 20%;
-  padding: 5% 5% 5%;
+  padding: 5%;
 }
 
 .about-me {
@@ -131,21 +147,21 @@ h3 {
   border-radius: 0 !important;
 }
 
-.box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 2em;
-  padding: 1em 1em;
-}
-
+.box,
 .border-box {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 2em;
-  border: 0.1em solid;
-  padding: 0em 1em;
+  border-radius: var(--border-radius-large);
+}
+
+.box {
+  padding: 1em;
+}
+
+.border-box {
+  border: var(--border-thin);
+  padding: 0 1em;
 }
 
 #skill-sorfwares {
@@ -157,14 +173,26 @@ h3 {
   align-items: flex-start;
 }
 
+#skill-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none; /* so it doesn't block clicks */
+  z-index: -1;
+  display: none;
+}
+
+#skill-lines.visualized {
+  display: block;
+}
+
 #skill {
   width: 50%;
   height: 100%;
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  /* distribute free space between items */
   flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   padding: 1.75em 2.5em;
   transition: transform 0.3s;
 }
@@ -175,7 +203,7 @@ h3 {
   height: 100%;
   width: 100%;
   opacity: 0.5;
-  background-color: #ffffff;
+  background: var(--white);
   transition: transform 0.3s;
   clip-path: polygon(0 0, 45% 0, 45% 100%, 0% 100%);
 }
@@ -190,9 +218,35 @@ h3 {
   padding: 0.2em 1em;
   cursor: pointer;
   flex: 0 1 auto;
-  /* don't grow by default */
-  transition: flex-grow 0.2s ease-in-out, flex-basis 0.2s ease-in-out,
-    padding 0.3s ease-in-out;
+  transition: padding 0.3s ease, transform 0.3s ease, flex 0.3s ease;
+}
+
+#skill [id^="skill-"].visualized {
+  width: auto;
+  padding: 1.5em;
+  aspect-ratio: 1/1;
+  pointer-events: none;
+  z-index: 2;
+}
+
+#skill span {
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: padding 0.3s ease, transform 0.3s ease, flex 0.3s ease;
+}
+
+#skill [id^="skill-"].visualized span {
+  right: 50%;
+  transform: translate(50%, -50%) scale(1.25);
+}
+
+#skill [id^="skill-"].visualized div,
+#skill [id^="skill-"].visualized p,
+#skill [id^="skill-"].visualized h2,
+#skill [id^="skill-"].visualized h3 {
+  display: none;
 }
 
 #skill .unselected:hover {
@@ -202,19 +256,15 @@ h3 {
 .software-icons {
   display: flex;
   flex-direction: row !important;
-  /* horizontal */
   gap: 1em !important;
-  /* space between icons */
   align-items: center;
-  /* vertical alignment */
   padding: 0 !important;
-  z-index: 2;
+  z-index: 5;
 }
 
 .selected {
-  padding: 1em 1em !important;
+  padding: 1em !important;
   flex: 10 0 100%;
-  /* grow a lot, base 50% height */
   width: 100%;
 }
 
@@ -222,36 +272,32 @@ h3 {
   display: none;
 }
 
-#skill span {
-  display: none;
-}
-
 #sorfwares {
   width: 50%;
   height: 80%;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  /* distribute free space between items */
   flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   padding: 1.75em 2.5em;
   transition: transform 0.3s;
 }
 
-#sorfwares [id^="sorfware-"] {
+#sorfware-0 {
   display: grid;
-  justify-content: end;
-  /* align the whole grid block to the right */
-  direction: rtl;
-  /* makes items flow from right to left */
-
+  justify-items: center; /* horizontal centering in each cell */
+  align-items: center; /* vertical centering in each cell */
   grid-template-columns: repeat(4, 1fr);
-  /* 4 equal columns */
   grid-template-rows: repeat(3, 1fr);
-  /* 3 rows, height auto */
   width: 100%;
   height: 85%;
   gap: 2.5%;
+}
+
+#sorfware-0 > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .value-style {
@@ -265,8 +311,8 @@ h3 {
 
 .software-item .value-style {
   opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none; /* prevent blocking clicks */
+  transition: opacity 0.3s;
+  pointer-events: none;
 }
 
 .software-item:hover .value-style {
@@ -279,32 +325,30 @@ h3 {
   justify-content: center;
   align-items: center;
   width: 90%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
-  border: 0.1em solid;
-  transition: transform 0.3s ease-out;
+  cursor: pointer;
+  border: var(--border-thin);
+  transition: width 0.3s ease, transform 0.3s ease;
 }
 
-#formula{
-  position: absolute;
-  top: 57.5%;
-  right: 25%;
-  width: 27.5%;
-  font-size: 0.5em;
-  line-height: 0.75em;
-  font-weight: 700;
-  text-align: justify;
+.software-item.visualized {
+  width: 50%; /* shrink or grow smoothly */
+  pointer-events: none;
+}
+
+.software-item.visualized div,
+.software-item.visualized p {
+  display: none;
 }
 
 .software-item:hover {
   transform: scale(1.2);
-  /* scale up on hover */
 }
 
 .software-item img {
-  width: 2em;
-  /* adjust size as needed */
-  height: 2em;
+  width: 50%;
+  height: 50%;
   z-index: 2;
 }
 
@@ -315,22 +359,51 @@ h3 {
   width: 100%;
   height: 100%;
   opacity: 0.5;
-  background-color: #ffffff;
+  background: var(--white);
   border-radius: 50%;
   z-index: 1;
   transform: rotate(135deg);
-  transform-origin: center center;
+  transform-origin: center;
 }
 
 .software-item .circle-shape:hover {
   opacity: 0.75;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s;
+}
+
+#visualize {
+  position: absolute;
+  bottom: 2.5%;
+  right: 2.5%;
+  width: 45%;
+  height: 12.5%;
+  font-size: 1.5em;
+  font-weight: bold;
+  border: none;
+  border-radius: 1em;
+  cursor: pointer;
+  transition: scale 0.3s;
+  z-index: 2;
+}
+
+#visualize:hover {
+  transform: scale(1.05);
+}
+
+#formula {
+  position: absolute;
+  top: 57.5%;
+  right: 25%;
+  width: 27.5%;
+  font-size: 0.5em;
+  font-weight: 700;
+  text-align: justify;
 }
 
 #search {
   width: 60%;
   height: 15%;
-  transition: width 0.2s ease;
+  transition: width 0.2s;
 }
 
 #search-box {
@@ -338,8 +411,7 @@ h3 {
   font-size: 1em;
   border: none;
   outline: none;
-  background-color: inherit;
-  /* smooth animation */
+  background: inherit;
 }
 
 .box .search-icon {
@@ -347,14 +419,11 @@ h3 {
 }
 
 #search-box::placeholder {
-  color: #ffffff;
-  /* your custom color */
   opacity: 0.5;
-  /* ensure it’s not faded */
 }
 
 .round-corner {
-  border-radius: 0.75em;
+  border-radius: var(--border-radius-medium);
 }
 
 .round {
