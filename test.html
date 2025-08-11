@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Canvas Freehand Path</title>
+  <style>
+    canvas { display:block; margin: 2rem auto; border: 1px solid #ccc; touch-action: none; }
+    button { display:block; margin: 0.5rem auto; }
+  </style>
+</head>
+<body>
+  <canvas id="c" width="900" height="400"></canvas>
+  <button id="clear">Clear</button>
+
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let last = { x: 0, y: 0 };
+
+    function pos(e) {
+      if (e.touches) e = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+
+    function start(e) {
+      drawing = true;
+      last = pos(e);
+      ctx.beginPath();
+      ctx.moveTo(last.x, last.y);
+      e.preventDefault();
+    }
+
+    function move(e) {
+      if (!drawing) return;
+      const p = pos(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.strokeStyle = '#e91e63';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+      last = p;
+      e.preventDefault();
+    }
+
+    function end(e) {
+      if (!drawing) return;
+      drawing = false;
+      ctx.closePath();
+      e.preventDefault();
+    }
+
+    // mouse
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
+
+    // touch
+    canvas.addEventListener('touchstart', start);
+    canvas.addEventListener('touchmove', move);
+    window.addEventListener('touchend', end);
+
+    document.getElementById('clear').addEventListener('click', () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+  </script>
+</body>
+</html>

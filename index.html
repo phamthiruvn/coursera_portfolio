@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="“Pragma”" content="”no-cache”" />
-    <meta http-equiv="“Expires”" content="”-1″" />
-    <meta http-equiv="“CACHE-CONTROL”" content="”NO-CACHE”" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="-1" />
+    <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
     <link rel="stylesheet" href="css/master.css" />
-
     <title>Portfolio Project</title>
-
+</head>
 <body>
     <div class="themes">
         <button id="pink" class="box darker" onclick="setTheme('pink')"><span class="desaturate">🌸</span></button>
@@ -32,10 +30,10 @@
                 <input id="search-box" type="text" placeholder="Search..." />
             </div>
             <div id="information" class="darker">V E R S A T H I L E</div>
-            <div id="like-info" class="box round-corner lighter"><span>❤︎</span></button></div>
+            <div id="like-info" class="box round-corner lighter"><span>❤︎</span></div>
             <object id="mySVG1" type="image/svg+xml"
                 style="position: absolute; top: 12.5%; right: 6.25%; z-index: 0; height: 75%"
-                data="images\Asset 6.svg"></object>
+                data="images/Asset 6.svg"></object>
             <div id="my-info">
                 <p>10000</p>
                 <p>10000</p>
@@ -49,7 +47,7 @@
                 <p>10000</p>
             </div>
             <object class="darker" id="mySVG2" type="image/svg+xml"
-                style="position: absolute; top: 0%; left: 0%; z-index: -1" data="images\Asset 5.svg"></object>
+                style="position: absolute; top: 0%; left: 0%; z-index: -1" data="images/Asset 5.svg"></object>
         </div>
         <div class="container" id="skill-sorfwares">
             <div id="skill">
@@ -61,82 +59,63 @@
                     <p class="sorfware">Photoshop, Illustrator</p>
                     <div class="loading-1 border-box"></div>
                 </div>
-
                 <div id="skill-2" class="border-box darker unselected">
                     <span class="desaturate">🖨️</span>
                     <h2>Graphic & Packaging Design</h2>
                     <h3>Thiết kế Đồ họa số & Bao bì sản phẩm</h3>
                     <p class="sorfware">Photoshop, Illustrator, InDesign</p>
                     <div class="loading-2 border-box"></div>
-
                 </div>
-
                 <div id="skill-3" class="border-box darker unselected">
                     <span class="desaturate">👆🏻</span>
                     <h2>Interactive Design</h2>
                     <h3>Thiết kế Tương tác Đa phương tiện</h3>
                     <p class="sorfware">PowerPoint, AfterEffects</p>
                     <div class="loading-3 border-box"></div>
-
                 </div>
-
                 <div id="skill-4" class="border-box darker unselected">
                     <span class="desaturate">🌐</span>
                     <h2>Web Design</h2>
                     <h3>Thiết kế Web</h3>
                     <p class="sorfware">JavaScript, HTML, CSS</p>
                     <div class="loading-4 border-box"></div>
-
                 </div>
-
                 <div id="skill-5" class="border-box darker unselected">
                     <span class="desaturate">🎬</span>
                     <h2>3D & Animation Design</h2>
                     <h3>Diễn hoạt 2D & 3D</h3>
-                    <p class="sorfware">Blender, Cinema4D , AfterEffects</p>
+                    <p class="sorfware">Blender, Cinema4D, AfterEffects</p>
                     <div class="loading-5 border-box"></div>
-
                 </div>
             </div>
-
             <div id="sorfwares">
                 <h1 class="border-box darker">SORFWARES/PHẦN MỀM</h1>
-                <div id="sorfware-0" class="darker"></div>
+                <div id="sorfware-0"></div>
+                <!--
                 <div id="formula">
                     <p>
                         <strong>Average Expertise Value Calculation:</strong><br>
                         <em>aevc</em> = max(0, (Σ<sub>i=1</sub><sup>n</sup> L<sub>i</sub> / n) - E<sup>2</sup>)
                     </p>
-                    
                     <p>
                         Where:<br>
-                        <strong>n</strong> = number of proficient software tools contributing to
-                        the expertise;<br>
-                        <strong>L<sub>i</sub></strong> = proficiency level of the
-                        <em>i<sup>th</sup></em> software tool;<br>
-                        <strong>E</strong> = confidence rank, where lower numbers represent
-                        higher confidence (e.g., the first listed skill indicates the highest confidence);
+                        <strong>n</strong> = number of proficient software tools contributing to the expertise;<br>
+                        <strong>L<sub>i</sub></strong> = proficiency level of the <em>i<sup>th</sup></em> software tool;<br>
+                        <strong>E</strong> = confidence rank, where lower numbers represent higher confidence (e.g., the first listed skill indicates the highest confidence);
                     </p>
-                
                 </div>
+                -->
             </div>
-
+            <button id="visualize" class="darker">VISUALIZE</button>
+            <canvas id="skill-lines"></canvas>
             <object class="darker" id="mySVG3" type="image/svg+xml"
-                style="position: absolute; top: 0%; left: 0%; z-index: -1" data="images\Asset 3.svg"></object>
+                style="position: absolute; top: 0%; left: 0%; z-index: -10" data="images/Asset 3.svg"></object>
         </div>
-
-
-
         <div class="container">
-
             <object class="darker" id="mySVG4" type="image/svg+xml"
-                style="position: absolute; top: 0%; left: 0%; z-index: -1" data="images\Asset 3.svg"></object>
+                style="position: absolute; top: 0%; left: 0%; z-index: -1" data="images/Asset 3.svg"></object>
         </div>
     </main>
+    <script src="js/main.js"></script>
 </body>
-
-<!-- Our codes -->
-<script src="js/main.js"></script>
-</head>
-
 </html>
