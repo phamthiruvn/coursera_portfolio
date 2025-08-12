@@ -223,13 +223,12 @@ h3 {
 
 #skill [id^="skill-"].visualized {
   width: auto;
-  padding: 5%;
   aspect-ratio: 1/1;
   z-index: 5;
 }
 
 #skill [id^="skill-"].visualized:hover {
-  padding: 7.5%;
+  padding: 5%;
   transition: all 0.3s ease;
 }
 
