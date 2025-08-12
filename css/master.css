@@ -178,7 +178,7 @@ h3 {
   top: 0;
   left: 0;
   pointer-events: none; /* so it doesn't block clicks */
-  z-index: -1;
+  z-index: 2;
   display: none;
 }
 
@@ -223,10 +223,14 @@ h3 {
 
 #skill [id^="skill-"].visualized {
   width: auto;
-  padding: 1.5em;
+  padding: 5%;
   aspect-ratio: 1/1;
-  pointer-events: none;
-  z-index: 2;
+  z-index: 5;
+}
+
+#skill [id^="skill-"].visualized:hover {
+  padding: 7.5%;
+  transition: all 0.3s ease;
 }
 
 #skill span {
@@ -262,6 +266,10 @@ h3 {
   z-index: 5;
 }
 
+[id^="skill-"].visualized.selected {
+  padding: 2em !important;
+}
+
 .selected {
   padding: 1em !important;
   flex: 10 0 100%;
@@ -292,6 +300,8 @@ h3 {
   width: 100%;
   height: 85%;
   gap: 2.5%;
+    transition: grid-template-columns 0.4s ease 0.5s, grid-template-rows 0.4s ease 0.5s;
+
 }
 
 #sorfware-0 > div {
@@ -305,7 +315,7 @@ h3 {
   top: 80%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 0.75em;
+  font-size: 0.5em;
   font-weight: 700;
 }
 
@@ -327,14 +337,13 @@ h3 {
   width: 90%;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  cursor: pointer;
   border: var(--border-thin);
   transition: width 0.3s ease, transform 0.3s ease;
 }
 
 .software-item.visualized {
   width: 50%; /* shrink or grow smoothly */
-  pointer-events: none;
+  cursor: pointer;
 }
 
 .software-item.visualized div,
@@ -344,6 +353,7 @@ h3 {
 
 .software-item:hover {
   transform: scale(1.2);
+  transition: transform 0.3s ease;
 }
 
 .software-item img {
@@ -366,10 +376,6 @@ h3 {
   transform-origin: center;
 }
 
-.software-item .circle-shape:hover {
-  opacity: 0.75;
-  transition: opacity 0.3s;
-}
 
 #visualize {
   position: absolute;
