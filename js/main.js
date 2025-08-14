@@ -642,43 +642,78 @@ function darkenRGB(r, g, b, percent) {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-window.addEventListener("load", () => {
+function alignAndClipAvatar() {
   const svgObject = document.getElementById("mySVG1");
   const avatar = document.getElementById("avatar");
 
-  svgObject.addEventListener("load", () => {
-    const svgDoc = svgObject.contentDocument;
-    if (!svgDoc) return;
+  if (!svgObject.contentDocument) return; // SVG not loaded yet
+  if (!avatar.naturalWidth || !avatar.naturalHeight) return; // image not loaded yet
 
-    const shape = svgDoc.querySelector("path");
-    if (!shape) return;
+  const rect = svgObject.getBoundingClientRect();
 
-    // Get original path & bounding box
-    const rawPath = shape.getAttribute("d");
-    const bbox = shape.getBBox();
+  const imgRatio = avatar.naturalWidth / avatar.naturalHeight;
+  const svgRatio = rect.width / rect.height;
 
-    // Compute scale factors to fit 0–1 space
-    const scaleX = 1 / bbox.width;
-    const scaleY = 1 / bbox.height;
-    const translateX = -bbox.x * scaleX;
-    const translateY = -bbox.y * scaleY;
+  let width, height;
+  if (imgRatio > svgRatio) {
+    height = rect.height;
+    width = height * imgRatio;
+  } else {
+    width = rect.width;
+    height = width / imgRatio;
+  }
 
-    // Build a transformed <path> in objectBoundingBox coords
-    const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    const tempPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    tempPath.setAttribute("d", rawPath);
-    tempPath.setAttribute("transform", `translate(${translateX},${translateY}) scale(${scaleX},${scaleY})`);
-    tempSvg.appendChild(tempPath);
+  avatar.style.width = width + "px";
+  avatar.style.height = height + "px";
+}
 
-    const pathData = tempPath.getAttribute("d"); // still original commands
-    const transformAttr = tempPath.getAttribute("transform");
+function setupAlignment() {
+  const svgObject = document.getElementById("mySVG1");
+  const avatar = document.getElementById("avatar");
 
-    // Apply to avatar as clip-path
-    avatar.style.clipPath = `path("${rawPath}")`;
-    avatar.style.webkitClipPath = `path("${rawPath}")`; // Safari
+  let svgReady = false;
+  let imgReady = false;
 
-    // Show avatar now
-    avatar.style.opacity = 1;
+  function tryAlign() {
+    if (svgReady && imgReady) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          alignAndClipAvatar();
+          avatar.style.opacity = 1; // Fade in avatar
+        });
+      });
+    }
+  }
+
+  function markSvgReady() {
+    svgReady = true;
+    tryAlign();
+  }
+
+  function markImgReady() {
+    imgReady = true;
+    tryAlign();
+  }
+
+  // Event listeners (fires every time they reload)
+  svgObject.addEventListener("load", markSvgReady);
+  avatar.addEventListener("load", markImgReady);
+
+  // Initial readiness check
+  if (avatar.complete) imgReady = true;
+  if (svgObject.contentDocument) svgReady = true;
+
+  tryAlign();
+
+  // Mutation observer to watch for src/data changes
+  const observer = new MutationObserver(() => {
+    svgReady = false;
+    imgReady = false;
   });
-});
 
+  observer.observe(svgObject, { attributes: true, attributeFilter: ["data"] });
+  observer.observe(avatar, { attributes: true, attributeFilter: ["src"] });
+}
+
+window.addEventListener("load", setupAlignment);
+window.addEventListener("resize", alignAndClipAvatar);
