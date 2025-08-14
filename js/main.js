@@ -3,9 +3,9 @@
 // Theme color pairs for light/dark variants
 const themePairs = {
   pink: ["#ffddf5ff", "#ea77a3ff"],
-  orange: ["#fdf5b6ff", "#ffa600ff"],
+  orange: ["#f3e6c6ff", "#e3980cff"],
   green: ["#ecfcafff", "#aba807ff"],
-  blue: ["#9ae5faff", "#0083d4ff"],
+  blue: ["#b5e4f1ff", "#0083d4ff"],
 };
 
 let currentTheme = "pink";
@@ -16,7 +16,9 @@ function colorSVG(obj) {
   const svgDoc = obj.contentDocument;
   if (!svgDoc) return;
   const fillColor = obj.classList.contains("darker") ? darkColor : lightColor;
-  svgDoc.querySelectorAll("path").forEach((p) => p.setAttribute("fill", fillColor));
+  svgDoc
+    .querySelectorAll("path")
+    .forEach((p) => p.setAttribute("fill", fillColor));
 }
 
 // Applies theme colors to page elements
@@ -108,7 +110,8 @@ document.querySelectorAll("#skill > div").forEach((skillDiv) => {
       } else {
         d.classList.remove("selected");
         const iconsDiv = d.querySelector(".software-icons");
-        if (iconsDiv) iconsDiv.replaceWith(createSoftwareP(d.dataset.softwareText));
+        if (iconsDiv)
+          iconsDiv.replaceWith(createSoftwareP(d.dataset.softwareText));
       }
     });
   });
@@ -116,21 +119,24 @@ document.querySelectorAll("#skill > div").forEach((skillDiv) => {
 
 // Deselects all skill divs on document click
 document.addEventListener("click", (e) => {
-  if (e.target.closest(".themes")) {
+  if (e.target.closest(".side-bar")) {
     startAnimation(100);
     return;
   }
   document.querySelectorAll("#skill > div.selected").forEach((div) => {
     div.classList.remove("selected");
     const iconsDiv = div.querySelector(".software-icons");
-    if (iconsDiv) iconsDiv.replaceWith(createSoftwareP(div.dataset.softwareText));
+    if (iconsDiv)
+      iconsDiv.replaceWith(createSoftwareP(div.dataset.softwareText));
   });
   animateLines(speed);
 });
 
 // Resizes icons on window resize
 window.addEventListener("resize", () => {
-  const skillWidth = document.getElementById("skill").getBoundingClientRect().width;
+  const skillWidth = document
+    .getElementById("skill")
+    .getBoundingClientRect().width;
   document.querySelectorAll(".software-icons img").forEach((img) => {
     img.width = img.height = skillWidth / 20;
   });
@@ -186,7 +192,9 @@ document.querySelectorAll('div[class^="loading-"]').forEach((div) => {
   const skillNumber = parseInt(skillId.split("-")[1], 10);
   const avg = Math.max(
     softwares.length
-      ? softwares.reduce((sum, soft) => sum + getSoftwareValue(soft), 0) / softwares.length - skillNumber ** 2
+      ? softwares.reduce((sum, soft) => sum + getSoftwareValue(soft), 0) /
+          softwares.length -
+          skillNumber ** 2
       : 0,
     0
   );
@@ -222,8 +230,15 @@ softwareSkills.forEach(({ name, value }) => {
 function angleToClipPath(angle) {
   angle = Math.max(0, Math.min(angle, 360));
   const points = [
-    [100, 0], [100, 50], [100, 100], [50, 100], [0, 100],
-    [0, 50], [0, 0], [50, 0], [100, 0],
+    [100, 0],
+    [100, 50],
+    [100, 100],
+    [50, 100],
+    [0, 100],
+    [0, 50],
+    [0, 0],
+    [50, 0],
+    [100, 0],
   ];
   const sector = Math.floor(angle / 45);
   const remainder = angle % 45;
@@ -233,7 +248,8 @@ function angleToClipPath(angle) {
   const interpX = start[0] + (end[0] - start[0]) * interp;
   const interpY = start[1] + (end[1] - start[1]) * interp;
   const polygonPoints = ["100% 0%"];
-  for (let i = 1; i <= sector; i++) polygonPoints.push(points[i][0] + "% " + points[i][1] + "%");
+  for (let i = 1; i <= sector; i++)
+    polygonPoints.push(points[i][0] + "% " + points[i][1] + "%");
   polygonPoints.push(interpX + "% " + interpY + "%", "50% 50%");
   return `polygon(${polygonPoints.join(", ")})`;
 }
@@ -248,6 +264,8 @@ document.getElementById("visualize").addEventListener("click", () => {
   skillLines.classList.toggle("visualized");
 
   skillDivs.forEach((div) => div.classList.toggle("visualized"));
+  // skillDivs.forEach((div) => div.classList.remove("selected"));
+
   softwareDivs.forEach((div) => {
     div.classList.toggle("visualized");
     div.classList.toggle("darker");
@@ -255,7 +273,9 @@ document.getElementById("visualize").addEventListener("click", () => {
   });
 
   softwareSkills.forEach(({ name, value }) => {
-    const el = document.getElementById(`software-${name.toLowerCase().replace(/\s+/g, "")}`);
+    const el = document.getElementById(
+      `software-${name.toLowerCase().replace(/\s+/g, "")}`
+    );
     if (el) {
       if (el.classList.contains("visualized")) {
         el.style.width = value + "%";
@@ -294,7 +314,9 @@ function getCentersWithMapping() {
     })
     .filter(Boolean);
 
-  const softwares = Array.from(container.querySelectorAll('[id^="software-"]')).map((el) => {
+  const softwares = Array.from(
+    container.querySelectorAll('[id^="software-"]')
+  ).map((el) => {
     const rect = el.getBoundingClientRect();
     return [
       el.id.replace(/^software-/, ""),
@@ -311,14 +333,18 @@ function afterMappingReady() {}
 
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("skill-sorfwares");
-  const mapArray = Array.from(container.querySelectorAll('[id^="skill-"]')).map((skillEl) => {
-    const skillId = skillEl.id.replace(/^skill-/, "");
-    const linkedSoftwareIds = (skillEl.getAttribute("data-software-text") || "")
-      .split(",")
-      .map((s) => s.trim().toLowerCase())
-      .filter(Boolean);
-    return [skillId.toLowerCase(), linkedSoftwareIds];
-  });
+  const mapArray = Array.from(container.querySelectorAll('[id^="skill-"]')).map(
+    (skillEl) => {
+      const skillId = skillEl.id.replace(/^skill-/, "");
+      const linkedSoftwareIds = (
+        skillEl.getAttribute("data-software-text") || ""
+      )
+        .split(",")
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean);
+      return [skillId.toLowerCase(), linkedSoftwareIds];
+    }
+  );
 
   mapping = {};
   mapArray.forEach(([key, value]) => {
@@ -348,7 +374,7 @@ function animateLines(s) {
   const lines = [];
   const skillCenter = skills[0];
   const softwareIds = mapping[skillCenter[0]] || [];
-  const color = themePairs[currentTheme][0];
+  const color = darkenColor(themePairs[currentTheme][0], 20);
 
   softwareIds.forEach((softwareId) => {
     const softwareCenter = softwares.find((s) => s[0] === softwareId);
@@ -371,7 +397,14 @@ function animateLines(s) {
     for (let i = 0; i < currentLine; i++) {
       const line = lines[i];
       ctx.strokeStyle = line.color;
-      drawArrow(ctx, line.from.x, line.from.y, line.to.x, line.to.y, headLength);
+      drawArrow(
+        ctx,
+        line.from.x,
+        line.from.y,
+        line.to.x,
+        line.to.y,
+        headLength
+      );
     }
 
     if (currentLine < lines.length) {
@@ -392,7 +425,16 @@ function animateLines(s) {
   draw();
 }
 
-function drawOrganicArrow(ctx, fromX, fromY, toX, toY, headLength, segments = 10, amp = 10) {
+function drawOrganicArrow(
+  ctx,
+  fromX,
+  fromY,
+  toX,
+  toY,
+  headLength,
+  segments = 10,
+  amp = 10
+) {
   const dx = (toX - fromX) / segments;
   const dy = (toY - fromY) / segments;
   ctx.beginPath();
@@ -417,9 +459,15 @@ function drawArrowhead(ctx, fromX, fromY, toX, toY, headLength) {
   const angle = Math.atan2(toY - fromY, toX - fromX);
   ctx.beginPath();
   ctx.moveTo(toX, toY);
-  ctx.lineTo(toX - headLength * Math.cos(angle - Math.PI / 6), toY - headLength * Math.sin(angle - Math.PI / 6));
+  ctx.lineTo(
+    toX - headLength * Math.cos(angle - Math.PI / 6),
+    toY - headLength * Math.sin(angle - Math.PI / 6)
+  );
   ctx.moveTo(toX, toY);
-  ctx.lineTo(toX - headLength * Math.cos(angle + Math.PI / 6), toY - headLength * Math.sin(angle + Math.PI / 6));
+  ctx.lineTo(
+    toX - headLength * Math.cos(angle + Math.PI / 6),
+    toY - headLength * Math.sin(angle + Math.PI / 6)
+  );
   ctx.stroke();
 }
 
@@ -435,8 +483,14 @@ function drawArrow(ctx, fromX, fromY, toX, toY, headLength) {
 
   ctx.beginPath();
   ctx.moveTo(toX, toY);
-  ctx.lineTo(toX - headLength * Math.cos(angle - Math.PI / 6), toY - headLength * Math.sin(angle - Math.PI / 6));
-  ctx.lineTo(toX - headLength * Math.cos(angle + Math.PI / 6), toY - headLength * Math.sin(angle + Math.PI / 6));
+  ctx.lineTo(
+    toX - headLength * Math.cos(angle - Math.PI / 6),
+    toY - headLength * Math.sin(angle - Math.PI / 6)
+  );
+  ctx.lineTo(
+    toX - headLength * Math.cos(angle + Math.PI / 6),
+    toY - headLength * Math.sin(angle + Math.PI / 6)
+  );
   ctx.lineTo(toX, toY);
   ctx.fillStyle = ctx.strokeStyle;
   ctx.fill();
@@ -462,3 +516,169 @@ function startAnimation(speed) {
 window.addEventListener("resize", () => {
   startAnimation(100);
 });
+
+const likeInfo = document.getElementById("like-info");
+
+likeInfo.addEventListener("click", (e) => {
+  const btn = e.currentTarget;
+
+  // Restart animation
+  btn.classList.remove("heartbeat");
+  void btn.offsetWidth; // force reflow
+  btn.classList.add("heartbeat");
+
+  // Heart burst triggered right at the first big pulse (20% of anim time)
+  setTimeout(() => {
+    createHeartBurst(btn);
+  }, 100); // 0.5s animation → 100ms hits ~20%
+});
+
+function createHeartBurst(element) {
+  const rect = element.getBoundingClientRect();
+  const count = Math.round(Math.random() * 10); // number of hearts per burst
+
+  const centerX = rect.left + window.scrollX + rect.width / 2;
+  const centerY = rect.top + window.scrollY + rect.height / 2;
+
+  for (let i = 0; i < count; i++) {
+    const heart = document.createElement("span");
+    heart.className = "flying-heart";
+    heart.textContent = "❤︎";
+
+    // Size scales with button size
+    const size = Math.max(12, rect.width * 0.25) * (0.8 + Math.random());
+    const dx = (Math.random() - 0.5) * size * 5;
+    const duration = 600 + Math.random() * 1200 + "ms";
+
+    // Center position (with slight vertical nudge for visual balance)
+    heart.style.left = centerX - size / 2 + "px";
+    heart.style.top = centerY - size / 2 + "px";
+
+    heart.style.fontSize = size + "px";
+    heart.style.color = themePairs[currentTheme][1];
+    heart.style.filter = `saturate(${1 + Math.random() * 2})`;
+    heart.style.setProperty("--dx", dx + "px");
+    heart.style.setProperty("--duration", duration);
+
+    document.body.appendChild(heart);
+    requestAnimationFrame(() => heart.classList.add("animate"));
+    heart.addEventListener("animationend", () => heart.remove());
+  }
+
+  // Trigger heartbeat on button
+  element.classList.remove("heartbeat");
+  void element.offsetWidth; // restart CSS animation
+  element.classList.add("heartbeat");
+}
+
+document.querySelectorAll(".nav-links a").forEach((link) => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault(); // stop default jump
+
+    const targetId = link.getAttribute("href").slice(1); // remove #
+    const targetEl = document.getElementById(targetId);
+
+    if (targetEl) {
+      const offset = window.innerHeight / 20; // 10vh offset in pixels
+      const elementPosition =
+        targetEl.getBoundingClientRect().top + window.pageYOffset;
+      const scrollToPosition = elementPosition - offset;
+
+      window.scrollTo({
+        top: scrollToPosition,
+        behavior: "smooth", // smooth scroll
+      });
+    }
+  });
+});
+
+const backHome = document.getElementById("back-home");
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > window.innerHeight / 20) {
+    backHome.classList.add("scrolled"); // Add class when shown (rotated 0°)
+  } else {
+    backHome.classList.remove("scrolled"); // Remove class when hidden (rotated -90°)
+  }
+});
+
+backHome.addEventListener("click", () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth", // for smooth scrolling
+  });
+});
+
+function darkenColor(color, percent) {
+  // Convert HEX to RGB if needed
+  if (color.startsWith("#")) {
+    let r, g, b;
+    if (color.length === 4) {
+      r = parseInt(color[1] + color[1], 16);
+      g = parseInt(color[2] + color[2], 16);
+      b = parseInt(color[3] + color[3], 16);
+    } else {
+      r = parseInt(color[1] + color[2], 16);
+      g = parseInt(color[3] + color[4], 16);
+      b = parseInt(color[5] + color[6], 16);
+    }
+    return darkenRGB(r, g, b, percent);
+  }
+
+  // If RGB format
+  const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+  if (rgbMatch) {
+    return darkenRGB(+rgbMatch[1], +rgbMatch[2], +rgbMatch[3], percent);
+  }
+
+  throw new Error("Unsupported color format: " + color);
+}
+
+function darkenRGB(r, g, b, percent) {
+  const factor = 1 - percent / 100;
+  r = Math.round(r * factor);
+  g = Math.round(g * factor);
+  b = Math.round(b * factor);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+window.addEventListener("load", () => {
+  const svgObject = document.getElementById("mySVG1");
+  const avatar = document.getElementById("avatar");
+
+  svgObject.addEventListener("load", () => {
+    const svgDoc = svgObject.contentDocument;
+    if (!svgDoc) return;
+
+    const shape = svgDoc.querySelector("path");
+    if (!shape) return;
+
+    // Get original path & bounding box
+    const rawPath = shape.getAttribute("d");
+    const bbox = shape.getBBox();
+
+    // Compute scale factors to fit 0–1 space
+    const scaleX = 1 / bbox.width;
+    const scaleY = 1 / bbox.height;
+    const translateX = -bbox.x * scaleX;
+    const translateY = -bbox.y * scaleY;
+
+    // Build a transformed <path> in objectBoundingBox coords
+    const tempSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    const tempPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    tempPath.setAttribute("d", rawPath);
+    tempPath.setAttribute("transform", `translate(${translateX},${translateY}) scale(${scaleX},${scaleY})`);
+    tempSvg.appendChild(tempPath);
+
+    const pathData = tempPath.getAttribute("d"); // still original commands
+    const transformAttr = tempPath.getAttribute("transform");
+
+    // Apply to avatar as clip-path
+    avatar.style.clipPath = `path("${rawPath}")`;
+    avatar.style.webkitClipPath = `path("${rawPath}")`; // Safari
+
+    // Show avatar now
+    avatar.style.opacity = 1;
+  });
+});
+
