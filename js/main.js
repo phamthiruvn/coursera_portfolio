@@ -8,7 +8,10 @@ const themePairs = {
   blue: ["#b5e4f1ff", "#0083d4ff"],
 };
 
-let currentTheme = "pink";
+let currentTheme =
+  Object.keys(themePairs)[
+    Math.floor(Math.random() * Object.keys(themePairs).length)
+  ];
 
 // Colors SVG <object> elements based on theme and class
 function colorSVG(obj) {
@@ -16,7 +19,9 @@ function colorSVG(obj) {
   const svgDoc = obj.contentDocument;
   if (!svgDoc) return;
   const fillColor = obj.classList.contains("darker") ? darkColor : lightColor;
-  svgDoc.querySelectorAll("path").forEach((p) => p.setAttribute("fill", fillColor));
+  svgDoc
+    .querySelectorAll("path")
+    .forEach((p) => p.setAttribute("fill", fillColor));
 }
 
 // Applies theme colors to page elements
@@ -127,12 +132,15 @@ document.addEventListener("click", (e) => {
     if (iconsDiv)
       iconsDiv.replaceWith(createSoftwareP(div.dataset.softwareText));
   });
+
   animateLines(speed);
 });
 
 // Resizes icons on window resize
 window.addEventListener("resize", () => {
-  const skillWidth = document.getElementById("skill").getBoundingClientRect().width;
+  const skillWidth = document
+    .getElementById("skill")
+    .getBoundingClientRect().width;
   document.querySelectorAll(".software-icons img").forEach((img) => {
     img.width = img.height = skillWidth / 20;
   });
@@ -141,8 +149,8 @@ window.addEventListener("resize", () => {
   });
 });
 
-// List of software skills and their values
-const softwareSkills = [
+// ===== DATA =====
+const softwareSkillsNow = [
   { name: "Photoshop", value: 80 },
   { name: "Illustrator", value: 80 },
   { name: "InDesign", value: 50 },
@@ -155,9 +163,73 @@ const softwareSkills = [
   { name: "Cinema4D", value: 45 },
 ];
 
-softwareSkills.sort((a, b) => b.value - a.value);
+const diffsByYear = {
+  2023: [
+    { name: "Photoshop", value: 0 },
+    { name: "Illustrator", value: 0 },
+    { name: "InDesign", value: -20 },
+    { name: "AfterEffects", value: 0 },
+    { name: "PowerPoint", value: 0 },
+    { name: "JavaScript", value: -20 },
+    { name: "HTML", value: -20 },
+    { name: "CSS", value: -20 },
+    { name: "Blender", value: -20 },
+    { name: "Cinema4D", value: -20 },
+  ],
+  2021: [
+    { name: "Photoshop", value: -80 },
+    { name: "Illustrator", value: -80 },
+    { name: "InDesign", value: -50 },
+    { name: "AfterEffects", value: -55 },
+    { name: "PowerPoint", value: -80 },
+    { name: "JavaScript", value: -60 },
+    { name: "HTML", value: -70 },
+    { name: "CSS", value: -70 },
+    { name: "Blender", value: -25 },
+    { name: "Cinema4D", value: -45 },
+  ],
+  2018: [
+    { name: "Photoshop", value: -80 },
+    { name: "Illustrator", value: -80 },
+    { name: "InDesign", value: -50 },
+    { name: "AfterEffects", value: -55 },
+    { name: "PowerPoint", value: -80 },
+    { name: "JavaScript", value: -60 },
+    { name: "HTML", value: -70 },
+    { name: "CSS", value: -70 },
+    { name: "Blender", value: -25 },
+    { name: "Cinema4D", value: -45 },
+  ],
+};
 
-// Gets mapping of skill divs to their software lists
+const years = [2025, 2023, 2021, 2018];
+let currentYear = 2025;
+let currentYearIndex = years.indexOf(currentYear);
+let visualizedState = false;
+
+// ===== HELPER FUNCTIONS =====
+function getSkillsForYear(targetYear) {
+  let skillsMap = Object.fromEntries(
+    softwareSkillsNow.map((s) => [s.name, s.value])
+  );
+
+  const yearsAbove = Object.keys(diffsByYear)
+    .map(Number)
+    .filter((y) => y > targetYear)
+    .sort((a, b) => b - a);
+
+  yearsAbove.forEach((year) => {
+    (diffsByYear[year] || []).forEach(({ name, value }) => {
+      skillsMap[name] = (skillsMap[name] || 0) + value;
+    });
+  });
+
+  return Object.entries(skillsMap)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
+}
+
+// Get mapping of skill -> software for loading bars
 function getSkillSoftwares() {
   const skills = document.querySelectorAll('div[id^="skill-"]');
   const skillSoftwares = {};
@@ -175,49 +247,138 @@ function getSkillSoftwares() {
 
 const skillSoftwares = getSkillSoftwares();
 
-// Gets the value for a software by name
 function getSoftwareValue(name) {
-  const skill = softwareSkills.find((s) => s.name === name);
+  const skill = getSkillsForYear(currentYear).find((s) => s.name === name);
   return skill ? skill.value : 0;
 }
 
-// Sets the clipPath for skill loading bars based on average software value
-document.querySelectorAll('div[class^="loading-"]').forEach((div) => {
-  const skillId = div.parentElement.id;
-  const softwares = skillSoftwares[skillId] || [];
-  const skillNumber = parseInt(skillId.split("-")[1], 10);
-  const avg = Math.max(
-    softwares.length
-      ? softwares.reduce((sum, soft) => sum + getSoftwareValue(soft), 0) / softwares.length - skillNumber ** 2
-      : 0,
-    0
-  );
-  div.style.clipPath = `polygon(0 0, ${avg}% 0, ${avg}% 100%, 0 100%)`;
-});
+// ===== YEAR CAROUSEL =====
+function createYearCarousel() {
+  const container = document.getElementById("year-buttons");
+  container.innerHTML = "";
 
-// Creates software skill items with icon, circle, and value
-const container = document.getElementById("sorfware-0");
-softwareSkills.forEach(({ name, value }) => {
-  const div = document.createElement("div");
-  div.classList.add("software-item", "darker");
-  div.style.position = "relative";
+  const prevBtn = document.createElement("button");
+  prevBtn.textContent = "◀";
+  prevBtn.addEventListener("click", () => {
+    currentYearIndex = (currentYearIndex - 1 + years.length) % years.length;
+    currentYear = years[currentYearIndex];
+    updateYearDisplay();
+  });
 
-  const img = document.createElement("img");
-  img.src = `icons/${name.toLowerCase().replace(/\s+/g, "")}.svg`;
-  img.alt = name;
-  img.style.position = "relative";
+  const yearLabel = document.createElement("span");
+  yearLabel.id = "year-label";
+  yearLabel.textContent = currentYear;
 
-  const circleDiv = document.createElement("div");
-  circleDiv.classList.add("circle-shape");
-  circleDiv.style.clipPath = angleToClipPath(value * 3.6);
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "▶";
+  nextBtn.addEventListener("click", () => {
+    currentYearIndex = (currentYearIndex + 1) % years.length;
+    currentYear = years[currentYearIndex];
+    updateYearDisplay();
+  });
+  container.append(prevBtn, yearLabel, nextBtn);
+}
 
-  const valueP = document.createElement("p");
-  valueP.classList.add("value-style");
-  valueP.textContent = value + "/100";
+createYearCarousel();
 
-  div.append(img, circleDiv, valueP);
-  div.id = `software-${name.toLowerCase().replace(/\s+/g, "")}`;
-  container.appendChild(div);
+function updateYearDisplay() {
+  document.getElementById("year-label").textContent = currentYear;
+  renderSoftwareSkills(currentYear);
+}
+
+// ===== SOFTWARE RENDERING =====
+function renderSoftwareSkills(year) {
+  const container = document.getElementById("sorfware-0");
+  container.innerHTML = "";
+
+  console.log("Rendering software skills for year:", getSkillsForYear(year));
+
+  getSkillsForYear(year).forEach(({ name, value }) => {
+    const id = name.toLowerCase().replace(/\s+/g, "");
+    const div = document.createElement("div");
+    div.classList.add("software-item");
+    div.style.position = "relative";
+
+    // Image
+    const img = document.createElement("img");
+    img.src = `icons/${id}.svg`;
+    img.alt = name;
+
+    // Circle
+    const circleDiv = document.createElement("div");
+    circleDiv.classList.add("circle-shape");
+    if (value > 0) {
+      circleDiv.style.clipPath = angleToClipPath(value * 3.6);
+    }
+    // Value text
+    const valueP = document.createElement("p");
+    valueP.classList.add("value-style");
+    valueP.textContent = value + "/100";
+
+    div.append(img, circleDiv, valueP);
+    div.id = `software-${id}`;
+
+    // Apply visualized state
+    if (visualizedState) {
+      div.classList.add("visualized", "lighter");
+      div.style.width = value + "%";
+      if (value == 0) {
+        div.style.display = "none";
+      }
+    } else {
+      div.classList.add("darker");
+      div.style.width = "90%";
+    }
+
+    container.appendChild(div);
+  });
+
+  // Loading bars only if not visualized
+  if (!visualizedState) {
+    document.querySelectorAll('div[class^="loading-"]').forEach((div) => {
+      const skillId = div.parentElement.id;
+      const softwares = skillSoftwares[skillId] || [];
+      const skillNumber = parseInt(skillId.split("-")[1], 10);
+      const avg = Math.max(
+        softwares.length
+          ? softwares.reduce((sum, soft) => sum + getSoftwareValue(soft), 0) /
+              softwares.length -
+              skillNumber ** 2
+          : 0,
+        0
+      );
+      div.style.clipPath = `polygon(0 0, ${avg}% 0, ${avg}% 100%, 0 100%)`;
+    });
+  }
+
+  applyTheme();
+}
+
+// ===== VISUALIZATION TOGGLE =====
+function toggleVisualization(year) {
+  const skillDivs = document.querySelectorAll("#skill > div[id^='skill-']");
+  const skillLines = document.getElementById("skill-lines");
+
+  visualizedState = !visualizedState;
+  skillLines.classList.toggle("visualized");
+
+  skillDivs.forEach((div) => div.classList.toggle("visualized"));
+
+  renderSoftwareSkills(year);
+
+  skillDivs.forEach((div) => {
+    div.addEventListener("click", () => {
+      if (!div.classList.contains("visualized")) return;
+      startAnimation(speed);
+    });
+  });
+}
+
+// ===== INIT =====
+renderSoftwareSkills(currentYear);
+
+document.getElementById("visualize").addEventListener("click", () => {
+  toggleVisualization(currentYear);
 });
 
 // Converts an angle to a CSS polygon clipPath for circular progress
@@ -250,42 +411,6 @@ function angleToClipPath(angle) {
 
 let speed = 0.05; // animation speed (0 < speed <= 1)
 
-// Handles visualize button click to toggle visualization and animate lines
-document.getElementById("visualize").addEventListener("click", () => {
-  const skillDivs = document.querySelectorAll("#skill > div[id^='skill-']");
-  const softwareDivs = document.querySelectorAll(".software-item");
-  const skillLines = document.getElementById("skill-lines");
-  skillLines.classList.toggle("visualized");
-
-  skillDivs.forEach((div) => div.classList.toggle("visualized"));
-
-  softwareDivs.forEach((div) => {
-    div.classList.toggle("visualized");
-    div.classList.toggle("darker");
-    div.classList.toggle("lighter");
-  });
-
-  softwareSkills.forEach(({ name, value }) => {
-    const el = document.getElementById(`software-${name.toLowerCase().replace(/\s+/g, "")}`);
-    if (el) {
-      if (el.classList.contains("visualized")) {
-        el.style.width = value + "%";
-      } else {
-        el.style.width = "";
-        el.style.height = "";
-      }
-    }
-  });
-  applyTheme();
-
-  skillDivs.forEach((div) => {
-    div.addEventListener("click", () => {
-      if (!div.classList.contains("visualized")) return;
-      startAnimation(speed);
-    });
-  });
-});
-
 // Gets center coordinates for skills and softwares, and their mapping
 function getCentersWithMapping() {
   const container = document.getElementById("skill-sorfwares");
@@ -305,7 +430,9 @@ function getCentersWithMapping() {
     })
     .filter(Boolean);
 
-  const softwares = Array.from(container.querySelectorAll('[id^="software-"]')).map((el) => {
+  const softwares = Array.from(
+    container.querySelectorAll('[id^="software-"]')
+  ).map((el) => {
     const rect = el.getBoundingClientRect();
     return [
       el.id.replace(/^software-/, ""),
@@ -322,14 +449,18 @@ function afterMappingReady() {}
 
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("skill-sorfwares");
-  const mapArray = Array.from(container.querySelectorAll('[id^="skill-"]')).map((skillEl) => {
-    const skillId = skillEl.id.replace(/^skill-/, "");
-    const linkedSoftwareIds = (skillEl.getAttribute("data-software-text") || "")
-      .split(",")
-      .map((s) => s.trim().toLowerCase())
-      .filter(Boolean);
-    return [skillId.toLowerCase(), linkedSoftwareIds];
-  });
+  const mapArray = Array.from(container.querySelectorAll('[id^="skill-"]')).map(
+    (skillEl) => {
+      const skillId = skillEl.id.replace(/^skill-/, "");
+      const linkedSoftwareIds = (
+        skillEl.getAttribute("data-software-text") || ""
+      )
+        .split(",")
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean);
+      return [skillId.toLowerCase(), linkedSoftwareIds];
+    }
+  );
 
   mapping = {};
   mapArray.forEach(([key, value]) => {
@@ -382,7 +513,14 @@ function animateLines(s) {
     for (let i = 0; i < currentLine; i++) {
       const line = lines[i];
       ctx.strokeStyle = line.color;
-      drawArrow(ctx, line.from.x, line.from.y, line.to.x, line.to.y, headLength);
+      drawArrow(
+        ctx,
+        line.from.x,
+        line.from.y,
+        line.to.x,
+        line.to.y,
+        headLength
+      );
     }
 
     if (currentLine < lines.length) {
@@ -403,7 +541,16 @@ function animateLines(s) {
   draw();
 }
 
-function drawOrganicArrow(ctx, fromX, fromY, toX, toY, headLength, segments = 10, amp = 10) {
+function drawOrganicArrow(
+  ctx,
+  fromX,
+  fromY,
+  toX,
+  toY,
+  headLength,
+  segments = 10,
+  amp = 10
+) {
   const dx = (toX - fromX) / segments;
   const dy = (toY - fromY) / segments;
   ctx.beginPath();
@@ -534,8 +681,9 @@ document.querySelectorAll(".nav-links a").forEach((link) => {
     const targetId = link.getAttribute("href").slice(1);
     const targetEl = document.getElementById(targetId);
     if (targetEl) {
-      const offset = window.innerHeight / 20;
-      const elementPosition = targetEl.getBoundingClientRect().top + window.pageYOffset;
+      const offset = window.innerHeight / 25;
+      const elementPosition =
+        targetEl.getBoundingClientRect().top + window.pageYOffset;
       const scrollToPosition = elementPosition - offset;
       window.scrollTo({
         top: scrollToPosition,
@@ -619,26 +767,48 @@ function alignAndClipAvatar() {
 function getClip(svgObject, avatar) {
   const svgDoc = svgObject.contentDocument;
   if (!svgDoc) return null;
-  const svgEl = svgDoc.querySelector('svg');
-  const pathEl = svgDoc.querySelector('path');
+  const svgEl = svgDoc.querySelector("svg");
+  const pathEl = svgDoc.querySelector("path");
   if (!svgEl || !pathEl) return null;
-  const d = pathEl.getAttribute('d');
+  const d = pathEl.getAttribute("d");
   const vb = svgEl.viewBox.baseVal;
   const svgRect = svgObject.getBoundingClientRect();
   const avatarRect = avatar.getBoundingClientRect();
   const targetW = svgRect.width;
   const targetH = svgRect.height;
   const offsetX = svgRect.left - avatarRect.left;
-  const offsetY = svgRect.top  - avatarRect.top;
-  return scalePathToPixels(d, vb.x, vb.y, vb.width, vb.height, targetW, targetH, offsetX, offsetY);
+  const offsetY = svgRect.top - avatarRect.top;
+  return scalePathToPixels(
+    d,
+    vb.x,
+    vb.y,
+    vb.width,
+    vb.height,
+    targetW,
+    targetH,
+    offsetX,
+    offsetY
+  );
 }
 
-function scalePathToPixels(d, vbX, vbY, vbW, vbH, targetW, targetH, offsetX = 0, offsetY = 0) {
+function scalePathToPixels(
+  d,
+  vbX,
+  vbY,
+  vbW,
+  vbH,
+  targetW,
+  targetH,
+  offsetX = 0,
+  offsetY = 0
+) {
   const sx = targetW / vbW;
   const sy = targetH / vbH;
   const tokens = d.match(/[a-zA-Z]|-?\d*\.?\d+(?:e[-+]?\d+)?/g);
   if (!tokens) return d;
-  let i = 0, out = '', cmd = '';
+  let i = 0,
+    out = "",
+    cmd = "";
   const isCmd = (t) => /^[a-zA-Z]$/.test(t);
   const fmt = (n) => (Math.round(n * 100) / 100).toString();
   const num = () => parseFloat(tokens[i++]);
@@ -648,92 +818,144 @@ function scalePathToPixels(d, vbX, vbY, vbW, vbH, targetW, targetH, offsetX = 0,
       for (let k = 0; k < count; k++) vals.push(num());
       const abs = cmd === cmd.toUpperCase();
       const mapped = abs ? mapAbs(vals) : mapRel(vals);
-      out += mapped.join(' ') + ' ';
+      out += mapped.join(" ") + " ";
     }
   };
   while (i < tokens.length) {
     if (isCmd(tokens[i])) {
       cmd = tokens[i++];
-      out += cmd + ' ';
+      out += cmd + " ";
     }
     switch (cmd) {
-      case 'M': case 'L': case 'T':
-      case 'm': case 'l': case 't':
-        writePairs(2,
-          ([x, y]) => [fmt(offsetX + (x - vbX) * sx), fmt(offsetY + (y - vbY) * sy)],
+      case "M":
+      case "L":
+      case "T":
+      case "m":
+      case "l":
+      case "t":
+        writePairs(
+          2,
+          ([x, y]) => [
+            fmt(offsetX + (x - vbX) * sx),
+            fmt(offsetY + (y - vbY) * sy),
+          ],
           ([dx, dy]) => [fmt(dx * sx), fmt(dy * sy)]
         );
         break;
-      case 'H': case 'h':
-        writePairs(1,
+      case "H":
+      case "h":
+        writePairs(
+          1,
           ([x]) => [fmt(offsetX + (x - vbX) * sx)],
           ([dx]) => [fmt(dx * sx)]
         );
         break;
-      case 'V': case 'v':
-        writePairs(1,
+      case "V":
+      case "v":
+        writePairs(
+          1,
           ([y]) => [fmt(offsetY + (y - vbY) * sy)],
           ([dy]) => [fmt(dy * sy)]
         );
         break;
-      case 'C': case 'c':
-        writePairs(6,
-          ([x1,y1,x2,y2,x,y]) => [
-            fmt(offsetX + (x1 - vbX) * sx), fmt(offsetY + (y1 - vbY) * sy),
-            fmt(offsetX + (x2 - vbX) * sx), fmt(offsetY + (y2 - vbY) * sy),
-            fmt(offsetX + (x  - vbX) * sx), fmt(offsetY + (y  - vbY) * sy)
+      case "C":
+      case "c":
+        writePairs(
+          6,
+          ([x1, y1, x2, y2, x, y]) => [
+            fmt(offsetX + (x1 - vbX) * sx),
+            fmt(offsetY + (y1 - vbY) * sy),
+            fmt(offsetX + (x2 - vbX) * sx),
+            fmt(offsetY + (y2 - vbY) * sy),
+            fmt(offsetX + (x - vbX) * sx),
+            fmt(offsetY + (y - vbY) * sy),
           ],
-          ([dx1,dy1,dx2,dy2,dx,dy]) => [
-            fmt(dx1 * sx), fmt(dy1 * sy),
-            fmt(dx2 * sx), fmt(dy2 * sy),
-            fmt(dx  * sx), fmt(dy  * sy)
+          ([dx1, dy1, dx2, dy2, dx, dy]) => [
+            fmt(dx1 * sx),
+            fmt(dy1 * sy),
+            fmt(dx2 * sx),
+            fmt(dy2 * sy),
+            fmt(dx * sx),
+            fmt(dy * sy),
           ]
         );
         break;
-      case 'S': case 's':
-        writePairs(4,
-          ([x2,y2,x,y]) => [
-            fmt(offsetX + (x2 - vbX) * sx), fmt(offsetY + (y2 - vbY) * sy),
-            fmt(offsetX + (x  - vbX) * sx), fmt(offsetY + (y  - vbY) * sy)
+      case "S":
+      case "s":
+        writePairs(
+          4,
+          ([x2, y2, x, y]) => [
+            fmt(offsetX + (x2 - vbX) * sx),
+            fmt(offsetY + (y2 - vbY) * sy),
+            fmt(offsetX + (x - vbX) * sx),
+            fmt(offsetY + (y - vbY) * sy),
           ],
-          ([dx2,dy2,dx,dy]) => [
-            fmt(dx2 * sx), fmt(dy2 * sy),
-            fmt(dx  * sx), fmt(dy  * sy)
+          ([dx2, dy2, dx, dy]) => [
+            fmt(dx2 * sx),
+            fmt(dy2 * sy),
+            fmt(dx * sx),
+            fmt(dy * sy),
           ]
         );
         break;
-      case 'Q': case 'q':
-        writePairs(4,
-          ([x1,y1,x,y]) => [
-            fmt(offsetX + (x1 - vbX) * sx), fmt(offsetY + (y1 - vbY) * sy),
-            fmt(offsetX + (x  - vbX) * sx), fmt(offsetY + (y  - vbY) * sy)
+      case "Q":
+      case "q":
+        writePairs(
+          4,
+          ([x1, y1, x, y]) => [
+            fmt(offsetX + (x1 - vbX) * sx),
+            fmt(offsetY + (y1 - vbY) * sy),
+            fmt(offsetX + (x - vbX) * sx),
+            fmt(offsetY + (y - vbY) * sy),
           ],
-          ([dx1,dy1,dx,dy]) => [
-            fmt(dx1 * sx), fmt(dy1 * sy),
-            fmt(dx  * sx), fmt(dy  * sy)
+          ([dx1, dy1, dx, dy]) => [
+            fmt(dx1 * sx),
+            fmt(dy1 * sy),
+            fmt(dx * sx),
+            fmt(dy * sy),
           ]
         );
         break;
-      case 'A': case 'a':
+      case "A":
+      case "a":
         while (i < tokens.length && !isCmd(tokens[i])) {
-          const rx = num(), ry = num(), rot = num(), laf = num(), sf = num(), x = num(), y = num();
-          if (cmd === 'A') {
-            out += [
-              fmt(Math.abs(rx) * sx), fmt(Math.abs(ry) * sy), fmt(rot), fmt(laf), fmt(sf),
-              fmt(offsetX + (x - vbX) * sx), fmt(offsetY + (y - vbY) * sy)
-            ].join(' ') + ' ';
+          const rx = num(),
+            ry = num(),
+            rot = num(),
+            laf = num(),
+            sf = num(),
+            x = num(),
+            y = num();
+          if (cmd === "A") {
+            out +=
+              [
+                fmt(Math.abs(rx) * sx),
+                fmt(Math.abs(ry) * sy),
+                fmt(rot),
+                fmt(laf),
+                fmt(sf),
+                fmt(offsetX + (x - vbX) * sx),
+                fmt(offsetY + (y - vbY) * sy),
+              ].join(" ") + " ";
           } else {
-            out += [
-              fmt(Math.abs(rx) * sx), fmt(Math.abs(ry) * sy), fmt(rot), fmt(laf), fmt(sf),
-              fmt(x * sx), fmt(y * sy)
-            ].join(' ') + ' ';
+            out +=
+              [
+                fmt(Math.abs(rx) * sx),
+                fmt(Math.abs(ry) * sy),
+                fmt(rot),
+                fmt(laf),
+                fmt(sf),
+                fmt(x * sx),
+                fmt(y * sy),
+              ].join(" ") + " ";
           }
         }
         break;
-      case 'Z': case 'z':
+      case "Z":
+      case "z":
         break;
       default:
-        while (i < tokens.length && !isCmd(tokens[i])) out += tokens[i++] + ' ';
+        while (i < tokens.length && !isCmd(tokens[i])) out += tokens[i++] + " ";
         break;
     }
   }

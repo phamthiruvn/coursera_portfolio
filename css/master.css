@@ -8,7 +8,7 @@
   --background-color: transparent;
   --white: #fff;
   --font-family-main: "Courier New", Courier, monospace;
-  --font-size-body: clamp(0.5rem, 0.25rem + 1.5vw, 1.5rem);
+  --font-size-body: clamp(0.5rem, -0.27rem + 1.8vw, 1.5rem);
   --border-thin: solid 0.1em;
   --border-radius-large: 2em;
   --border-radius-medium: 0.75em;
@@ -37,7 +37,7 @@ html {
 body {
   color: var(--text-color);
   font-family: var(--font-family-main);
-  font-size: clamp(0.5rem, 0.2rem + 1.2vw, 5rem);
+  font-size: var(--font-size-body);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -80,7 +80,7 @@ h3 {
 
 a {
   color: inherit;
-  text-decoration:dashed;
+  text-decoration: dashed;
 }
 
 .side-bar {
@@ -272,7 +272,7 @@ a {
 
   50% {
     transform: translate(var(--dx), -5em) scale(1.25);
-    opacity: 1;
+    opacity: 0.75;
   }
 
   100% {
@@ -293,18 +293,36 @@ a {
   padding: 2.5% 2% 2.5% 4.5%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;  
+  align-items: flex-start;
   justify-content: flex-start;
+  gap: 0.5em;
 }
 
 .about-name {
   font-size: 2em;
   font-weight: 700;
 }
+#my-info h2 {
+  font-size: 1.25em;
+  font-weight: 650;
+}
+
+.about-quote {
+  font-size: 0.75em;
+  font-weight: 500;
+  padding: 0.25em;
+  font-style: italic;
+}
 
 .about-me {
   padding: 0;
   border-radius: 0 !important;
+}
+
+.about-contact {
+  list-style: none; /* no bullets */
+  padding: 0; /* remove default left padding */
+  margin: 0; /* reset margin */
 }
 
 .box,
@@ -429,6 +447,34 @@ a {
   z-index: 5;
 }
 
+#year-buttons {
+  position: absolute;
+  top: -2.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12.5%;
+  aspect-ratio: 5/1;
+  display: flex;
+  align-items: center;
+  padding: 0.25em 1em;
+  border-radius: var(--border-radius-large);
+}
+
+#year-buttons button {
+  font-size: 1em;
+  padding: 0.25em 0.5em;
+  color: inherit;
+  border: none;
+  border-radius: var(--border-radius-large);
+}
+
+#year-label {
+  text-align: center;
+  font-size: 1.25em;
+  text-align: center;
+  font-weight: bold;
+}
+
 [id^="skill-"].visualized.selected {
   padding: 1.2em !important;
 }
@@ -475,7 +521,7 @@ a {
     grid-template-rows 0.4s ease 0.5s;
 }
 
-#sorfware-0>div {
+#sorfware-0 > div {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -505,7 +551,6 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 90%;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: var(--border-thin);
@@ -525,6 +570,11 @@ a {
 
 .software-item:hover {
   transform: scale(1.2);
+  transition: transform 0.3s ease;
+}
+
+.software-item.visualized:hover {
+  transform: scale(1.01);
   transition: transform 0.3s ease;
 }
 
