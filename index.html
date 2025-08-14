@@ -2,138 +2,178 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="-1" />
-    <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
-    <link rel="stylesheet" href="css/master.css" />
-    <title>Portfolio Project</title>
-  </head>
-  <body>
-    <div class="side-bar">
-      <div class="side-button lighter">
-        <p>Back Home</p>
-        <button id="back-home" style="border: none">
-          <span class="desaturate">✈️</span>
-        </button>
-      </div>
 
-      <div class="side-button lighter">
-        <p>Spring</p>
-        <button id="pink" class="box darker" onclick="setTheme('pink')">
-          <span class="desaturate">🌸</span>
-        </button>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="-1" />
+  <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
+  <link rel="stylesheet" href="css/master.css" />
+  <title>Portfolio Project</title>
+</head>
 
-      <div class="side-button lighter">
-        <p>Summer</p>
-        <button id="orange" class="box darker" onclick="setTheme('orange')">
-          <span class="desaturate">😎</span>
-        </button>
-      </div>
-
-      <div class="side-button lighter">
-        <p>Autumn</p>
-        <button id="green" class="box darker" onclick="setTheme('green')">
-          <span class="desaturate">🍂</span>
-        </button>
-      </div>
-      <div class="side-button lighter">
-        <p>Winter</p>
-        <button id="blue" class="box darker" onclick="setTheme('blue')">
-          <span class="desaturate">❄️</span>
-        </button>
-      </div>
+<body>
+  <div class="side-bar">
+    <div class="side-button lighter">
+      <p>Back Home</p>
+      <button id="back-home" style="border: none">
+        <span class="desaturate">✈️</span>
+      </button>
     </div>
-    <nav class="navbar">
-      <ul class="nav-links box darker">
-        <li><a href="#about-me">About Me</a></li>
-        <li><a href="#skill-sorfwares">Skills & Sorfwares</a></li>
-        <li><a href="#gallery">Gallery</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-      <div class="logo box darker">MyPortfolio</div>
-    </nav>
-    <main>
-      <div class="container" id="about-me">
-        <div id="search" class="box darker">
-          <span class="search-icon">🔍︎</span>
-          <input id="search-box" type="text" placeholder="Search..." />
-        </div>
-        <div id="information" class="darker">V E R S A T H I L E</div>
-        <button id="like-info" class="box round-corner lighter">❤︎</button>
-        <div id="avatar-frame">
-          <object
-            id="mySVG1"
-            type="image/svg+xml"
-            data="images/Asset 6.svg"></object>
-          <img id="avatar" src="images/avatar.jpg" alt=""/>
-        </div>
 
+    <div class="side-button lighter">
+      <p>Spring</p>
+      <button id="pink" class="box darker" onclick="setTheme('pink')">
+        <span class="desaturate">🌸</span>
+      </button>
+    </div>
 
-        <div id="my-info">
-          <p>10000</p>
-          <p>10000</p>
-          <p>10000</p>
-          <p>10000</p>
-          <p>10000</p>
-          <p>10000</p>
-          <p>10000</p>
-          <p>10000</p>
-          <p>10000</p>
-          <p>10000</p>
-        </div>
-        <object
-          class="darker"
-          id="mySVG2"
-          type="image/svg+xml"
-          style="position: absolute; top: 0%; left: 0%; z-index: -10"
-          data="images/Asset 5.svg"></object>
+    <div class="side-button lighter">
+      <p>Summer</p>
+      <button id="orange" class="box darker" onclick="setTheme('orange')">
+        <span class="desaturate">😎</span>
+      </button>
+    </div>
+
+    <div class="side-button lighter">
+      <p>Autumn</p>
+      <button id="green" class="box darker" onclick="setTheme('green')">
+        <span class="desaturate">🍂</span>
+      </button>
+    </div>
+    <div class="side-button lighter">
+      <p>Winter</p>
+      <button id="blue" class="box darker" onclick="setTheme('blue')">
+        <span class="desaturate">❄️</span>
+      </button>
+    </div>
+  </div>
+  <nav class="navbar">
+    <ul class="nav-links box darker">
+      <li><a href="#about-me">About Me</a></li>
+      <li><a href="#skill-sorfwares">Skills & Sorfwares</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="logo box darker">MyPortfolio</div>
+  </nav>
+  <main>
+    <div class="container" id="about-me">
+      <div id="search" class="box darker">
+        <span class="search-icon">🔍︎</span>
+        <input id="search-box" type="text" placeholder="Search..." />
       </div>
-      <div class="container" id="skill-sorfwares">
-        <div id="skill">
-          <h1 class="border-box darker">EXPERTISE/CHUYÊN MÔN</h1>
-          <div id="skill-1" class="border-box darker unselected">
-            <span class="desaturate">👁️</span>
-            <h2>Branding & Visual Identity</h2>
-            <h3>Thiết kế Thương hiệu</h3>
-            <p class="sorfware">Photoshop, Illustrator</p>
-            <div class="loading-1 border-box"></div>
-          </div>
-          <div id="skill-2" class="border-box darker unselected">
-            <span class="desaturate">🖨️</span>
-            <h2>Graphic & Packaging Design</h2>
-            <h3>Thiết kế Đồ họa số & Bao bì sản phẩm</h3>
-            <p class="sorfware">Photoshop, Illustrator, InDesign</p>
-            <div class="loading-2 border-box"></div>
-          </div>
-          <div id="skill-3" class="border-box darker unselected">
-            <span class="desaturate">👆🏻</span>
-            <h2>Interactive Design</h2>
-            <h3>Thiết kế Tương tác Đa phương tiện</h3>
-            <p class="sorfware">PowerPoint, AfterEffects</p>
-            <div class="loading-3 border-box"></div>
-          </div>
-          <div id="skill-4" class="border-box darker unselected">
-            <span class="desaturate">🌐</span>
-            <h2>Web Design</h2>
-            <h3>Thiết kế Web</h3>
-            <p class="sorfware">JavaScript, HTML, CSS</p>
-            <div class="loading-4 border-box"></div>
-          </div>
-          <div id="skill-5" class="border-box darker unselected">
-            <span class="desaturate">🎬</span>
-            <h2>3D & Animation Design</h2>
-            <h3>Diễn hoạt 2D & 3D</h3>
-            <p class="sorfware">Blender, Cinema4D, AfterEffects</p>
-            <div class="loading-5 border-box"></div>
-          </div>
+      <div id="information" class="darker">V E R S A T H I L E</div>
+      <button id="like-info" class="box round-corner lighter">❤︎</button>
+      <div id="avatar-frame">
+        <object id="mySVG1" type="image/svg+xml" data="images/Asset 6.svg"></object>
+        <img id="avatar" src="images/avatar.jpg" alt="" />
+      </div>
+
+      <div id="my-info">
+        <header class="about-header">
+          <h1 class="about-name">PHẠM NHẬT THI</h1>
+          <h2 class="about-title">Versatile Designer</h2>
+          <ul class="about-contact">
+            <li><span>Hanoi, Vietnam</span></li>
+            <li><a href="mailto:phamthiruvn@gmail.com">phamthiruvn@gmail.com</a></li>
+            <li><a href="https://coursera-portfolio-xi.vercel.app/" target="_blank" rel="noopener">nhatthi.aboutme</a></li>
+          </ul>
+        </header>
+
+        <section class="about-bio">
+          <h2>About Me</h2>
+          <quote class="about-quote">
+                    I’m a versatile designer with a passion for crafting impactful visual
+        solutions across branding, UI/UX, print, and motion. My approach blends
+        creativity with strategy, ensuring each project not only looks great but
+        works seamlessly for its audience.
+          </quote>
+        </section>
+
+        <!-- <section class="about__highlights">
+          <h2>Background &amp; Highlights</h2>
+
+          <ul class="timeline">
+            <li>
+              <strong>Bachelor in Graphic Design</strong> — University Name, 2022
+            </li>
+            <li>
+              Adobe Certified Professional (Photoshop, Illustrator) — 2024
+            </li>
+            <li>
+              UX Design Course — Provider, 2024
+            </li>
+            <li>
+              Motion Graphics Workshop — Provider, 2023
+            </li>
+            <li>
+              <strong>Brand Designer — Studio/Client</strong> (2023–Present)<br>
+              Led identity system, type, and packaging for a D2C beverage brand; created a scalable design toolkit and
+              launch assets.
+            </li>
+            <li>
+              <strong>UI Designer — Company/Client</strong> (2021–2023)<br>
+              Delivered responsive web UI and design tokens; shipped a component library that reduced dev handoff time
+              by 30%.
+            </li>
+            <li>
+              Award / Exhibition — 2024
+            </li>
+            <li>
+              Featured in / Publication — 2023
+            </li>
+          </ul>
+        </section> -->
+      </div>
+      </section>
+
+      <object class="darker" id="mySVG2" type="image/svg+xml"
+        style="position: absolute; top: 0%; left: 0%; z-index: -10" data="images/Asset 5.svg"></object>
+    </div>
+    <div class="container" id="skill-sorfwares">
+      <div id="skill">
+        <h1 class="border-box darker">EXPERTISE/CHUYÊN MÔN</h1>
+        <div id="skill-1" class="border-box darker unselected">
+          <span class="desaturate">👁️</span>
+          <h2>Branding & Visual Identity</h2>
+          <h3>Thiết kế Thương hiệu</h3>
+          <p class="sorfware">Photoshop, Illustrator</p>
+          <div class="loading-1 border-box"></div>
         </div>
-        <div id="sorfwares">
-          <h1 class="border-box darker">SORFWARES/PHẦN MỀM</h1>
-          <div id="sorfware-0"></div>
-          <!--
+        <div id="skill-2" class="border-box darker unselected">
+          <span class="desaturate">🖨️</span>
+          <h2>Graphic & Packaging Design</h2>
+          <h3>Thiết kế Đồ họa số & Bao bì sản phẩm</h3>
+          <p class="sorfware">Photoshop, Illustrator, InDesign</p>
+          <div class="loading-2 border-box"></div>
+        </div>
+        <div id="skill-3" class="border-box darker unselected">
+          <span class="desaturate">👆🏻</span>
+          <h2>Interactive Design</h2>
+          <h3>Thiết kế Tương tác Đa phương tiện</h3>
+          <p class="sorfware">PowerPoint, AfterEffects</p>
+          <div class="loading-3 border-box"></div>
+        </div>
+        <div id="skill-4" class="border-box darker unselected">
+          <span class="desaturate">🌐</span>
+          <h2>Web Design</h2>
+          <h3>Thiết kế Web</h3>
+          <p class="sorfware">JavaScript, HTML, CSS</p>
+          <div class="loading-4 border-box"></div>
+        </div>
+        <div id="skill-5" class="border-box darker unselected">
+          <span class="desaturate">🎬</span>
+          <h2>3D & Animation Design</h2>
+          <h3>Diễn hoạt 2D & 3D</h3>
+          <p class="sorfware">Blender, Cinema4D, AfterEffects</p>
+          <div class="loading-5 border-box"></div>
+        </div>
+      </div>
+      <div id="sorfwares">
+        <h1 class="border-box darker">SORFWARES/PHẦN MỀM</h1>
+        <div id="sorfware-0"></div>
+        <!--
                 <div id="formula">
                     <p>
                         <strong>Average Expertise Value Calculation:</strong><br>
@@ -147,25 +187,18 @@
                     </p>
                 </div>
                 -->
-        </div>
-        <button id="visualize" class="darker">VISUALIZE</button>
-        <canvas id="skill-lines"></canvas>
-        <object
-          class="darker"
-          id="mySVG3"
-          type="image/svg+xml"
-          style="position: absolute; top: 0%; left: 0%; z-index: -10"
-          data="images/Asset 3.svg"></object>
       </div>
-      <div class="container" id="gallery">
-        <object
-          class="darker"
-          id="mySVG4"
-          type="image/svg+xml"
-          style="position: absolute; top: 0%; left: 0%; z-index: -10"
-          data="images/Asset 3.svg"></object>
-      </div>
-    </main>
-    <script src="js/main.js"></script>
-  </body>
+      <button id="visualize" class="darker">VISUALIZE</button>
+      <canvas id="skill-lines"></canvas>
+      <object class="darker" id="mySVG3" type="image/svg+xml"
+        style="position: absolute; top: 0%; left: 0%; z-index: -10" data="images/Asset 3.svg"></object>
+    </div>
+    <div class="container" id="gallery">
+      <object class="darker" id="mySVG4" type="image/svg+xml"
+        style="position: absolute; top: 0%; left: 0%; z-index: -10" data="images/Asset 3.svg"></object>
+    </div>
+  </main>
+  <script src="js/main.js"></script>
+</body>
+
 </html>

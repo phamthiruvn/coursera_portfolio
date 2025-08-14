@@ -16,9 +16,7 @@ function colorSVG(obj) {
   const svgDoc = obj.contentDocument;
   if (!svgDoc) return;
   const fillColor = obj.classList.contains("darker") ? darkColor : lightColor;
-  svgDoc
-    .querySelectorAll("path")
-    .forEach((p) => p.setAttribute("fill", fillColor));
+  svgDoc.querySelectorAll("path").forEach((p) => p.setAttribute("fill", fillColor));
 }
 
 // Applies theme colors to page elements
@@ -134,9 +132,7 @@ document.addEventListener("click", (e) => {
 
 // Resizes icons on window resize
 window.addEventListener("resize", () => {
-  const skillWidth = document
-    .getElementById("skill")
-    .getBoundingClientRect().width;
+  const skillWidth = document.getElementById("skill").getBoundingClientRect().width;
   document.querySelectorAll(".software-icons img").forEach((img) => {
     img.width = img.height = skillWidth / 20;
   });
@@ -192,9 +188,7 @@ document.querySelectorAll('div[class^="loading-"]').forEach((div) => {
   const skillNumber = parseInt(skillId.split("-")[1], 10);
   const avg = Math.max(
     softwares.length
-      ? softwares.reduce((sum, soft) => sum + getSoftwareValue(soft), 0) /
-          softwares.length -
-          skillNumber ** 2
+      ? softwares.reduce((sum, soft) => sum + getSoftwareValue(soft), 0) / softwares.length - skillNumber ** 2
       : 0,
     0
   );
@@ -264,7 +258,6 @@ document.getElementById("visualize").addEventListener("click", () => {
   skillLines.classList.toggle("visualized");
 
   skillDivs.forEach((div) => div.classList.toggle("visualized"));
-  // skillDivs.forEach((div) => div.classList.remove("selected"));
 
   softwareDivs.forEach((div) => {
     div.classList.toggle("visualized");
@@ -273,9 +266,7 @@ document.getElementById("visualize").addEventListener("click", () => {
   });
 
   softwareSkills.forEach(({ name, value }) => {
-    const el = document.getElementById(
-      `software-${name.toLowerCase().replace(/\s+/g, "")}`
-    );
+    const el = document.getElementById(`software-${name.toLowerCase().replace(/\s+/g, "")}`);
     if (el) {
       if (el.classList.contains("visualized")) {
         el.style.width = value + "%";
@@ -314,9 +305,7 @@ function getCentersWithMapping() {
     })
     .filter(Boolean);
 
-  const softwares = Array.from(
-    container.querySelectorAll('[id^="software-"]')
-  ).map((el) => {
+  const softwares = Array.from(container.querySelectorAll('[id^="software-"]')).map((el) => {
     const rect = el.getBoundingClientRect();
     return [
       el.id.replace(/^software-/, ""),
@@ -333,18 +322,14 @@ function afterMappingReady() {}
 
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("skill-sorfwares");
-  const mapArray = Array.from(container.querySelectorAll('[id^="skill-"]')).map(
-    (skillEl) => {
-      const skillId = skillEl.id.replace(/^skill-/, "");
-      const linkedSoftwareIds = (
-        skillEl.getAttribute("data-software-text") || ""
-      )
-        .split(",")
-        .map((s) => s.trim().toLowerCase())
-        .filter(Boolean);
-      return [skillId.toLowerCase(), linkedSoftwareIds];
-    }
-  );
+  const mapArray = Array.from(container.querySelectorAll('[id^="skill-"]')).map((skillEl) => {
+    const skillId = skillEl.id.replace(/^skill-/, "");
+    const linkedSoftwareIds = (skillEl.getAttribute("data-software-text") || "")
+      .split(",")
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+    return [skillId.toLowerCase(), linkedSoftwareIds];
+  });
 
   mapping = {};
   mapArray.forEach(([key, value]) => {
@@ -373,7 +358,7 @@ function animateLines(s) {
 
   const lines = [];
   const skillCenter = skills[0];
-  const softwareIds = mapping[skillCenter[0]] || [];
+  const softwareIds = mapping[skillCenter[0]];
   const color = darkenColor(themePairs[currentTheme][0], 20);
 
   softwareIds.forEach((softwareId) => {
@@ -397,14 +382,7 @@ function animateLines(s) {
     for (let i = 0; i < currentLine; i++) {
       const line = lines[i];
       ctx.strokeStyle = line.color;
-      drawArrow(
-        ctx,
-        line.from.x,
-        line.from.y,
-        line.to.x,
-        line.to.y,
-        headLength
-      );
+      drawArrow(ctx, line.from.x, line.from.y, line.to.x, line.to.y, headLength);
     }
 
     if (currentLine < lines.length) {
@@ -425,16 +403,7 @@ function animateLines(s) {
   draw();
 }
 
-function drawOrganicArrow(
-  ctx,
-  fromX,
-  fromY,
-  toX,
-  toY,
-  headLength,
-  segments = 10,
-  amp = 10
-) {
+function drawOrganicArrow(ctx, fromX, fromY, toX, toY, headLength, segments = 10, amp = 10) {
   const dx = (toX - fromX) / segments;
   const dy = (toY - fromY) / segments;
   ctx.beginPath();
@@ -521,21 +490,17 @@ const likeInfo = document.getElementById("like-info");
 
 likeInfo.addEventListener("click", (e) => {
   const btn = e.currentTarget;
-
-  // Restart animation
   btn.classList.remove("heartbeat");
-  void btn.offsetWidth; // force reflow
+  void btn.offsetWidth;
   btn.classList.add("heartbeat");
-
-  // Heart burst triggered right at the first big pulse (20% of anim time)
   setTimeout(() => {
     createHeartBurst(btn);
-  }, 100); // 0.5s animation → 100ms hits ~20%
+  }, 100);
 });
 
 function createHeartBurst(element) {
   const rect = element.getBoundingClientRect();
-  const count = Math.round(Math.random() * 10); // number of hearts per burst
+  const count = Math.round(Math.random() * 10);
 
   const centerX = rect.left + window.scrollX + rect.width / 2;
   const centerY = rect.top + window.scrollY + rect.height / 2;
@@ -544,49 +509,37 @@ function createHeartBurst(element) {
     const heart = document.createElement("span");
     heart.className = "flying-heart";
     heart.textContent = "❤︎";
-
-    // Size scales with button size
     const size = Math.max(12, rect.width * 0.25) * (0.8 + Math.random());
     const dx = (Math.random() - 0.5) * size * 5;
-    const duration = 600 + Math.random() * 1200 + "ms";
-
-    // Center position (with slight vertical nudge for visual balance)
+    const duration = 300 + Math.random() * 1200 + "ms";
     heart.style.left = centerX - size / 2 + "px";
     heart.style.top = centerY - size / 2 + "px";
-
     heart.style.fontSize = size + "px";
     heart.style.color = themePairs[currentTheme][1];
     heart.style.filter = `saturate(${1 + Math.random() * 2})`;
     heart.style.setProperty("--dx", dx + "px");
     heart.style.setProperty("--duration", duration);
-
     document.body.appendChild(heart);
     requestAnimationFrame(() => heart.classList.add("animate"));
     heart.addEventListener("animationend", () => heart.remove());
   }
-
-  // Trigger heartbeat on button
   element.classList.remove("heartbeat");
-  void element.offsetWidth; // restart CSS animation
+  void element.offsetWidth;
   element.classList.add("heartbeat");
 }
 
 document.querySelectorAll(".nav-links a").forEach((link) => {
   link.addEventListener("click", (e) => {
-    e.preventDefault(); // stop default jump
-
-    const targetId = link.getAttribute("href").slice(1); // remove #
+    e.preventDefault();
+    const targetId = link.getAttribute("href").slice(1);
     const targetEl = document.getElementById(targetId);
-
     if (targetEl) {
-      const offset = window.innerHeight / 20; // 10vh offset in pixels
-      const elementPosition =
-        targetEl.getBoundingClientRect().top + window.pageYOffset;
+      const offset = window.innerHeight / 20;
+      const elementPosition = targetEl.getBoundingClientRect().top + window.pageYOffset;
       const scrollToPosition = elementPosition - offset;
-
       window.scrollTo({
         top: scrollToPosition,
-        behavior: "smooth", // smooth scroll
+        behavior: "smooth",
       });
     }
   });
@@ -596,21 +549,20 @@ const backHome = document.getElementById("back-home");
 
 window.addEventListener("scroll", () => {
   if (window.scrollY > window.innerHeight / 20) {
-    backHome.classList.add("scrolled"); // Add class when shown (rotated 0°)
+    backHome.classList.add("scrolled");
   } else {
-    backHome.classList.remove("scrolled"); // Remove class when hidden (rotated -90°)
+    backHome.classList.remove("scrolled");
   }
 });
 
 backHome.addEventListener("click", () => {
   window.scrollTo({
     top: 0,
-    behavior: "smooth", // for smooth scrolling
+    behavior: "smooth",
   });
 });
 
 function darkenColor(color, percent) {
-  // Convert HEX to RGB if needed
   if (color.startsWith("#")) {
     let r, g, b;
     if (color.length === 4) {
@@ -624,13 +576,10 @@ function darkenColor(color, percent) {
     }
     return darkenRGB(r, g, b, percent);
   }
-
-  // If RGB format
   const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
   if (rgbMatch) {
     return darkenRGB(+rgbMatch[1], +rgbMatch[2], +rgbMatch[3], percent);
   }
-
   throw new Error("Unsupported color format: " + color);
 }
 
@@ -645,15 +594,11 @@ function darkenRGB(r, g, b, percent) {
 function alignAndClipAvatar() {
   const svgObject = document.getElementById("mySVG1");
   const avatar = document.getElementById("avatar");
-
-  if (!svgObject.contentDocument) return; // SVG not loaded yet
-  if (!avatar.naturalWidth || !avatar.naturalHeight) return; // image not loaded yet
-
+  if (!svgObject.contentDocument) return;
+  if (!avatar.naturalWidth || !avatar.naturalHeight) return;
   const rect = svgObject.getBoundingClientRect();
-
   const imgRatio = avatar.naturalWidth / avatar.naturalHeight;
   const svgRatio = rect.width / rect.height;
-
   let width, height;
   if (imgRatio > svgRatio) {
     height = rect.height;
@@ -662,55 +607,171 @@ function alignAndClipAvatar() {
     width = rect.width;
     height = width / imgRatio;
   }
-
   avatar.style.width = width + "px";
   avatar.style.height = height + "px";
+  const pathData = getClip(svgObject, avatar);
+  if (pathData) {
+    avatar.style.clipPath = `path("${pathData}")`;
+    avatar.style.webkitClipPath = `path("${pathData}")`;
+  }
+}
+
+function getClip(svgObject, avatar) {
+  const svgDoc = svgObject.contentDocument;
+  if (!svgDoc) return null;
+  const svgEl = svgDoc.querySelector('svg');
+  const pathEl = svgDoc.querySelector('path');
+  if (!svgEl || !pathEl) return null;
+  const d = pathEl.getAttribute('d');
+  const vb = svgEl.viewBox.baseVal;
+  const svgRect = svgObject.getBoundingClientRect();
+  const avatarRect = avatar.getBoundingClientRect();
+  const targetW = svgRect.width;
+  const targetH = svgRect.height;
+  const offsetX = svgRect.left - avatarRect.left;
+  const offsetY = svgRect.top  - avatarRect.top;
+  return scalePathToPixels(d, vb.x, vb.y, vb.width, vb.height, targetW, targetH, offsetX, offsetY);
+}
+
+function scalePathToPixels(d, vbX, vbY, vbW, vbH, targetW, targetH, offsetX = 0, offsetY = 0) {
+  const sx = targetW / vbW;
+  const sy = targetH / vbH;
+  const tokens = d.match(/[a-zA-Z]|-?\d*\.?\d+(?:e[-+]?\d+)?/g);
+  if (!tokens) return d;
+  let i = 0, out = '', cmd = '';
+  const isCmd = (t) => /^[a-zA-Z]$/.test(t);
+  const fmt = (n) => (Math.round(n * 100) / 100).toString();
+  const num = () => parseFloat(tokens[i++]);
+  const writePairs = (count, mapAbs, mapRel) => {
+    while (i < tokens.length && !isCmd(tokens[i])) {
+      const vals = [];
+      for (let k = 0; k < count; k++) vals.push(num());
+      const abs = cmd === cmd.toUpperCase();
+      const mapped = abs ? mapAbs(vals) : mapRel(vals);
+      out += mapped.join(' ') + ' ';
+    }
+  };
+  while (i < tokens.length) {
+    if (isCmd(tokens[i])) {
+      cmd = tokens[i++];
+      out += cmd + ' ';
+    }
+    switch (cmd) {
+      case 'M': case 'L': case 'T':
+      case 'm': case 'l': case 't':
+        writePairs(2,
+          ([x, y]) => [fmt(offsetX + (x - vbX) * sx), fmt(offsetY + (y - vbY) * sy)],
+          ([dx, dy]) => [fmt(dx * sx), fmt(dy * sy)]
+        );
+        break;
+      case 'H': case 'h':
+        writePairs(1,
+          ([x]) => [fmt(offsetX + (x - vbX) * sx)],
+          ([dx]) => [fmt(dx * sx)]
+        );
+        break;
+      case 'V': case 'v':
+        writePairs(1,
+          ([y]) => [fmt(offsetY + (y - vbY) * sy)],
+          ([dy]) => [fmt(dy * sy)]
+        );
+        break;
+      case 'C': case 'c':
+        writePairs(6,
+          ([x1,y1,x2,y2,x,y]) => [
+            fmt(offsetX + (x1 - vbX) * sx), fmt(offsetY + (y1 - vbY) * sy),
+            fmt(offsetX + (x2 - vbX) * sx), fmt(offsetY + (y2 - vbY) * sy),
+            fmt(offsetX + (x  - vbX) * sx), fmt(offsetY + (y  - vbY) * sy)
+          ],
+          ([dx1,dy1,dx2,dy2,dx,dy]) => [
+            fmt(dx1 * sx), fmt(dy1 * sy),
+            fmt(dx2 * sx), fmt(dy2 * sy),
+            fmt(dx  * sx), fmt(dy  * sy)
+          ]
+        );
+        break;
+      case 'S': case 's':
+        writePairs(4,
+          ([x2,y2,x,y]) => [
+            fmt(offsetX + (x2 - vbX) * sx), fmt(offsetY + (y2 - vbY) * sy),
+            fmt(offsetX + (x  - vbX) * sx), fmt(offsetY + (y  - vbY) * sy)
+          ],
+          ([dx2,dy2,dx,dy]) => [
+            fmt(dx2 * sx), fmt(dy2 * sy),
+            fmt(dx  * sx), fmt(dy  * sy)
+          ]
+        );
+        break;
+      case 'Q': case 'q':
+        writePairs(4,
+          ([x1,y1,x,y]) => [
+            fmt(offsetX + (x1 - vbX) * sx), fmt(offsetY + (y1 - vbY) * sy),
+            fmt(offsetX + (x  - vbX) * sx), fmt(offsetY + (y  - vbY) * sy)
+          ],
+          ([dx1,dy1,dx,dy]) => [
+            fmt(dx1 * sx), fmt(dy1 * sy),
+            fmt(dx  * sx), fmt(dy  * sy)
+          ]
+        );
+        break;
+      case 'A': case 'a':
+        while (i < tokens.length && !isCmd(tokens[i])) {
+          const rx = num(), ry = num(), rot = num(), laf = num(), sf = num(), x = num(), y = num();
+          if (cmd === 'A') {
+            out += [
+              fmt(Math.abs(rx) * sx), fmt(Math.abs(ry) * sy), fmt(rot), fmt(laf), fmt(sf),
+              fmt(offsetX + (x - vbX) * sx), fmt(offsetY + (y - vbY) * sy)
+            ].join(' ') + ' ';
+          } else {
+            out += [
+              fmt(Math.abs(rx) * sx), fmt(Math.abs(ry) * sy), fmt(rot), fmt(laf), fmt(sf),
+              fmt(x * sx), fmt(y * sy)
+            ].join(' ') + ' ';
+          }
+        }
+        break;
+      case 'Z': case 'z':
+        break;
+      default:
+        while (i < tokens.length && !isCmd(tokens[i])) out += tokens[i++] + ' ';
+        break;
+    }
+  }
+  return out.trim();
 }
 
 function setupAlignment() {
   const svgObject = document.getElementById("mySVG1");
   const avatar = document.getElementById("avatar");
-
   let svgReady = false;
   let imgReady = false;
-
   function tryAlign() {
     if (svgReady && imgReady) {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           alignAndClipAvatar();
-          avatar.style.opacity = 1; // Fade in avatar
+          avatar.style.opacity = 1;
         });
       });
     }
   }
-
   function markSvgReady() {
     svgReady = true;
     tryAlign();
   }
-
   function markImgReady() {
     imgReady = true;
     tryAlign();
   }
-
-  // Event listeners (fires every time they reload)
   svgObject.addEventListener("load", markSvgReady);
   avatar.addEventListener("load", markImgReady);
-
-  // Initial readiness check
   if (avatar.complete) imgReady = true;
   if (svgObject.contentDocument) svgReady = true;
-
   tryAlign();
-
-  // Mutation observer to watch for src/data changes
   const observer = new MutationObserver(() => {
     svgReady = false;
     imgReady = false;
   });
-
   observer.observe(svgObject, { attributes: true, attributeFilter: ["data"] });
   observer.observe(avatar, { attributes: true, attributeFilter: ["src"] });
 }
