@@ -160,17 +160,16 @@ document.addEventListener("click", (e) => {
 
   // Deselect all info sections if click outside
   infoSections.forEach((parent) => {
-    if (parent.classList.contains("info-selected") && !parent.contains(e.target)) {
+    if (
+      parent.classList.contains("info-selected") &&
+      !parent.contains(e.target)
+    ) {
       parent.classList.remove("info-selected");
     }
   });
 
   startAnimation(100);
 });
-
-
-
-
 
 // Resizes icons on window resize
 window.addEventListener("resize", () => {
@@ -1096,5 +1095,3 @@ document.addEventListener("scroll", () => {
 document.addEventListener("mousemove", (e) => {
   window.MouseEvent = e;
 });
-
-

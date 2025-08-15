@@ -309,14 +309,16 @@ a {
   position: absolute;
   top: 20%;
   width: 70%;
-  height: 70%;
-  padding: 1.5% 4.5%;
+  height: 80%;
+  padding: 2.5% 3% 2% 4%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
   line-height: 1;
-  letter-spacing: 0.02em;}
+  letter-spacing: 0.02em;
+  gap: 0.25em;
+}
 
 .about-name {
   font-size: 1.5em;
@@ -405,6 +407,24 @@ a {
   padding: 0em 1.25em;
 }
 
+.traits {
+  margin-top: auto; /* takes up remaining space */
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.5em 0;
+  justify-content: space-between;
+  gap: 0.5em;
+}
+
+.traits span {
+  padding: 0.3em 0.6em;
+  border-radius: var(--border-radius-large);
+  font-size: 0.75em;
+  font-weight: 750;
+  font-style: italic;
+  cursor: default;
+}
+
 .box,
 .border-box {
   display: flex;
@@ -491,7 +511,7 @@ a {
   border-radius: 50%;
   aspect-ratio: 1/1;
   z-index: 5;
-  transition: all 0.3s ease;
+  transition: padding 0.3s ease, transform 0.3s ease, flex 0.3s ease;
 }
 
 #skill [id^="skill-"].visualized:hover {
@@ -650,12 +670,12 @@ a {
   border-radius: 50%;
   border: var(--border-thin);
   transition: width 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+  cursor: pointer;
 }
 
 .software-item.visualized {
   width: 50%;
   /* shrink or grow smoothly */
-  cursor: pointer;
 }
 
 .software-item.visualized div,
