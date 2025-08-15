@@ -103,7 +103,7 @@ a {
   justify-content: flex-end;
   align-items: center;
   border-radius: 2em;
-  transition: padding 0.3s ease;
+  transition: padding 0.3s ease, transform 0.3s ease;
   border: var(--border-thin);
 }
 
@@ -125,7 +125,6 @@ a {
 
 .side-button:hover button {
   transform: rotate(-15deg);
-  transition: transform 0.3s ease;
 }
 
 #back-home span {
@@ -168,15 +167,36 @@ a {
   top: 0%;
   z-index: -5;
   height: 100%;
-  width: 40%;
+  width: 35%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+#avatar-circle {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 9999;
+  width: 5.5%;
+  aspect-ratio: 1/1;
+  right: 24%;
+  top: 17%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: rotate 0.3 linear 0.5;
+}
+
+#compass {
+  width: 50%;
+  aspect-ratio: 1/1;
+  clip-path: polygon(50% 0%, 100% 85%, 50% 50%, 0% 85%);
+  transform-origin: center;
+  transform: rotate(90deg);
+}
+
 #avatar {
   position: absolute;
-  /* sits on top of SVG */
   opacity: 0;
   transition: opacity 0.3s ease;
   mix-blend-mode: darken;
@@ -185,7 +205,7 @@ a {
 #mySVG1 {
   z-index: -10;
   /* stay behind the avatar */
-  width: 70%;
+  width: 80%;
 }
 
 #information {
@@ -208,11 +228,11 @@ a {
 #like-info {
   position: absolute;
   padding: 0 !important;
-  bottom: 6%;
-  right: 2.5%;
-  width: 10%;
+  bottom: 12.5%;
+  right: 3%;
+  width: 8%;
   aspect-ratio: 1/1;
-  font-size: 2.5em;
+  font-size: 2em;
   cursor: pointer;
   overflow: visible;
   user-select: none;
@@ -248,11 +268,11 @@ a {
 
 #like-info.heartbeat {
   animation: heartbeat 0.2s ease-in-out;
+  transition: transform 0.3s ease;
 }
 
 #like-info:hover {
   transform: scale(1.1);
-  transition: transform 0.3s ease;
 }
 
 .flying-heart {
@@ -284,45 +304,105 @@ a {
 .flying-heart.animate {
   animation: heartFly var(--duration) cubic-bezier(0.2, 1, 0.2, 1) forwards;
 }
-
+/* Container */
 #my-info {
   position: absolute;
-  height: 80%;
-  width: 65%;
   top: 20%;
-  padding: 2.5% 2% 2.5% 4.5%;
+  width: 70%;
+  height: 70%;
+  padding: 1.5% 4.5%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: flex-start;
-  gap: 0.5em;
-}
+  justify-content: space-between;
+  line-height: 1;
+  letter-spacing: 0.02em;}
 
 .about-name {
-  font-size: 2em;
+  font-size: 1.5em;
   font-weight: 700;
 }
+
+.about-title {
+  font-weight: 600;
+}
+
+.about-contact {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+#my-info li {
+  font-size: 0.8em;
+  font-weight: 500;
+  padding: 0.1em 0.5em;
+  font-style: normal;
+}
+
+/* Section Headings */
 #my-info h2 {
   font-size: 1.25em;
   font-weight: 650;
 }
 
+/* Subheadings */
+#my-info h3 {
+  font-size: 0.9em;
+  font-weight: 600;
+  padding: 0.1em 0.5em;
+}
+
+/* About Me */
 .about-quote {
-  font-size: 0.75em;
+  font-size: 0.8em;
   font-weight: 500;
-  padding: 0.25em;
   font-style: italic;
+  padding: 0 0.25em;
 }
 
-.about-me {
-  padding: 0;
-  border-radius: 0 !important;
+.about-quote-2 {
+  font-size: 0.8em;
+  font-weight: 500;
+  font-style: italic;
+  padding: 0 0.25em;
 }
 
-.about-contact {
-  list-style: none; /* no bullets */
-  padding: 0; /* remove default left padding */
-  margin: 0; /* reset margin */
+#my-info .job,
+#my-info .school,
+#my-info .certifications,
+#my-info .awards,
+#my-info .about-bio {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+/* Hide lists and paragraph by default */
+#my-info .job ul,
+#my-info .school ul,
+#my-info .certifications ul,
+#my-info .awards ul,
+#my-info .about-quote-2 {
+  display: none;
+}
+
+/* Show only when parent has "info-selected" class */
+#my-info .job.info-selected ul,
+#my-info .school.info-selected ul,
+#my-info .certifications.info-selected ul,
+#my-info .awards.info-selected ul,
+#my-info .about-bio.info-selected .about-quote-2 {
+  display: block;
+}
+
+#my-info .job ul,
+#my-info .school ul,
+#my-info .certifications ul,
+#my-info .awards ul {
+  padding: 0em 1.25em;
 }
 
 .box,
@@ -349,6 +429,10 @@ a {
   height: 100%;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+#skill-sorfwares h1 {
+  padding: 0.25em 0.5em;
 }
 
 #skill-lines {
@@ -407,11 +491,11 @@ a {
   border-radius: 50%;
   aspect-ratio: 1/1;
   z-index: 5;
+  transition: all 0.3s ease;
 }
 
 #skill [id^="skill-"].visualized:hover {
   padding: 1.25em;
-  transition: all 0.3s ease;
 }
 
 #skill span {
@@ -452,11 +536,15 @@ a {
   top: -2.5%;
   left: 50%;
   transform: translateX(-50%);
-  width: 12.5%;
+  width: 15%;
   aspect-ratio: 5/1;
+}
+
+.carousel {
   display: flex;
   align-items: center;
   padding: 0.25em 1em;
+  border-width: 0.25em;
   border-radius: var(--border-radius-large);
 }
 
@@ -466,6 +554,11 @@ a {
   color: inherit;
   border: none;
   border-radius: var(--border-radius-large);
+  transition: scale 0.1s ease;
+}
+
+#year-buttons button:hover {
+  scale: 1.2;
 }
 
 #year-label {
@@ -474,6 +567,7 @@ a {
   text-align: center;
   font-weight: bold;
   margin-top: 0.15em;
+  pointer-events: none;
 }
 
 [id^="skill-"].visualized.selected {
@@ -555,7 +649,7 @@ a {
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   border: var(--border-thin);
-  transition: width 0.3s ease, transform 0.3s ease;
+  transition: width 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
 }
 
 .software-item.visualized {
@@ -575,7 +669,7 @@ a {
 }
 
 .software-item.visualized:hover {
-  transform: scale(1.01);
+  transform: scale(1.1);
   transition: transform 0.3s ease;
 }
 
@@ -610,12 +704,12 @@ a {
   border: none;
   border-radius: 1em;
   cursor: pointer;
-  transition: scale 0.3s;
   z-index: 2;
+  transition: transform 0.3s ease;
 }
 
 #visualize:hover {
-  transform: scale(1.05);
+  transform: scale(1.025);
 }
 
 #formula {

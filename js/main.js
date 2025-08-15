@@ -120,12 +120,37 @@ document.querySelectorAll("#skill > div").forEach((skillDiv) => {
   });
 });
 
-// Deselects all skill divs on document click
+// Select all clickable info sections once
+const infoSections = document.querySelectorAll(
+  "#my-info .job, #my-info .school, #my-info .certifications, #my-info .awards, .about-bio"
+);
+
+// Add click toggle for each section
+infoSections.forEach((parent) => {
+  parent.addEventListener("click", (e) => {
+    e.stopPropagation(); // Prevent document click from immediately deselecting
+
+    // Deselect all other sections
+    infoSections.forEach((other) => {
+      if (other !== parent) {
+        other.classList.remove("info-selected");
+      }
+    });
+
+    // Toggle the clicked section
+    parent.classList.toggle("info-selected");
+  });
+});
+
+// Existing document click handler
 document.addEventListener("click", (e) => {
-  if (e.target.closest(".side-bar")) {
+  // Keep existing skill logic
+  if (e.target.closest(".side-bar, #year-buttons")) {
     startAnimation(100);
     return;
   }
+
+  // Deselect skill divs
   document.querySelectorAll("#skill > div.selected").forEach((div) => {
     div.classList.remove("selected");
     const iconsDiv = div.querySelector(".software-icons");
@@ -133,8 +158,19 @@ document.addEventListener("click", (e) => {
       iconsDiv.replaceWith(createSoftwareP(div.dataset.softwareText));
   });
 
-  animateLines(speed);
+  // Deselect all info sections if click outside
+  infoSections.forEach((parent) => {
+    if (parent.classList.contains("info-selected") && !parent.contains(e.target)) {
+      parent.classList.remove("info-selected");
+    }
+  });
+
+  startAnimation(100);
 });
+
+
+
+
 
 // Resizes icons on window resize
 window.addEventListener("resize", () => {
@@ -259,8 +295,21 @@ function createYearCarousel() {
   nextBtn.textContent = "▶";
 
   function updateArrows() {
-    prevBtn.style.opacity = currentYearIndex === 0 ? "0" : "1";
-    nextBtn.style.opacity = currentYearIndex === years.length - 1 ? "0" : "1";
+    if (currentYearIndex === 0) {
+      prevBtn.style.opacity = "0";
+      prevBtn.style.pointerEvents = "none"; // disable clicks
+    } else {
+      prevBtn.style.opacity = "1";
+      prevBtn.style.pointerEvents = "auto"; // enable clicks
+    }
+
+    if (currentYearIndex === years.length - 1) {
+      nextBtn.style.opacity = "0";
+      nextBtn.style.pointerEvents = "none"; // disable clicks
+    } else {
+      nextBtn.style.opacity = "1";
+      nextBtn.style.pointerEvents = "auto"; // enable clicks
+    }
   }
 
   prevBtn.addEventListener("click", () => {
@@ -268,6 +317,7 @@ function createYearCarousel() {
       currentYearIndex--;
       currentYear = years[currentYearIndex];
       updateYearDisplay();
+
       updateArrows();
     }
   });
@@ -296,12 +346,14 @@ function updateYearDisplay() {
 function renderSoftwareSkills(year) {
   const container = document.getElementById("sorfware-0");
   container.innerHTML = "";
+  const skills = document.querySelectorAll('[id^="skill-"]');
 
   getSkillsForYear(year).forEach(({ name, value }) => {
     const id = name.toLowerCase().replace(/\s+/g, "");
     const div = document.createElement("div");
     div.classList.add("software-item");
     div.style.position = "relative";
+    if (value == 0) return;
 
     // Image
     const img = document.createElement("img");
@@ -335,6 +387,14 @@ function renderSoftwareSkills(year) {
 
     container.appendChild(div);
   });
+
+  let selectedDiv = Array.from(skills).find(
+    (el) => el.tagName === "DIV" && el.classList.contains("selected")
+  );
+
+  if (selectedDiv) {
+    startAnimation(speed);
+  }
 
   // Loading bars only if not visualized
   if (!visualizedState) {
@@ -1008,3 +1068,33 @@ function setupAlignment() {
 
 window.addEventListener("load", setupAlignment);
 window.addEventListener("resize", alignAndClipAvatar);
+
+const circle = document.getElementById("avatar-circle");
+
+function updateRotation(x, y) {
+  const rect = circle.getBoundingClientRect();
+  const circleX = rect.left + rect.width / 2;
+  const circleY = rect.top + rect.height / 2;
+
+  const angle = Math.atan2(y - circleY, x - circleX) * (180 / Math.PI);
+  circle.style.transform = `rotate(${angle}deg)`;
+}
+
+document.addEventListener("mousemove", (e) => {
+  updateRotation(e.clientX, e.clientY);
+});
+
+document.addEventListener("scroll", () => {
+  // Optional: keep pointing to cursor while scrolling
+  const mouseEvent = window.MouseEvent;
+  if (mouseEvent) {
+    updateRotation(mouseEvent.clientX, mouseEvent.clientY);
+  }
+});
+
+// Track last mouse position
+document.addEventListener("mousemove", (e) => {
+  window.MouseEvent = e;
+});
+
+
