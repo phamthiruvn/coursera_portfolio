@@ -470,9 +470,10 @@ a {
 
 #year-label {
   text-align: center;
-  font-size: 1.25em;
+  font-size: 1.5em;
   text-align: center;
   font-weight: bold;
+  margin-top: 0.15em;
 }
 
 [id^="skill-"].visualized.selected {

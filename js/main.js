@@ -160,72 +160,64 @@ const softwareSkillsNow = [
   { name: "HTML", value: 70 },
   { name: "CSS", value: 70 },
   { name: "Blender", value: 25 },
-  { name: "Cinema4D", value: 45 },
+  { name: "Cinema4D", value: 30 },
 ];
 
 const diffsByYear = {
   2023: [
-    { name: "Photoshop", value: 0 },
-    { name: "Illustrator", value: 0 },
-    { name: "InDesign", value: -20 },
-    { name: "AfterEffects", value: 0 },
-    { name: "PowerPoint", value: 0 },
-    { name: "JavaScript", value: -20 },
-    { name: "HTML", value: -20 },
-    { name: "CSS", value: -20 },
-    { name: "Blender", value: -20 },
-    { name: "Cinema4D", value: -20 },
+    { name: "Photoshop", value: 80 },
+    { name: "Illustrator", value: 80 },
+    { name: "InDesign", value: 30 },
+    { name: "AfterEffects", value: 45 },
+    { name: "PowerPoint", value: 80 },
+    { name: "JavaScript", value: 60 },
+    { name: "HTML", value: 70 },
+    { name: "CSS", value: 70 },
+    { name: "Blender", value: 25 },
+    { name: "Cinema4D", value: 25 },
   ],
   2021: [
-    { name: "Photoshop", value: -80 },
-    { name: "Illustrator", value: -80 },
-    { name: "InDesign", value: -50 },
-    { name: "AfterEffects", value: -55 },
-    { name: "PowerPoint", value: -80 },
-    { name: "JavaScript", value: -60 },
-    { name: "HTML", value: -70 },
-    { name: "CSS", value: -70 },
-    { name: "Blender", value: -25 },
-    { name: "Cinema4D", value: -45 },
+    { name: "Photoshop", value: 70 },
+    { name: "Illustrator", value: 70 },
+    { name: "InDesign", value: 0 },
+    { name: "AfterEffects", value: 30 },
+    { name: "PowerPoint", value: 70 },
+    { name: "JavaScript", value: 50 },
+    { name: "HTML", value: 50 },
+    { name: "CSS", value: 50 },
+    { name: "Blender", value: 0 },
+    { name: "Cinema4D", value: 15 },
   ],
   2018: [
-    { name: "Photoshop", value: -80 },
-    { name: "Illustrator", value: -80 },
-    { name: "InDesign", value: -50 },
-    { name: "AfterEffects", value: -55 },
-    { name: "PowerPoint", value: -80 },
-    { name: "JavaScript", value: -60 },
-    { name: "HTML", value: -70 },
-    { name: "CSS", value: -70 },
-    { name: "Blender", value: -25 },
-    { name: "Cinema4D", value: -45 },
+    { name: "Photoshop", value: 50 },
+    { name: "Illustrator", value: 50 },
+    { name: "InDesign", value: 0 },
+    { name: "AfterEffects", value: 20 },
+    { name: "PowerPoint", value: 60 },
+    { name: "JavaScript", value: 30 },
+    { name: "HTML", value: 30 },
+    { name: "CSS", value: 30 },
+    { name: "Blender", value: 0 },
+    { name: "Cinema4D", value: 0 },
   ],
 };
 
-const years = [2025, 2023, 2021, 2018];
+const years = [2018, 2021, 2023, 2025];
 let currentYear = 2025;
 let currentYearIndex = years.indexOf(currentYear);
 let visualizedState = false;
 
-// ===== HELPER FUNCTIONS =====
 function getSkillsForYear(targetYear) {
-  let skillsMap = Object.fromEntries(
-    softwareSkillsNow.map((s) => [s.name, s.value])
-  );
+  // If the year has diffs defined, use them
+  if (diffsByYear[targetYear]) {
+    return diffsByYear[targetYear]
+      .map(({ name, value }) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+  }
 
-  const yearsAbove = Object.keys(diffsByYear)
-    .map(Number)
-    .filter((y) => y > targetYear)
-    .sort((a, b) => b - a);
-
-  yearsAbove.forEach((year) => {
-    (diffsByYear[year] || []).forEach(({ name, value }) => {
-      skillsMap[name] = (skillsMap[name] || 0) + value;
-    });
-  });
-
-  return Object.entries(skillsMap)
-    .map(([name, value]) => ({ name, value }))
+  // Otherwise, return current skills
+  return softwareSkillsNow
+    .map(({ name, value }) => ({ name, value }))
     .sort((a, b) => b.value - a.value);
 }
 
@@ -252,18 +244,12 @@ function getSoftwareValue(name) {
   return skill ? skill.value : 0;
 }
 
-// ===== YEAR CAROUSEL =====
 function createYearCarousel() {
   const container = document.getElementById("year-buttons");
   container.innerHTML = "";
 
   const prevBtn = document.createElement("button");
   prevBtn.textContent = "◀";
-  prevBtn.addEventListener("click", () => {
-    currentYearIndex = (currentYearIndex - 1 + years.length) % years.length;
-    currentYear = years[currentYearIndex];
-    updateYearDisplay();
-  });
 
   const yearLabel = document.createElement("span");
   yearLabel.id = "year-label";
@@ -271,12 +257,32 @@ function createYearCarousel() {
 
   const nextBtn = document.createElement("button");
   nextBtn.textContent = "▶";
-  nextBtn.addEventListener("click", () => {
-    currentYearIndex = (currentYearIndex + 1) % years.length;
-    currentYear = years[currentYearIndex];
-    updateYearDisplay();
+
+  function updateArrows() {
+    prevBtn.style.opacity = currentYearIndex === 0 ? "0" : "1";
+    nextBtn.style.opacity = currentYearIndex === years.length - 1 ? "0" : "1";
+  }
+
+  prevBtn.addEventListener("click", () => {
+    if (currentYearIndex > 0) {
+      currentYearIndex--;
+      currentYear = years[currentYearIndex];
+      updateYearDisplay();
+      updateArrows();
+    }
   });
+
+  nextBtn.addEventListener("click", () => {
+    if (currentYearIndex < years.length - 1) {
+      currentYearIndex++;
+      currentYear = years[currentYearIndex];
+      updateYearDisplay();
+      updateArrows();
+    }
+  });
+
   container.append(prevBtn, yearLabel, nextBtn);
+  updateArrows(); // initial arrow state
 }
 
 createYearCarousel();
@@ -290,8 +296,6 @@ function updateYearDisplay() {
 function renderSoftwareSkills(year) {
   const container = document.getElementById("sorfware-0");
   container.innerHTML = "";
-
-  console.log("Rendering software skills for year:", getSkillsForYear(year));
 
   getSkillsForYear(year).forEach(({ name, value }) => {
     const id = name.toLowerCase().replace(/\s+/g, "");
@@ -307,9 +311,8 @@ function renderSoftwareSkills(year) {
     // Circle
     const circleDiv = document.createElement("div");
     circleDiv.classList.add("circle-shape");
-    if (value > 0) {
-      circleDiv.style.clipPath = angleToClipPath(value * 3.6);
-    }
+    circleDiv.style.clipPath = angleToClipPath(value * 3.6);
+
     // Value text
     const valueP = document.createElement("p");
     valueP.classList.add("value-style");
@@ -430,16 +433,17 @@ function getCentersWithMapping() {
     })
     .filter(Boolean);
 
-  const softwares = Array.from(
-    container.querySelectorAll('[id^="software-"]')
-  ).map((el) => {
-    const rect = el.getBoundingClientRect();
-    return [
-      el.id.replace(/^software-/, ""),
-      rect.left - containerRect.left,
-      rect.top - containerRect.top + rect.height / 2,
-    ];
-  });
+  const softwares = Array.from(container.querySelectorAll('[id^="software-"]'))
+    .filter((el) => window.getComputedStyle(el).display !== "none") // keep only visible
+    .map((el) => {
+      const rect = el.getBoundingClientRect();
+      return [
+        el.id.replace(/^software-/, ""), // software name
+        rect.left - containerRect.left, // x position
+        rect.top - containerRect.top + rect.height / 2, // y center
+      ];
+    });
+
   return { skills, softwares };
 }
 
@@ -488,12 +492,16 @@ function animateLines(s) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   const lines = [];
+  if (!skills[0]) return null;
   const skillCenter = skills[0];
-  const softwareIds = mapping[skillCenter[0]];
-  const color = darkenColor(themePairs[currentTheme][0], 20);
+  const softwareIds = softwares.filter((s) =>
+    new Set(mapping[skillCenter[0]] || []).has(s[0])
+  );
+
+  const color = darkenColor(themePairs[currentTheme][0], 5);
 
   softwareIds.forEach((softwareId) => {
-    const softwareCenter = softwares.find((s) => s[0] === softwareId);
+    const softwareCenter = softwares.find((s) => s[0] === softwareId[0]);
     lines.push({
       from: { x: skillCenter[1], y: skillCenter[2] },
       to: { x: softwareCenter[1], y: softwareCenter[2] },
