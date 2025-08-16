@@ -146,12 +146,14 @@ infoSections.forEach((parent) => {
 document.addEventListener("click", (e) => {
   // Keep existing skill logic
 
-  if (e.target.closest(".side-bar, #year-buttons")) {
-    const visualizedDivs = Array.from(skillDivs).filter((div) =>
-      div.classList.contains("visualized")
+  if (e.target.closest(".side-bar, #year-buttons", "#visualize")) {
+    const visualizedDivs = Array.from(skillDivs).filter(
+      (div) =>
+        div.classList.contains("visualized") &&
+        div.classList.contains("selected")
     );
 
-    if (visualizedDivs.length > 0) {
+    if (visualizedDivs.length == 0) {
       const randomDiv =
         visualizedDivs[Math.floor(Math.random() * visualizedDivs.length)];
       randomDiv.classList.add("selected");
@@ -433,9 +435,15 @@ const skillDivs = document.querySelectorAll("#skill > div[id^='skill-']");
 // ===== VISUALIZATION TOGGLE =====
 function toggleVisualization(year) {
   const skillLines = document.getElementById("skill-lines");
-  skillDivs[Math.floor(Math.random() * skillDivs.length)].classList.add(
-    "selected"
+
+  const visualizedDivs = Array.from(skillDivs).filter((div) =>
+    div.classList.contains("selected")
   );
+
+  if (visualizedDivs.length == 0) {
+    const randomDiv = skillDivs[Math.floor(Math.random() * skillDivs.length)];
+    randomDiv.classList.add("selected");
+  }
 
   visualizedState = !visualizedState;
   skillLines.classList.toggle("visualized");
