@@ -147,9 +147,15 @@ document.addEventListener("click", (e) => {
   // Keep existing skill logic
 
   if (e.target.closest(".side-bar, #year-buttons")) {
-    Array.from(skillDivs)
-      .filter((div) => div.classList.contains("visualized"))
-      [Math.floor(Math.random() * skillDivs.length)].classList.add("selected");
+    const visualizedDivs = Array.from(skillDivs).filter((div) =>
+      div.classList.contains("visualized")
+    );
+
+    if (visualizedDivs.length > 0) {
+      const randomDiv =
+        visualizedDivs[Math.floor(Math.random() * visualizedDivs.length)];
+      randomDiv.classList.add("selected");
+    }
     startAnimation(100);
     return;
   }
