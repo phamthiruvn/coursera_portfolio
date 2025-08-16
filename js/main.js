@@ -246,6 +246,26 @@ const diffsByYear = {
   ],
 };
 
+function sortSkills(skills) {
+  // Find skills with names of length 2
+  const fixedIndexes = skills
+    .map((skill, i) => ({ skill, i }))
+    .filter(({ skill }) => skill.name.length === 2);
+
+  // Extract sortable skills
+  const sortable = skills.filter(skill => skill.name.length !== 2);
+
+  // Sort descending by value
+  sortable.sort((a, b) => b.value - a.value);
+
+  // Reinsert fixed skills at their original positions
+  fixedIndexes.forEach(({ skill, i }) => {
+    sortable.splice(i, 0, skill);
+  });
+
+  return sortable;
+}
+
 const years = [2018, 2021, 2023, 2025];
 let currentYear = 2025;
 let currentYearIndex = years.indexOf(currentYear);
@@ -254,11 +274,11 @@ let visualizedState = false;
 function getSkillsForYear(targetYear) {
   // If the year has diffs defined, use them
   if (diffsByYear[targetYear]) {
-    return diffsByYear[targetYear];
+    return sortSkills(diffsByYear[targetYear]);
   }
 
   // Otherwise, return current skills
-  return softwareSkillsNow;
+  return sortSkills(softwareSkillsNow);
 }
 
 // Get mapping of skill -> software for loading bars
