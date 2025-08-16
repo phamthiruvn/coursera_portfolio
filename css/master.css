@@ -27,6 +27,11 @@ html {
   display: none;
 }
 
+input, textarea, select, button {
+  font: inherit;
+  color: inherit;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -63,7 +68,7 @@ button {
 }
 
 h1 {
-  font-weight: 700;
+  font-weight: 900;
   font-size: 1.25em;
 }
 
@@ -416,7 +421,6 @@ a {
 #my-info .about-bio.info-selected ~ .traits span {
   transform: scaleY(0.15) skewX(-20deg); /* compress height and skew */
   border-radius: 0.15em;
-  
 }
 
 #my-info .job ul,
@@ -427,7 +431,6 @@ a {
 }
 
 .traits {
-  
   width: 100%;
   margin-top: auto; /* takes up remaining space */
   display: flex;
@@ -438,8 +441,6 @@ a {
 
 .traits span {
   display: inline-block;
- 
-  transform-origin: bottom; /* shrink from top */
   padding: 0.25em 0.5em;
   border-radius: var(--border-radius-large);
   font-size: 0.75em;
@@ -515,7 +516,7 @@ a {
   width: 100%;
   opacity: 0.5;
   background: var(--white);
-  transition: transform 0.3s;
+  transition: transform 0.3s ease, opacity 0.3s;
   clip-path: polygon(0 0, 45% 0, 45% 100%, 0% 100%);
   border: none !important;
   z-index: 0;
@@ -532,6 +533,21 @@ a {
   cursor: pointer;
   flex: 0 1 auto;
   transition: padding 0.3s ease, transform 0.3s ease, flex 0.3s ease;
+}
+
+#skill [id^="skill-"] h3 {
+  display: none;
+}
+
+#skill [id^="skill-"].selected h3 {
+  display: block;
+  padding: 0% 7.5% 1% 2.5%;
+  font-size: 0.75em;
+  font-weight: 500;
+}
+
+#skill [id^="skill-"].selected [class^="loading-"] {
+  opacity: 0.25;
 }
 
 #skill [id^="skill-"].visualized {
@@ -786,12 +802,22 @@ a {
 
 .box .search-icon {
   margin: 0.5%;
+  cursor: pointer;
+}
+
+.search-parent-highlight {
+  border-radius: 10em;
+  transition: background-color 0.3s ease;
+  padding: 0em 0.5em;
 }
 
 #search-box::placeholder {
   opacity: 0.5;
+  font-style: italic;
   color: var(--text-color);
 }
+
+
 
 .round-corner {
   border-radius: var(--border-radius-medium);

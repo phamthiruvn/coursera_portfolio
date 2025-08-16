@@ -145,6 +145,7 @@ infoSections.forEach((parent) => {
 // Existing document click handler
 document.addEventListener("click", (e) => {
   // Keep existing skill logic
+
   if (e.target.closest(".side-bar, #year-buttons")) {
     startAnimation(100);
     return;
@@ -196,6 +197,8 @@ const softwareSkillsNow = [
   { name: "CSS", value: 70 },
   { name: "Blender", value: 25 },
   { name: "Cinema4D", value: 30 },
+  { name: "English", value: 60 },
+  { name: "Russian", value: 70 },
 ];
 
 const diffsByYear = {
@@ -210,6 +213,8 @@ const diffsByYear = {
     { name: "CSS", value: 70 },
     { name: "Blender", value: 25 },
     { name: "Cinema4D", value: 25 },
+    { name: "English", value: 60 },
+    { name: "Russian", value: 70 },
   ],
   2021: [
     { name: "Photoshop", value: 70 },
@@ -222,6 +227,8 @@ const diffsByYear = {
     { name: "CSS", value: 50 },
     { name: "Blender", value: 0 },
     { name: "Cinema4D", value: 15 },
+    { name: "English", value: 50 },
+    { name: "Russian", value: 70 },
   ],
   2018: [
     { name: "Photoshop", value: 50 },
@@ -234,6 +241,8 @@ const diffsByYear = {
     { name: "CSS", value: 30 },
     { name: "Blender", value: 0 },
     { name: "Cinema4D", value: 0 },
+    { name: "English", value: 30 },
+    { name: "Russian", value: 50 },
   ],
 };
 
@@ -245,15 +254,11 @@ let visualizedState = false;
 function getSkillsForYear(targetYear) {
   // If the year has diffs defined, use them
   if (diffsByYear[targetYear]) {
-    return diffsByYear[targetYear]
-      .map(({ name, value }) => ({ name, value }))
-      .sort((a, b) => b.value - a.value);
+    return diffsByYear[targetYear];
   }
 
   // Otherwise, return current skills
-  return softwareSkillsNow
-    .map(({ name, value }) => ({ name, value }))
-    .sort((a, b) => b.value - a.value);
+  return softwareSkillsNow;
 }
 
 // Get mapping of skill -> software for loading bars
@@ -404,8 +409,7 @@ function renderSoftwareSkills(year) {
       const avg = Math.max(
         softwares.length
           ? softwares.reduce((sum, soft) => sum + getSoftwareValue(soft), 0) /
-              softwares.length -
-              skillNumber ** 2
+              softwares.length
           : 0,
         0
       );
@@ -1095,3 +1099,162 @@ document.addEventListener("scroll", () => {
 document.addEventListener("mousemove", (e) => {
   window.MouseEvent = e;
 });
+
+function applyParentHighlight(el) {
+  const [lightColor, darkColor] = themePairs[currentTheme];
+  el.classList.add("search-parent-highlight");
+
+  // inline styling
+  el.style.backgroundColor = lightColor;
+  el.style.color = darkColor;
+}
+
+const searchBox = document.getElementById("search-box");
+const searchIcon = document.querySelector(".search-icon");
+
+let currentIndex = 0;
+let matches = [];
+let lastMatch = null;
+
+function clearParentHighlight(el) {
+  if (!el) return;
+  el.classList.remove("search-parent-highlight");
+  el.style.backgroundColor = "";
+  el.style.border = "";
+  el.style.color = "";
+}
+function findVisibleHighlightTarget(node) {
+  // text node → start from parent
+  let el = node.nodeType === 3 ? node.parentNode : node;
+
+  while (el && el !== document.body) {
+    const style = getComputedStyle(el);
+
+    // if this element or any ancestor is hidden → skip it
+    if (style.display === "none" || style.visibility === "hidden") {
+      // climb further up
+      el = el.parentNode;
+      continue;
+    }
+
+    // check ancestors to make sure none of them are hidden
+    let ancestor = el.parentNode;
+    let hidden = false;
+    while (ancestor && ancestor !== document.body) {
+      const ancestorStyle = getComputedStyle(ancestor);
+      if (
+        ancestorStyle.display === "none" ||
+        ancestorStyle.visibility === "hidden"
+      ) {
+        hidden = true;
+        break;
+      }
+      ancestor = ancestor.parentNode;
+    }
+
+    if (!hidden) return el;
+
+    el = el.parentNode;
+  }
+
+  return null; // no visible ancestor found
+}
+
+// remove child matches if ancestor already included
+function pruneMatches(list) {
+  return list.filter(
+    (el) => !list.some((other) => other !== el && other.contains(el))
+  );
+}
+
+function highlightNextParent() {
+  const text = searchBox.value.trim().toLowerCase();
+  if (!text) return;
+
+  // new search
+  if (!matches.length || matches[0].dataset.searchText !== text) {
+    // Clear old
+    matches.forEach(clearParentHighlight);
+    matches = [];
+    const seen = new Set();
+
+    function searchInNode(node) {
+      if (node.nodeType === 3) {
+        if (node.data.toLowerCase().includes(text)) {
+          let target = findVisibleHighlightTarget(node);
+          if (target && !seen.has(target)) {
+            target.dataset.searchText = text;
+            matches.push(target);
+            seen.add(target);
+          }
+        }
+      } else if (
+        node.nodeType === 1 &&
+        node.childNodes &&
+        !["SCRIPT", "STYLE"].includes(node.tagName)
+      ) {
+        node.childNodes.forEach(searchInNode);
+      }
+    }
+
+    searchInNode(document.body);
+
+    // search <img> src
+    document.querySelectorAll("img").forEach((img) => {
+      if (img.src.toLowerCase().includes(text)) {
+        // start from parent so the container gets highlighted
+        let target = findVisibleHighlightTarget(img.parentNode);
+        if (target && !seen.has(target)) {
+          target.dataset.searchText = text;
+          matches.push(target);
+          seen.add(target);
+        }
+      }
+    });
+
+    matches = pruneMatches(matches);
+    currentIndex = 0;
+  }
+
+  if (!matches.length) return;
+
+  if (lastMatch) clearParentHighlight(lastMatch);
+
+  const match = matches[currentIndex];
+  applyParentHighlight(match);
+  match.scrollIntoView({ behavior: "smooth", block: "center" });
+
+  lastMatch = match;
+  currentIndex = (currentIndex + 1) % matches.length;
+}
+
+// Enter triggers search
+searchBox.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") highlightNextParent();
+});
+
+// Click icon triggers search
+searchIcon.addEventListener("click", highlightNextParent);
+
+function clearAllHighlights() {
+  matches.forEach(clearParentHighlight);
+  matches = [];
+  lastMatch = null;
+  currentIndex = 0;
+  searchBox.value = ""; // <-- clear search box too
+}
+
+document.addEventListener(
+  "click",
+  (e) => {
+    searchBox.value = ""; // clear search box here too
+
+    const el = e.target.closest(".search-parent-highlight");
+    if (!el) return;
+
+    clearParentHighlight(el);
+    matches = matches.filter((m) => m !== el);
+    if (lastMatch === el) lastMatch = null;
+  },
+  true
+);
