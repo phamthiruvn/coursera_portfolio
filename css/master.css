@@ -8,7 +8,7 @@
   --background-color: transparent;
   --white: #fff;
   --font-family-main: "Courier New", Courier, monospace;
-  --font-size-body: clamp(0.5rem, -0.27rem + 1.8vw, 1.5rem);
+  --font-size-body: clamp(0.45rem, -0.27rem + 1.8vw, 1.5rem);
   --border-thin: solid 0.1em;
   --border-radius-large: 2em;
   --border-radius-medium: 0.75em;
@@ -382,6 +382,14 @@ a {
   cursor: pointer;
 }
 
+#my-info .job h3:hover,
+#my-info .school h3:hover,
+#my-info .certifications h2:hover,
+#my-info .awards h2:hover,
+#my-info .about-bio p:hover {
+  text-decoration: underline;
+}
+
 /* Hide lists and paragraph by default */
 #my-info .job ul,
 #my-info .school ul,
@@ -400,6 +408,17 @@ a {
   display: block;
 }
 
+/* When any other section has .info-selected */
+#my-info .job.info-selected ~ .traits span,
+#my-info .school.info-selected ~ .traits span,
+#my-info .certifications.info-selected ~ .traits span,
+#my-info .awards.info-selected ~ .traits span,
+#my-info .about-bio.info-selected ~ .traits span {
+  transform: scaleY(0.15) skewX(-20deg); /* compress height and skew */
+  border-radius: 0.15em;
+  
+}
+
 #my-info .job ul,
 #my-info .school ul,
 #my-info .certifications ul,
@@ -408,21 +427,30 @@ a {
 }
 
 .traits {
+  
+  width: 100%;
   margin-top: auto; /* takes up remaining space */
   display: flex;
   flex-wrap: wrap;
   padding: 0.5em 0;
-  justify-content: space-between;
   gap: 0.5em;
 }
 
 .traits span {
-  padding: 0.3em 0.6em;
+  display: inline-block;
+ 
+  transform-origin: bottom; /* shrink from top */
+  padding: 0.25em 0.5em;
   border-radius: var(--border-radius-large);
   font-size: 0.75em;
   font-weight: 750;
   font-style: italic;
   cursor: default;
+  transition: transform 0.3s ease, border-radius 0.3s ease;
+}
+
+.traits span:hover {
+  transform: translateY(-0.3em);
 }
 
 .box,
