@@ -147,17 +147,6 @@ document.addEventListener("click", (e) => {
   // Keep existing skill logic
 
   if (e.target.closest(".side-bar, #year-buttons", "#visualize")) {
-    const visualizedDivs = Array.from(skillDivs).filter(
-      (div) =>
-        div.classList.contains("visualized") &&
-        div.classList.contains("selected")
-    );
-
-    if (visualizedDivs.length == 0) {
-      const randomDiv =
-        visualizedDivs[Math.floor(Math.random() * visualizedDivs.length)];
-      randomDiv.classList.add("selected");
-    }
     startAnimation(100);
     return;
   }
@@ -430,21 +419,10 @@ function renderSoftwareSkills(year) {
   applyTheme();
 }
 
-const skillDivs = document.querySelectorAll("#skill > div[id^='skill-']");
-
 // ===== VISUALIZATION TOGGLE =====
 function toggleVisualization(year) {
   const skillLines = document.getElementById("skill-lines");
-
-  const visualizedDivs = Array.from(skillDivs).filter((div) =>
-    div.classList.contains("selected")
-  );
-
-  if (visualizedDivs.length == 0) {
-    const randomDiv = skillDivs[Math.floor(Math.random() * skillDivs.length)];
-    randomDiv.classList.add("selected");
-  }
-
+  const skillDivs = document.querySelectorAll("#skill > div[id^='skill-']");
   visualizedState = !visualizedState;
   skillLines.classList.toggle("visualized");
 
