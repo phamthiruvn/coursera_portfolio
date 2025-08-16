@@ -197,8 +197,8 @@ const softwareSkillsNow = [
   { name: "CSS", value: 70 },
   { name: "Blender", value: 25 },
   { name: "Cinema4D", value: 30 },
-  { name: "English", value: 60 },
-  { name: "Russian", value: 70 },
+  { name: "UK", value: 60 },
+  { name: "RU", value: 70 },
 ];
 
 const diffsByYear = {
@@ -213,8 +213,8 @@ const diffsByYear = {
     { name: "CSS", value: 70 },
     { name: "Blender", value: 25 },
     { name: "Cinema4D", value: 25 },
-    { name: "English", value: 60 },
-    { name: "Russian", value: 70 },
+    { name: "UK", value: 60 },
+    { name: "RU", value: 70 },
   ],
   2021: [
     { name: "Photoshop", value: 70 },
@@ -227,8 +227,8 @@ const diffsByYear = {
     { name: "CSS", value: 50 },
     { name: "Blender", value: 0 },
     { name: "Cinema4D", value: 15 },
-    { name: "English", value: 50 },
-    { name: "Russian", value: 70 },
+    { name: "UK", value: 50 },
+    { name: "RU", value: 70 },
   ],
   2018: [
     { name: "Photoshop", value: 50 },
@@ -241,8 +241,8 @@ const diffsByYear = {
     { name: "CSS", value: 30 },
     { name: "Blender", value: 0 },
     { name: "Cinema4D", value: 0 },
-    { name: "English", value: 30 },
-    { name: "Russian", value: 50 },
+    { name: "UK", value: 30 },
+    { name: "RU", value: 50 },
   ],
 };
 
