@@ -4,7 +4,7 @@
 const themePairs = {
   pink: ["#ffddf5ff", "#ea77a3ff"],
   orange: ["#f3e6c6ff", "#e3980cff"],
-  green: ["#ecfcafff", "#aba807ff"],
+  green: ["#edfcafff", "#729607ff"],
   blue: ["#b5e4f1ff", "#0083d4ff"],
 };
 
@@ -147,6 +147,9 @@ document.addEventListener("click", (e) => {
   // Keep existing skill logic
 
   if (e.target.closest(".side-bar, #year-buttons")) {
+    Array.from(skillDivs)
+      .filter((div) => div.classList.contains("visualized"))
+      [Math.floor(Math.random() * skillDivs.length)].classList.add("selected");
     startAnimation(100);
     return;
   }
@@ -405,7 +408,6 @@ function renderSoftwareSkills(year) {
     document.querySelectorAll('div[class^="loading-"]').forEach((div) => {
       const skillId = div.parentElement.id;
       const softwares = skillSoftwares[skillId] || [];
-      const skillNumber = parseInt(skillId.split("-")[1], 10);
       const avg = Math.max(
         softwares.length
           ? softwares.reduce((sum, soft) => sum + getSoftwareValue(soft), 0) /
@@ -420,10 +422,14 @@ function renderSoftwareSkills(year) {
   applyTheme();
 }
 
+const skillDivs = document.querySelectorAll("#skill > div[id^='skill-']");
+
 // ===== VISUALIZATION TOGGLE =====
 function toggleVisualization(year) {
-  const skillDivs = document.querySelectorAll("#skill > div[id^='skill-']");
   const skillLines = document.getElementById("skill-lines");
+  skillDivs[Math.floor(Math.random() * skillDivs.length)].classList.add(
+    "selected"
+  );
 
   visualizedState = !visualizedState;
   skillLines.classList.toggle("visualized");
@@ -708,6 +714,7 @@ const likeInfo = document.getElementById("like-info");
 
 likeInfo.addEventListener("click", (e) => {
   const btn = e.currentTarget;
+
   btn.classList.remove("heartbeat");
   void btn.offsetWidth;
   btn.classList.add("heartbeat");
@@ -1258,3 +1265,5 @@ document.addEventListener(
   },
   true
 );
+
+const soundClick = new Audio("sounds/click.m4a"); // path to your sound file

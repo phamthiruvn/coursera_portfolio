@@ -27,7 +27,10 @@ html {
   display: none;
 }
 
-input, textarea, select, button {
+input,
+textarea,
+select,
+button {
   font: inherit;
   color: inherit;
 }
@@ -447,7 +450,9 @@ a {
   font-weight: 750;
   font-style: italic;
   cursor: default;
-  transition: transform 0.3s ease, border-radius 0.3s ease;
+  transform-origin: bottom;
+
+  transition: transform 0.3s ease, border-radius 0.5s ease;
 }
 
 .traits span:hover {
@@ -528,8 +533,8 @@ a {
   display: flex;
   flex-direction: column;
   align-items: baseline;
-  gap: 0.2em;
-  padding: 0.2em 1em;
+  gap: 0.1em;
+  padding: 0.25em 1em;
   cursor: pointer;
   flex: 0 1 auto;
   transition: padding 0.3s ease, transform 0.3s ease, flex 0.3s ease;
@@ -816,8 +821,6 @@ a {
   font-style: italic;
   color: var(--text-color);
 }
-
-
 
 .round-corner {
   border-radius: var(--border-radius-medium);
