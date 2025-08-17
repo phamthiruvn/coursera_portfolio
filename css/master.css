@@ -844,7 +844,7 @@ a {
   position: absolute;
   height: 36.5%;
   left: 0.75%;
-  aspect-ratio: 3/2;
+  width: 27.5%;
 }
 
 #gallery-info {
@@ -860,15 +860,66 @@ a {
   position: absolute;
   border-radius: var(--border-radius-large);
   border: 0.25em solid;
+  overflow: hidden;
 }
 
-#gallery--1 {
+#gallery-origin {
+  position: absolute;
+  border-radius: var(--border-radius-large);
+  border: 0.25em solid;
+  overflow: hidden;
   height: 75%;
   width: 67.5%;
   right: 1.25%;
   top: 2.5%;
   border-bottom-left-radius: var(--border-radius-medium);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+.origin {
+  border-radius: var(--border-radius-medium);
+}
+
+
+@keyframes waveZoom {
+  0% {
+    transform: scale(1) rotate(0deg) skew(0deg, 0deg);
+  }
+  20% {
+    transform: scale(2) rotate(3deg) skew(5deg, -5deg);
+  }
+  40% {
+    transform: scale(3) rotate(-3deg) skew(-10deg, 1deg);
+  }
+  60% {
+    transform: scale(1.5) rotate(4deg) skew(1deg, -2deg);
+  }
+  80% {
+    transform: scale(1.25) rotate(-2deg) skew(-1deg, 1deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg) skew(0deg, 0deg);
+  }
+}
+.blur-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(1em);
+  mix-blend-mode: multiply;
+  opacity: 0.75;
+  z-index: 1;
+  pointer-events: none;
+  transform-origin: center center;
+  animation: waveZoom 20s ease-in-out infinite; /* smooth zoom effect */
+}
+
+
 
 #gallery--2 {
   height: 55%;
@@ -877,6 +928,51 @@ a {
   bottom: 2.5%;
   border-top-right-radius: var(--border-radius-medium);
   border-bottom-right-radius: var(--border-radius-medium);
+}
+
+@keyframes slideLR {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(calc(var(--move, 0) / 2));
+  } /* halfway */
+  50% {
+    transform: translateX(var(--move, 0));
+  } /* full */
+  80% {
+    transform: translateX(calc(var(--move, 0) / 2));
+  } /* halfway back */
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUD {
+  0% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(calc(var(--move, 0) / 2));
+  } /* halfway */
+  50% {
+    transform: translateY(var(--move, 0));
+  } /* full */
+  80% {
+    transform: translateY(calc(var(--move, 0) / 2));
+  } /* halfway back */
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Animate clones inside both #gallery--2 and #gallery--3 */
+[id^="gallery--"] .slide-horizontal {
+  animation: slideLR 60s ease-in-out infinite;
+}
+
+[id^="gallery--"] .slide-vertical {
+  animation: slideUD 60s ease-in-out infinite;
 }
 
 #gallery--3 {

@@ -1297,3 +1297,150 @@ function changeAvatar() {
 }
 
 setInterval(changeAvatar, 24000);
+
+function alignAndClipGallery() {
+  const gallery = document.getElementById("gallery");
+  if (!gallery) return;
+
+  const images = gallery.querySelectorAll("img");
+
+  images.forEach((img) => {
+    if (img.complete && img.naturalWidth && img.naturalHeight) {
+      // already loaded
+      processImage(img);
+    } else {
+      // wait until loaded
+      img.addEventListener("load", () => processImage(img), { once: true });
+    }
+  });
+}
+
+function processImage(img) {
+  const parent = img.closest('[id^="gallery-origin"]');
+  if (!parent) return;
+
+  alignAndClipElement(img, parent);
+}
+
+function alignAndClipElement(element, parent) {
+  const rect = parent.getBoundingClientRect();
+  const ratio = element.naturalWidth / element.naturalHeight;
+  const parentRatio = rect.width / rect.height;
+  const percent = 0.95
+
+  let width, height;
+  if (ratio > parentRatio) {
+    // fit by width (reversed logic)
+    width = rect.width*percent;
+    height = width / ratio;
+  } else {
+    // fit by height (reversed logic)
+    height = rect.height*percent;
+    width = height * ratio;
+  }
+
+  // --- Apply new size ---
+  element.style.width = width + "px";
+  element.style.height = height + "px";
+
+  // --- Center inside parent ---
+  element.style.zIndex = "2"; // keep above
+
+  // --- Add blurred background image ---
+  if (!parent.querySelector(".blur-bg")) {
+    const blurImg = document.createElement("img");
+    blurImg.src = element.src;
+    blurImg.className = "blur-bg";
+    blurImg.style.width = rect.width + "px";
+    blurImg.style.height = rect.height + "px";
+    parent.insertBefore(blurImg, element); // behind main image
+  } else {
+    const blurImg = parent.querySelector(".blur-bg");
+    blurImg.style.top = "0px";
+    blurImg.style.left = "0px";
+    blurImg.style.width = rect.width + "px";
+    blurImg.style.height = rect.height + "px";
+  }
+}
+
+function duplicateGalleryImages() {
+  const gallery = document.getElementById("gallery");
+  if (!gallery) return;
+
+  const firstImg = gallery.querySelector(
+    "#gallery-origin img:not(.blur-bg):not(.cloned)"
+  );
+  if (!firstImg) return;
+
+  const items = gallery.querySelectorAll('[id^="gallery--"]');
+  items.forEach((parent) => {
+    if (!parent.querySelector("img")) {
+      const clone = firstImg.cloneNode(true);
+      clone.classList.add("cloned");
+      parent.appendChild(clone);
+
+      // when clone loads, calculate sizing
+      clone.addEventListener("load", () => updateClone(clone, parent));
+    } else {
+      // already has img (on resize, etc.)
+      const clone = parent.querySelector("img");
+      updateClone(clone, parent);
+    }
+  });
+}
+
+function updateClone(clone, parent) {
+  const parentRect = parent.getBoundingClientRect();
+  const parentRatio = parentRect.width / parentRect.height;
+  const imgRatio = clone.naturalWidth / clone.naturalHeight;
+
+  // reset styles before sizing
+  clone.style.position = "absolute";
+  clone.style.display = "block";
+  clone.style.margin = "0";
+  clone.style.padding = "0";
+  clone.style.transform = "none";
+
+  // clear old classes
+  clone.classList.remove("slide-horizontal", "slide-vertical");
+
+  if (imgRatio > parentRatio) {
+    // fit by height → horizontal slide
+    clone.style.height = parentRect.height + "px";
+    clone.style.width = "auto";
+
+    const overflow = clone.scrollWidth - parentRect.width;
+    const move = Math.max(0, overflow);
+
+    // horizontal: move left → negative X
+    clone.style.setProperty("--move", `-${move}px`);
+    clone.classList.add("slide-horizontal");
+  } else {
+    // fit by width → vertical slide
+    clone.style.width = parentRect.width + "px";
+    clone.style.height = "auto";
+
+    const overflow = clone.scrollHeight - parentRect.height;
+    const move = -Math.max(0, overflow);
+
+    // vertical: move down → positive Y
+    clone.style.setProperty("--move", `${move}px`);
+    clone.classList.add("slide-vertical");
+  }
+
+  // enforce top-left anchor AFTER sizing
+  clone.style.left = "0px";
+  clone.style.top = "0px";
+}
+
+// run once on load
+window.addEventListener("load", () => {
+  alignAndClipGallery();
+  duplicateGalleryImages();
+});
+
+// update on resize
+window.addEventListener("resize", () => {
+  alignAndClipGallery();
+  duplicateGalleryImages(); // only updates, no extra clones
+});
