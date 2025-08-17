@@ -5,7 +5,7 @@ const themePairs = {
   pink: ["#ffddf5ff", "#ea77a3ff"],
   orange: ["#f3e6c6ff", "#e3980cff"],
   green: ["#edfcafff", "#729607ff"],
-  blue: ["#b5e4f1ff", "#0083d4ff"],
+  blue: ["#d5f3fcff", "#0083d4ff"],
 };
 
 let currentTheme =
@@ -253,7 +253,7 @@ function sortSkills(skills) {
     .filter(({ skill }) => skill.name.length === 2);
 
   // Extract sortable skills
-  const sortable = skills.filter(skill => skill.name.length !== 2);
+  const sortable = skills.filter((skill) => skill.name.length !== 2);
 
   // Sort descending by value
   sortable.sort((a, b) => b.value - a.value);
@@ -733,6 +733,7 @@ likeInfo.addEventListener("click", (e) => {
   setTimeout(() => {
     createHeartBurst(btn);
   }, 100);
+  changeAvatar();
 });
 
 function createHeartBurst(element) {
@@ -1279,3 +1280,20 @@ document.addEventListener(
 );
 
 const soundClick = new Audio("sounds/click.m4a"); // path to your sound file
+
+const totalAvatars = 4; // if you want avatar0.jpg → avatar3.jpg
+const avatarEl = document.getElementById("avatar");
+let imageIndex = 0; // start at 0
+
+function changeAvatar() {
+  setTimeout(() => {
+    // go to next avatar in order
+    imageIndex = (imageIndex + 1) % totalAvatars;
+    avatarEl.src = `images/avatar${imageIndex}.jpg`;
+
+    // fade back in
+    avatarEl.style.opacity = 1;
+  }, 300); // wait for fade-out to finish (matches CSS transition)
+}
+
+setInterval(changeAvatar, 24000);
