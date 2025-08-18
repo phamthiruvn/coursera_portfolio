@@ -1298,6 +1298,8 @@ function changeAvatar() {
 
 setInterval(changeAvatar, 24000);
 
+
+
 function alignAndClipGallery() {
   const gallery = document.getElementById("gallery");
   if (!gallery) return;
@@ -1316,14 +1318,15 @@ function alignAndClipGallery() {
 }
 
 function processImage(img) {
-  const parent = img.closest('[id^="gallery-origin"]');
+  const parent = img.closest('[id^="origin-container"]');
   if (!parent) return;
 
   alignAndClipElement(img, parent);
 }
 
 function alignAndClipElement(element, parent) {
-  const rect = parent.getBoundingClientRect();
+  const parentparent = parent.closest('[id^="gallery-origin"]')
+  const rect = parentparent.getBoundingClientRect();
   const ratio = element.naturalWidth / element.naturalHeight;
   const parentRatio = rect.width / rect.height;
   const percent = 0.95
@@ -1343,23 +1346,14 @@ function alignAndClipElement(element, parent) {
   element.style.width = width + "px";
   element.style.height = height + "px";
 
-  // --- Center inside parent ---
-  element.style.zIndex = "2"; // keep above
-
   // --- Add blurred background image ---
-  if (!parent.querySelector(".blur-bg")) {
+  if (!parentparent.querySelector(".blur-bg")) {
     const blurImg = document.createElement("img");
     blurImg.src = element.src;
     blurImg.className = "blur-bg";
-    blurImg.style.width = rect.width + "px";
-    blurImg.style.height = rect.height + "px";
-    parent.insertBefore(blurImg, element); // behind main image
+    parentparent.append(blurImg); // behind main image
   } else {
-    const blurImg = parent.querySelector(".blur-bg");
-    blurImg.style.top = "0px";
-    blurImg.style.left = "0px";
-    blurImg.style.width = rect.width + "px";
-    blurImg.style.height = rect.height + "px";
+    const blurImg = parentparent.querySelector(".blur-bg");
   }
 }
 
@@ -1368,7 +1362,7 @@ function duplicateGalleryImages() {
   if (!gallery) return;
 
   const firstImg = gallery.querySelector(
-    "#gallery-origin img:not(.blur-bg):not(.cloned)"
+    "#origin-container img:not(.blur-bg):not(.cloned)"
   );
   if (!firstImg) return;
 
@@ -1443,4 +1437,65 @@ window.addEventListener("load", () => {
 window.addEventListener("resize", () => {
   alignAndClipGallery();
   duplicateGalleryImages(); // only updates, no extra clones
+});
+
+const img = document.querySelector("#origin-container .origin");
+const container = img.parentElement;
+
+const magnifier = document.getElementById("magnifier");
+
+// Only create the zoom image once
+let zoomImg = magnifier.querySelector("img");
+if (!zoomImg) {
+  zoomImg = img.cloneNode();
+  zoomImg.classList.add("zoom-2x"); // default zoom class
+  magnifier.appendChild(zoomImg);
+}
+
+let lastMouse = {x: 0, y: 0};
+let isMoving = false;
+
+container.addEventListener("mousemove", (e) => {
+  const rect = img.getBoundingClientRect();
+  const magWidth = magnifier.offsetWidth;
+  const magHeight = magnifier.offsetHeight;
+
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+
+  // Check movement
+  const dx = mouseX - lastMouse.x;
+  const dy = mouseY - lastMouse.y;
+  const distance = Math.sqrt(dx*dx + dy*dy);
+
+  lastMouse = {x: mouseX, y: mouseY};
+
+  // While moving, slightly reduce zoom
+  const baseZoom = parseFloat(getComputedStyle(zoomImg).getPropertyValue("--zoom-level")) || 2;
+  const zoomFactor = distance > 0 ? baseZoom * 0.95 : baseZoom; // smaller when moving
+
+  zoomImg.style.width = rect.width * zoomFactor + "px";
+  zoomImg.style.height = rect.height * zoomFactor + "px";
+
+  // Center magnifier on cursor
+  let magnifierX = mouseX - magWidth / 2;
+  let magnifierY = mouseY - magHeight / 2;
+
+  // magnifierX = Math.max(0, Math.min(rect.width - magWidth, magnifierX));
+  // magnifierY = Math.max(0, Math.min(rect.height - magHeight, magnifierY));
+
+  magnifier.style.left = magnifierX + "px";
+  magnifier.style.top = magnifierY + "px";
+  magnifier.style.display = "block";
+
+  // Move zoomed image inside magnifier
+  const offsetX = mouseX * zoomFactor - magWidth / 2;
+  const offsetY = mouseY * zoomFactor - magHeight / 2;
+
+  zoomImg.style.left = -offsetX + "px";
+  zoomImg.style.top = -offsetY + "px";
+});
+
+container.addEventListener("mouseleave", () => {
+  magnifier.style.display = "none";
 });
