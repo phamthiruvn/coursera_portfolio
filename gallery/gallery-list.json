@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "title": "SUNET Brand Identity",
+    "description": "A complete brand identity project including logo, typography, and designs.",
+    "year": 2025,
+    "category": "Branding",
+    "coverImage": "gallery/sunet/cover.jpg",
+    "gallery": [
+      "gallery/sunet/1.jpg",
+      "gallery/sunet/2.jpg",
+      "gallery/sunet/3.jpg",
+      "gallery/sunet/4.jpg",
+      "gallery/sunet/5.jpg",
+      "gallery/sunet/6.jpg",
+      "gallery/sunet/7.jpg",
+      "gallery/sunet/video.gif"
+    ],
+    "tags": [
+      "#branding",
+      "#marketing",
+      "#agency"
+    ],
+    "link": "https://su-net.vercel.app/"
+  },
+  {
+    "id": 2,
+    "title": "Coming Soon Project",
+    "description": "A placeholder project. Details and visuals will be added soon!",
+    "year": 2025,
+    "category": "Web Design",
+    "coverImage": "gallery/placeholder/cover.gif",
+    "gallery": [
+    ],
+    "tags": [
+      "#comingsoon",
+      "#placeholder",
+      "#tbd"
+    ],
+    "link": "#"
+  }
+]

@@ -250,20 +250,6 @@
       <div id="sorfwares">
         <h1 class="border-box darker">SORFWARES</h1>
         <div id="sorfware-0"></div>
-        <!--
-                <div id="formula">
-                    <p>
-                        <strong>Average Expertise Value Calculation:</strong><br>
-                        <em>aevc</em> = max(0, (Σ<sub>i=1</sub><sup>n</sup> L<sub>i</sub> / n) - E<sup>2</sup>)
-                    </p>
-                    <p>
-                        Where:<br>
-                        <strong>n</strong> = number of proficient software tools contributing to the expertise;<br>
-                        <strong>L<sub>i</sub></strong> = proficiency level of the <em>i<sup>th</sup></em> software tool;<br>
-                        <strong>E</strong> = confidence rank, where lower numbers represent higher confidence (e.g., the first listed skill indicates the highest confidence);
-                    </p>
-                </div>
-                -->
       </div>
       <button id="visualize" class="darker">VISUALIZE</button>
       <canvas id="skill-lines"></canvas>
@@ -274,8 +260,8 @@
       <div id="gallery-origin" class="lighter">
 
         <div id="origin-container">
+          <img src="" alt="" class="origin">
           <div id="magnifier" class="lighter"></div>
-          <img src="gallery/gif.gif" alt="" class="origin">
         </div>
 
       </div>
@@ -283,8 +269,34 @@
       <div id="gallery--3" class="lighter"></div>
 
 
-      <div id="gallery-info" class="darker border-box"></div>
-      <div id="gallery-carousel" class="darker border-box"></div>
+      <div id="gallery-info" class="darker border-box">
+
+        <h1 class="project-title"></h1>
+        <h3 class="project-description"></h3>
+        <ul class="project-meta">
+          <li><strong>Year:</strong> <span class="project-year"></span></li>
+          <li><strong>Category:</strong> <span class="project-category"></span></li>
+        </ul>
+        <div class="project-tags"></div>
+        <a href="" class="project-link" target="_blank">View Project➡</a>
+        <div class="project-next">
+          <span id="prev-design">◀</span>
+          <p>Inside this project</p>
+          <span id="next-design">▶</span>
+        </div>
+      </div>
+
+
+      <div id="gallery-carousel" class="darker border-box">
+        <ul id="gallery-control">
+          <li id ="prev-project" class="lighter">⏮</li>
+          <p class="lighter">SEE MORE</p>
+          <li id ="next-project" class="lighter">⏭</li>
+        </ul>
+        <div id="gallery-list">
+          <div id="gallery-list-text"></div>
+        </div>
+      </div>
 
 
       <object class="darker" id="mySVG4" type="image/svg+xml"

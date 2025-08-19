@@ -4,7 +4,7 @@
 const themePairs = {
   pink: ["#ffddf5ff", "#ea77a3ff"],
   orange: ["#f3e6c6ff", "#e3980cff"],
-  green: ["#edfcafff", "#729607ff"],
+  green: ["#fffab5ff", "#5b7608ff"],
   blue: ["#d5f3fcff", "#0083d4ff"],
 };
 
@@ -1279,8 +1279,6 @@ document.addEventListener(
   true
 );
 
-const soundClick = new Audio("sounds/click.m4a"); // path to your sound file
-
 const totalAvatars = 4; // if you want avatar0.jpg → avatar3.jpg
 const avatarEl = document.getElementById("avatar");
 let imageIndex = 0; // start at 0
@@ -1298,204 +1296,320 @@ function changeAvatar() {
 
 setInterval(changeAvatar, 24000);
 
+function initGalleryAndMagnifier() {
+  // === Align & Clip Gallery ===
+  function alignAndClipGallery() {
+    const img = document.querySelector("#origin-container .origin");
 
-
-function alignAndClipGallery() {
-  const gallery = document.getElementById("gallery");
-  if (!gallery) return;
-
-  const images = gallery.querySelectorAll("img");
-
-  images.forEach((img) => {
     if (img.complete && img.naturalWidth && img.naturalHeight) {
-      // already loaded
       processImage(img);
     } else {
-      // wait until loaded
       img.addEventListener("load", () => processImage(img), { once: true });
     }
-  });
-}
-
-function processImage(img) {
-  const parent = img.closest('[id^="origin-container"]');
-  if (!parent) return;
-
-  alignAndClipElement(img, parent);
-}
-
-function alignAndClipElement(element, parent) {
-  const parentparent = parent.closest('[id^="gallery-origin"]')
-  const rect = parentparent.getBoundingClientRect();
-  const ratio = element.naturalWidth / element.naturalHeight;
-  const parentRatio = rect.width / rect.height;
-  const percent = 0.95
-
-  let width, height;
-  if (ratio > parentRatio) {
-    // fit by width (reversed logic)
-    width = rect.width*percent;
-    height = width / ratio;
-  } else {
-    // fit by height (reversed logic)
-    height = rect.height*percent;
-    width = height * ratio;
   }
 
-  // --- Apply new size ---
-  element.style.width = width + "px";
-  element.style.height = height + "px";
+  function processImage(img) {
+    const parent = img.closest('[id^="origin-container"]');
+    if (!parent) return;
+    alignAndClipElement(img, parent);
+  }
 
-  // --- Add blurred background image ---
-  if (!parentparent.querySelector(".blur-bg")) {
+  function alignAndClipElement(element, parent) {
+    const parentparent = parent.closest('[id^="gallery-origin"]');
+    const rect = parentparent.getBoundingClientRect();
+    const ratio = element.naturalWidth / element.naturalHeight;
+    const parentRatio = rect.width / rect.height;
+    const percent = 0.95;
+
+    let width, height;
+    if (ratio > parentRatio) {
+      width = rect.width * percent;
+      height = width / ratio;
+    } else {
+      height = rect.height * percent;
+      width = height * ratio;
+    }
+
+    element.style.width = width + "px";
+    element.style.height = height + "px";
+
+    // blurred background
+    const oldBlur = parentparent.querySelector(".blur-bg");
+    if (oldBlur) {
+      oldBlur.remove(); // ✅ remove previous blur image
+    }
+
     const blurImg = document.createElement("img");
     blurImg.src = element.src;
     blurImg.className = "blur-bg";
-    parentparent.append(blurImg); // behind main image
-  } else {
-    const blurImg = parentparent.querySelector(".blur-bg");
+    parentparent.append(blurImg);
   }
-}
 
-function duplicateGalleryImages() {
-  const gallery = document.getElementById("gallery");
-  if (!gallery) return;
+  // === Duplicate Gallery Images ===
+  function duplicateGalleryImages() {
+    const gallery = document.getElementById("gallery");
+    if (!gallery) return;
 
-  const firstImg = gallery.querySelector(
-    "#origin-container img:not(.blur-bg):not(.cloned)"
-  );
-  if (!firstImg) return;
+    // 🔹 remove existing cloned images first
+    gallery.querySelectorAll("img.cloned").forEach((img) => img.remove());
 
-  const items = gallery.querySelectorAll('[id^="gallery--"]');
-  items.forEach((parent) => {
-    if (!parent.querySelector("img")) {
+    const firstImg = gallery.querySelector(
+      "#origin-container img:not(.blur-bg):not(.cloned)"
+    );
+    if (!firstImg) return;
+
+    const items = gallery.querySelectorAll('[id^="gallery--"]');
+    items.forEach((parent) => {
       const clone = firstImg.cloneNode(true);
       clone.classList.add("cloned");
       parent.appendChild(clone);
 
-      // when clone loads, calculate sizing
-      clone.addEventListener("load", () => updateClone(clone, parent));
+      if (clone.complete) {
+        updateClone(clone, parent);
+      } else {
+        clone.addEventListener("load", () => updateClone(clone, parent), {
+          once: true,
+        });
+      }
+    });
+  }
+
+  function updateClone(clone, parent) {
+    const parentRect = parent.getBoundingClientRect();
+    const parentRatio = parentRect.width / parentRect.height;
+    const imgRatio = clone.naturalWidth / clone.naturalHeight;
+
+    clone.style.position = "absolute";
+    clone.style.display = "block";
+    clone.style.margin = "0";
+    clone.style.padding = "0";
+    clone.style.transform = "none";
+
+    clone.classList.remove("slide-horizontal", "slide-vertical");
+
+    if (imgRatio > parentRatio) {
+      clone.style.height = parentRect.height + "px";
+      clone.style.width = "auto";
+
+      const overflow = clone.scrollWidth - parentRect.width;
+      const move = Math.max(0, overflow);
+
+      clone.style.setProperty("--move", `-${move}px`);
+      clone.classList.add("slide-horizontal");
     } else {
-      // already has img (on resize, etc.)
-      const clone = parent.querySelector("img");
-      updateClone(clone, parent);
+      clone.style.width = parentRect.width + "px";
+      clone.style.height = "auto";
+
+      const overflow = clone.scrollHeight - parentRect.height;
+      const move = -Math.max(0, overflow);
+
+      clone.style.setProperty("--move", `${move}px`);
+      clone.classList.add("slide-vertical");
     }
+
+    clone.style.left = "0px";
+    clone.style.top = "0px";
+  }
+
+  // === Magnifier ===
+  function initMagnifier() {
+    const img = document.querySelector("#origin-container .origin");
+    const container = img?.parentElement;
+    const magnifier = document.getElementById("magnifier");
+    if (!img || !container || !magnifier) return;
+
+    magnifier.innerHTML = ""; // reset old zoom image
+    const zoomImg = img.cloneNode();
+    zoomImg.classList.add("zoom-3x");
+    magnifier.appendChild(zoomImg);
+
+    let lastMouse = { x: 0, y: 0 };
+
+    container.onmousemove = (e) => {
+      const rect = img.getBoundingClientRect();
+      const magWidth = magnifier.offsetWidth;
+      const magHeight = magnifier.offsetHeight;
+
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      const dx = mouseX - lastMouse.x;
+      const dy = mouseY - lastMouse.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      lastMouse = { x: mouseX, y: mouseY };
+
+      const baseZoom =
+        parseFloat(
+          getComputedStyle(zoomImg).getPropertyValue("--zoom-level")
+        ) || 2;
+      const zoomFactor = distance > 0 ? baseZoom * 0.95 : baseZoom;
+
+      zoomImg.style.width = rect.width * zoomFactor + "px";
+      zoomImg.style.height = rect.height * zoomFactor + "px";
+
+      magnifier.style.left = mouseX - magWidth / 2 + "px";
+      magnifier.style.top = mouseY - magHeight / 2 + "px";
+      magnifier.style.display = "block";
+
+      const offsetX = mouseX * zoomFactor - magWidth / 2;
+      const offsetY = mouseY * zoomFactor - magHeight / 2;
+
+      zoomImg.style.left = -offsetX + "px";
+      zoomImg.style.top = -offsetY + "px";
+    };
+
+    container.onmouseleave = () => {
+      magnifier.style.display = "none";
+    };
+  }
+
+  // === Run on load + resize ===
+  alignAndClipGallery();
+  duplicateGalleryImages();
+  initMagnifier();
+
+  window.addEventListener("resize", () => {
+    alignAndClipGallery();
+    duplicateGalleryImages();
+    initMagnifier();
   });
 }
 
-function updateClone(clone, parent) {
-  const parentRect = parent.getBoundingClientRect();
-  const parentRatio = parentRect.width / parentRect.height;
-  const imgRatio = clone.naturalWidth / clone.naturalHeight;
+let projectIndex = 0; // default project index
+let galleryIndex = 0; // -1 = cover, 0+ = inside gallery
+let projectsData = [];
 
-  // reset styles before sizing
-  clone.style.position = "absolute";
-  clone.style.display = "block";
-  clone.style.margin = "0";
-  clone.style.padding = "0";
-  clone.style.transform = "none";
+// === Show project info and reset gallery ===
+function showProject(index) {
+  const originImg = document.querySelector("#origin-container .origin");
+  const project = projectsData[index];
+  if (!project) return;
 
-  // clear old classes
-  clone.classList.remove("slide-horizontal", "slide-vertical");
+  const container = document.getElementById("gallery-info");
+  container.querySelector(".project-title").textContent = project.title;
+  container.querySelector(".project-description").textContent =
+    project.description;
+  container.querySelector(".project-year").textContent = project.year || "";
+  container.querySelector(".project-category").textContent =
+    project.category || "";
 
-  if (imgRatio > parentRatio) {
-    // fit by height → horizontal slide
-    clone.style.height = parentRect.height + "px";
-    clone.style.width = "auto";
+  // Tags
+  const tagsDiv = container.querySelector(".project-tags");
+  tagsDiv.innerHTML = "";
+  project.tags.forEach((tag) => {
+    const span = document.createElement("span");
+    span.textContent = tag;
+    span.className = "lighter border-box";
+    tagsDiv.appendChild(span);
+  });
 
-    const overflow = clone.scrollWidth - parentRect.width;
-    const move = Math.max(0, overflow);
+  // Link
+  const linkEl = container.querySelector(".project-link");
+  linkEl.href = project.link;
+  applyTheme();
 
-    // horizontal: move left → negative X
-    clone.style.setProperty("--move", `-${move}px`);
-    clone.classList.add("slide-horizontal");
+  // ✅ Reset galleryIndex to cover image
+  galleryIndex = -1;
+
+  originImg.src = project.coverImage;
+  originImg.alt = project.title;
+
+
+  if (originImg.complete) {
+    initGalleryAndMagnifier();
+    changeImg(true); // fade in new image
   } else {
-    // fit by width → vertical slide
-    clone.style.width = parentRect.width + "px";
-    clone.style.height = "auto";
+      changeImg(false); // fade out current image
+    originImg.addEventListener("load", initGalleryAndMagnifier, { once: true });
+    changeImg(true); // fade in new image
+  }
+}
 
-    const overflow = clone.scrollHeight - parentRect.height;
-    const move = -Math.max(0, overflow);
+// === Load data ===
+fetch("gallery/gallery-list.json")
+  .then((res) => res.json())
+  .then((projects) => {
+    const container = document.getElementById("gallery-list-text");
 
-    // vertical: move down → positive Y
-    clone.style.setProperty("--move", `${move}px`);
-    clone.classList.add("slide-vertical");
+    projects.forEach((project) => {
+      container.textContent = project.id + ". " + project.title;
+    });
+
+    projectsData = projects;
+    showProject(projectIndex);
+  })
+  .catch((err) => console.error("Error loading gallery:", err));
+
+// === Show next/prev image in gallery ===
+function showGalleryImage(step) {
+  changeImg(false); // fade out current image
+
+  const project = projectsData[projectIndex];
+  if (!project) return;
+
+  const originImg = document.querySelector("#origin-container .origin");
+
+  // If gallery empty → only cover available
+  if (!project.gallery || project.gallery.length === 0) return;
+
+  const total = project.gallery.length;
+  galleryIndex += step;
+
+  // wrap
+  if (galleryIndex < -1) galleryIndex = total - 1; // wrap backward
+  if (galleryIndex >= total) galleryIndex = -1; // wrap forward
+
+  if (galleryIndex === -1) {
+    originImg.src = project.coverImage;
+    originImg.alt = project.title;
+  } else {
+    originImg.src = project.gallery[galleryIndex];
+    originImg.alt = `${project.title} design ${galleryIndex + 1}`;
   }
 
-  // enforce top-left anchor AFTER sizing
-  clone.style.left = "0px";
-  clone.style.top = "0px";
+  if (originImg.complete) {
+    initGalleryAndMagnifier();
+    changeImg(true); // fade in new image
+  } else {
+    originImg.addEventListener("load", initGalleryAndMagnifier, { once: true });
+    changeImg(true); // fade in new image
+  }
 }
 
-// run once on load
-window.addEventListener("load", () => {
-  alignAndClipGallery();
-  duplicateGalleryImages();
+// === Hook buttons ===
+document.getElementById("prev-design").addEventListener("click", () => {
+  showGalleryImage(-1);
+});
+document.getElementById("next-design").addEventListener("click", () => {
+  showGalleryImage(1);
 });
 
-// update on resize
-window.addEventListener("resize", () => {
-  alignAndClipGallery();
-  duplicateGalleryImages(); // only updates, no extra clones
-});
+function changeImg(fadeIn) {
+  // Select all images inside #gallery
+  const galleryImgs = document.querySelectorAll("#gallery img");
 
-const img = document.querySelector("#origin-container .origin");
-const container = img.parentElement;
+  // Select the .origin element(s)
+  const originImgs = document.querySelectorAll(".origin");
 
-const magnifier = document.getElementById("magnifier");
-
-// Only create the zoom image once
-let zoomImg = magnifier.querySelector("img");
-if (!zoomImg) {
-  zoomImg = img.cloneNode();
-  zoomImg.classList.add("zoom-2x"); // default zoom class
-  magnifier.appendChild(zoomImg);
+  // Combine both NodeLists into one array
+  const imgs = [...galleryImgs, ...originImgs];
+  imgs.forEach((img) => {
+    img.style.opacity = 0.5; // or any other operation
+  });
+  imgs.forEach((img) => {
+    img.style.transition = "opacity 0.5s ease"; // smooth fade
+    img.style.opacity = fadeIn ? 1 : 0; // show or hide
+  });
 }
 
-let lastMouse = {x: 0, y: 0};
-let isMoving = false;
-
-container.addEventListener("mousemove", (e) => {
-  const rect = img.getBoundingClientRect();
-  const magWidth = magnifier.offsetWidth;
-  const magHeight = magnifier.offsetHeight;
-
-  const mouseX = e.clientX - rect.left;
-  const mouseY = e.clientY - rect.top;
-
-  // Check movement
-  const dx = mouseX - lastMouse.x;
-  const dy = mouseY - lastMouse.y;
-  const distance = Math.sqrt(dx*dx + dy*dy);
-
-  lastMouse = {x: mouseX, y: mouseY};
-
-  // While moving, slightly reduce zoom
-  const baseZoom = parseFloat(getComputedStyle(zoomImg).getPropertyValue("--zoom-level")) || 2;
-  const zoomFactor = distance > 0 ? baseZoom * 0.95 : baseZoom; // smaller when moving
-
-  zoomImg.style.width = rect.width * zoomFactor + "px";
-  zoomImg.style.height = rect.height * zoomFactor + "px";
-
-  // Center magnifier on cursor
-  let magnifierX = mouseX - magWidth / 2;
-  let magnifierY = mouseY - magHeight / 2;
-
-  // magnifierX = Math.max(0, Math.min(rect.width - magWidth, magnifierX));
-  // magnifierY = Math.max(0, Math.min(rect.height - magHeight, magnifierY));
-
-  magnifier.style.left = magnifierX + "px";
-  magnifier.style.top = magnifierY + "px";
-  magnifier.style.display = "block";
-
-  // Move zoomed image inside magnifier
-  const offsetX = mouseX * zoomFactor - magWidth / 2;
-  const offsetY = mouseY * zoomFactor - magHeight / 2;
-
-  zoomImg.style.left = -offsetX + "px";
-  zoomImg.style.top = -offsetY + "px";
+// === Hook project prev/next ===
+document.getElementById("prev-project").addEventListener("click", () => {
+  projectIndex = (projectIndex - 1 + projectsData.length) % projectsData.length;
+  showProject(projectIndex);
 });
 
-container.addEventListener("mouseleave", () => {
-  magnifier.style.display = "none";
+document.getElementById("next-project").addEventListener("click", () => {
+  projectIndex = (projectIndex + 1) % projectsData.length;
+  showProject(projectIndex);
 });
