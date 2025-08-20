@@ -24,11 +24,33 @@ function colorSVG(obj) {
     .forEach((p) => p.setAttribute("fill", fillColor));
 }
 
+function setFaviconFromFile(color) {
+  fetch("/icons/favicon.svg")
+    .then((res) => res.text())
+    .then((svgText) => {
+      // Replace all fill attributes with your color
+      const newSvg = svgText.replace(/<path /g, `<path fill="${color}" `);
+
+      // Encode SVG for data URL
+      const url =
+        "data:image/svg+xml;charset=utf-8," + encodeURIComponent(newSvg);
+
+      let link = document.querySelector("link[rel~='icon']");
+      if (!link) {
+        link = document.createElement("link");
+        link.rel = "icon";
+        document.head.appendChild(link);
+      }
+      link.href = url;
+    });
+}
+
 // Applies theme colors to page elements
 function applyTheme() {
   const [lightColor, darkColor] = themePairs[currentTheme];
   document.body.style.color = lightColor;
   document.body.style.backgroundColor = lightColor;
+  setFaviconFromFile(darkColor);
 
   document.querySelectorAll(".darker").forEach((el) => {
     el.style.color = lightColor;
@@ -1538,9 +1560,7 @@ fetch("gallery/gallery-list.json")
       container.appendChild(p);
     });
 
-    // translate all new elements
-    applyTranslations(currentLang, container);
-
+    // translate all new element
     projectsData = projects;
     showProject(projectIndex);
   })
@@ -1623,34 +1643,52 @@ document.getElementById("next-project").addEventListener("click", () => {
 
 let translations = {};
 let currentLang = "en";
+const originalContent = new Map();
 
-// Load translation file
 fetch("vn.json")
   .then((res) => res.json())
   .then((data) => {
     translations = data;
+    backupOriginalText();
     const savedLang = localStorage.getItem("lang") || "en";
     setLanguage(savedLang);
   });
 
-// normalize text
 function normalize(str) {
   return String(str).replace(/\s+/g, " ").trim();
 }
 
-// translate text node
+function backupOriginalText(root = document.body) {
+  const walker = document.createTreeWalker(
+    root,
+    NodeFilter.SHOW_TEXT,
+    null,
+    false
+  );
+  let node;
+  while ((node = walker.nextNode())) {
+    originalContent.set(node, node.nodeValue);
+  }
+  root
+    .querySelectorAll("[placeholder],[title],[alt],[value],[aria-label]")
+    .forEach((el) => {
+      ["placeholder", "title", "alt", "value", "aria-label"].forEach((attr) => {
+        if (el.hasAttribute(attr)) {
+          originalContent.set(el, { attr, value: el.getAttribute(attr) });
+        }
+      });
+    });
+}
+
 function translateTextNode(node, lang) {
   const dict = translations[lang];
   const raw = node.nodeValue;
   const text = normalize(raw);
   if (!text) return;
-
   if (dict[text]) {
     node.nodeValue = dict[text];
     return;
   }
-
-  // pattern: "N. Title"
   const m = raw.match(/^(\s*\d+\.\s*)([\s\S]+)$/);
   if (m) {
     const prefix = m[1];
@@ -1661,7 +1699,6 @@ function translateTextNode(node, lang) {
   }
 }
 
-// translate attributes
 function translateAttributes(el, lang) {
   const dict = translations[lang];
   ["placeholder", "title", "alt", "value", "aria-label"].forEach((attr) => {
@@ -1672,7 +1709,6 @@ function translateAttributes(el, lang) {
   });
 }
 
-// apply translation to entire DOM or subtree
 function applyTranslations(lang, root = document.body) {
   if (!translations[lang]) return;
   const walker = document.createTreeWalker(
@@ -1692,14 +1728,26 @@ function applyTranslations(lang, root = document.body) {
     });
 }
 
-// switch language
+function restoreOriginal(root = document.body) {
+  for (const [node, value] of originalContent.entries()) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      node.nodeValue = value;
+    } else if (typeof value === "object") {
+      node.setAttribute(value.attr, value.value);
+    }
+  }
+}
+
 function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem("lang", lang);
-  applyTranslations(lang);
+  if (lang === "en") {
+    restoreOriginal();
+  } else {
+    applyTranslations(lang);
+  }
 }
 
-// toggle button (optional)
 function toggleLanguage() {
   setLanguage(currentLang === "en" ? "vn" : "en");
 }

@@ -1165,13 +1165,32 @@ li {
   border-top-right-radius: var(--border-radius-medium);
 }
 
-#contact{
+#contact {
   aspect-ratio: auto;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.contact-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
+  padding: 1em;
+}
+
+.contact-container ul {
+  width: 75%;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  font-size: 1.75em;
+}
+
+.contact-container h1 {
+  font-size: 1.5em;
 }
 
 .round-corner {

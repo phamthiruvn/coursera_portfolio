@@ -9,7 +9,8 @@
   <meta http-equiv="Expires" content="-1" />
   <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
   <link rel="stylesheet" href="css/master.css" />
-  <title>Nhật Thi</title>
+
+  <title>NHẬT THI</title>
 </head>
 
 <body>
@@ -45,6 +46,12 @@
       <p>Winter</p>
       <button id="blue" class="box darker" onclick="setTheme('blue')">
         <span class="desaturate">❄️</span>
+      </button>
+    </div>
+    <div class="side-button darker">
+      <p>Tiếng Việt</p>
+      <button class="box lighter" onclick="toggleLanguage()">
+        <span class="desaturate">💬</span>
       </button>
     </div>
   </div>
@@ -120,11 +127,12 @@
         </div>
 
         <div class="job">
-          <h3>Freelance Designer – Graphic design, 3D & Web Design (2023–Present)</h3>
+          <h3>
+            Freelance Designer – Graphic design, 3D & Web Design
+            (2023–Present)
+          </h3>
           <ul>
-            <li>
-              Designed graphics, 3D models, and responsive web layouts
-            </li>
+            <li>Designed graphics, 3D models, and responsive web layouts</li>
             <li>
               Utilized Blender, After Effects, and Webflow to deliver cohesive
               cross-media solutions
@@ -291,7 +299,7 @@
         </ul>
         <div class="project-tags"></div>
         <a href="" class="project-link" target="_blank">View Project<span
-            style="position: relative; top: 0.1em; left:0.25em">➥</span></a>
+            style="position: relative; top: 0.1em; left: 0.25em">➥</span></a>
         <div class="project-next">
           <span id="prev-design">◀</span>
           <p>Inside this project</p>
@@ -314,13 +322,17 @@
         style="position: absolute; top: 0%; left: 0%; z-index: -10" data="images/Asset 1.svg"></object>
     </div>
     <div class="container" id="contact">
-      <div id="contact-info" class="darker border-box">
-        <h1 class="contact-title">CONTACT ME</h1>
-   
-  
-      </div>
+      <section class="contact-container box darker">
+        <h1>CONTACT ME </h1>
+        <ul>
+          <li> <a href="mailto:phamthiruvn@gmail.com">phamthiruvn@gmail.com</a>
+          </li>
+          <li>0988 442 773</li>
+          <li> <a href="https://www.behance.net/nhtthiphm" target="_blank" rel="noopener">behance.net/nhtthiphm</a>
+          </li>
+        </ul>
+      </section>
     </div>
-
   </main>
   <script src="js/main.js"></script>
 </body>
