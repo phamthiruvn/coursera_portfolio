@@ -33,7 +33,6 @@ select,
 button {
   font: inherit;
   color: inherit;
-  cursor: default;
 }
 
 .custom-cursor {
@@ -822,6 +821,7 @@ a {
 }
 
 .box .search-icon {
+  font-size: 2em;
   margin: 0.5%;
   cursor: pointer;
 }
@@ -848,12 +848,13 @@ a {
   flex-direction: column;
   justify-content: top;
   align-items: flex-start;
-  padding: 1.5em;
-  gap: 0.1em;
+  padding: 1.25em;
+  gap: 0.2em;
 }
 
 #gallery-info h1 {
   font-weight: 900;
+  font-size: 1em;
   letter-spacing: -0.05em; /* tighten characters if font-stretch not supported */
   text-align: justify;
   justify-self: center;
@@ -886,6 +887,7 @@ li {
   font-size: 0.75em;
   font-weight: 500;
   text-indent: 1em; /* push first line inward */
+  letter-spacing: -0.05em;
 }
 
 #gallery-carousel {
@@ -914,7 +916,8 @@ li {
 
 #gallery-list-text {
   width: 100%;
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
   white-space: nowrap;
   animation: scroll-left 30s linear infinite;
 }
@@ -951,13 +954,24 @@ li {
   transition: transform 0.3s ease;
 }
 
+#prev-project,
+#next-project {
+  letter-spacing: -0.25em;
+}
+#prev-project {
+  padding-right: 0.3em;
+}
+
 #gallery-control li:hover {
   transform: scale(1.2);
 }
+
 #gallery-control p {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 0.75em;
+
   height: 100%;
   padding: 0.25em 0.5em;
   border-radius: var(--border-radius-large);
@@ -1149,6 +1163,15 @@ li {
   border-top-left-radius: var(--border-radius-medium);
   border-bottom-left-radius: var(--border-radius-medium);
   border-top-right-radius: var(--border-radius-medium);
+}
+
+#contact{
+  aspect-ratio: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .round-corner {

@@ -2,9 +2,9 @@
 
 // Theme color pairs for light/dark variants
 const themePairs = {
-  pink: ["#ffddf5ff", "#ea77a3ff"],
+  pink: ["#ffddf5ff", "#d86cbaff"],
   orange: ["#f3e6c6ff", "#e3980cff"],
-  green: ["#fffab5ff", "#5b7608ff"],
+  green: ["#ead9f0ff", "#7e57b4ff"],
   blue: ["#d5f3fcff", "#0083d4ff"],
 };
 
@@ -1420,7 +1420,7 @@ function initGalleryAndMagnifier() {
 
     magnifier.innerHTML = ""; // reset old zoom image
     const zoomImg = img.cloneNode();
-    zoomImg.classList.add("zoom-3x");
+    zoomImg.classList.add("zoom-2x");
     magnifier.appendChild(zoomImg);
 
     let lastMouse = { x: 0, y: 0 };
@@ -1515,12 +1515,11 @@ function showProject(index) {
   originImg.src = project.coverImage;
   originImg.alt = project.title;
 
-
   if (originImg.complete) {
     initGalleryAndMagnifier();
     changeImg(true); // fade in new image
   } else {
-      changeImg(false); // fade out current image
+    changeImg(false); // fade out current image
     originImg.addEventListener("load", initGalleryAndMagnifier, { once: true });
     changeImg(true); // fade in new image
   }
@@ -1531,10 +1530,16 @@ fetch("gallery/gallery-list.json")
   .then((res) => res.json())
   .then((projects) => {
     const container = document.getElementById("gallery-list-text");
+    container.innerHTML = ""; // clear old content
 
     projects.forEach((project) => {
-      container.textContent = project.id + ". " + project.title;
+      const p = document.createElement("p");
+      p.textContent = project.id + ". " + project.title;
+      container.appendChild(p);
     });
+
+    // translate all new elements
+    applyTranslations(currentLang, container);
 
     projectsData = projects;
     showProject(projectIndex);
@@ -1607,9 +1612,94 @@ function changeImg(fadeIn) {
 document.getElementById("prev-project").addEventListener("click", () => {
   projectIndex = (projectIndex - 1 + projectsData.length) % projectsData.length;
   showProject(projectIndex);
+  applyTranslations(currentLang, document.getElementById("gallery-info"));
 });
 
 document.getElementById("next-project").addEventListener("click", () => {
   projectIndex = (projectIndex + 1) % projectsData.length;
   showProject(projectIndex);
+  applyTranslations(currentLang, document.getElementById("gallery-info"));
 });
+
+let translations = {};
+let currentLang = "en";
+
+// Load translation file
+fetch("vn.json")
+  .then((res) => res.json())
+  .then((data) => {
+    translations = data;
+    const savedLang = localStorage.getItem("lang") || "en";
+    setLanguage(savedLang);
+  });
+
+// normalize text
+function normalize(str) {
+  return String(str).replace(/\s+/g, " ").trim();
+}
+
+// translate text node
+function translateTextNode(node, lang) {
+  const dict = translations[lang];
+  const raw = node.nodeValue;
+  const text = normalize(raw);
+  if (!text) return;
+
+  if (dict[text]) {
+    node.nodeValue = dict[text];
+    return;
+  }
+
+  // pattern: "N. Title"
+  const m = raw.match(/^(\s*\d+\.\s*)([\s\S]+)$/);
+  if (m) {
+    const prefix = m[1];
+    const rest = normalize(m[2]);
+    if (dict[rest]) {
+      node.nodeValue = prefix + dict[rest];
+    }
+  }
+}
+
+// translate attributes
+function translateAttributes(el, lang) {
+  const dict = translations[lang];
+  ["placeholder", "title", "alt", "value", "aria-label"].forEach((attr) => {
+    if (!el.hasAttribute(attr)) return;
+    const orig = normalize(el.getAttribute(attr));
+    if (!orig) return;
+    if (dict[orig]) el.setAttribute(attr, dict[orig]);
+  });
+}
+
+// apply translation to entire DOM or subtree
+function applyTranslations(lang, root = document.body) {
+  if (!translations[lang]) return;
+  const walker = document.createTreeWalker(
+    root,
+    NodeFilter.SHOW_TEXT,
+    null,
+    false
+  );
+  let node;
+  while ((node = walker.nextNode())) {
+    translateTextNode(node, lang);
+  }
+  root
+    .querySelectorAll("[placeholder],[title],[alt],[value],[aria-label]")
+    .forEach((el) => {
+      translateAttributes(el, lang);
+    });
+}
+
+// switch language
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem("lang", lang);
+  applyTranslations(lang);
+}
+
+// toggle button (optional)
+function toggleLanguage() {
+  setLanguage(currentLang === "en" ? "vn" : "en");
+}
