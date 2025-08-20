@@ -4,7 +4,7 @@
 const themePairs = {
   pink: ["#ffddf5ff", "#d86cbaff"],
   orange: ["#f3e6c6ff", "#e3980cff"],
-  green: ["#ead9f0ff", "#7e57b4ff"],
+  green: ["#e5d9f0ff", "#7e57b4ff"],
   blue: ["#d5f3fcff", "#0083d4ff"],
 };
 

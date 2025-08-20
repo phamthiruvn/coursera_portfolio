@@ -15,6 +15,8 @@
   --border-radius-round: 50%;
   --gap-large: clamp(1rem, 0.5rem + 2.5vw, 2.75rem);
   --gap-medium: clamp(0.75rem, 0.25rem + 2.75vw, 2.75rem);
+  --gap-little: clamp(0.5rem, 0.25rem + 1.5vw, 1.5rem);
+
   --line-width: 2;
   --line-cap: round;
 }
@@ -54,7 +56,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2.5% 5%;
+  padding: 2% 5%;
   gap: var(--gap-medium);
   min-width: 500px;
 }
@@ -65,7 +67,7 @@ main {
   justify-content: center;
   align-items: center;
   width: 100%;
-  gap: var(--gap-large);
+  gap: var(--gap-little);
 }
 
 button {
@@ -1177,7 +1179,7 @@ li {
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 1em;
+  padding: 0.5em;
 }
 
 .contact-container ul {
