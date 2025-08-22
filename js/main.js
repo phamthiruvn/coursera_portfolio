@@ -1,1753 +1,1227 @@
 /** @format */
 
-// Theme color pairs for light/dark variants
 const themePairs = {
   pink: ["#ffddf5ff", "#d86cbaff"],
   orange: ["#f3e6c6ff", "#e3980cff"],
   green: ["#e5d9f0ff", "#7e57b4ff"],
   blue: ["#d5f3fcff", "#0083d4ff"],
 };
-
 let currentTheme =
   Object.keys(themePairs)[
     Math.floor(Math.random() * Object.keys(themePairs).length)
   ];
 
-// Colors SVG <object> elements based on theme and class
-function colorSVG(obj) {
-  const [lightColor, darkColor] = themePairs[currentTheme];
-  const svgDoc = obj.contentDocument;
-  if (!svgDoc) return;
-  const fillColor = obj.classList.contains("darker") ? darkColor : lightColor;
-  svgDoc
-    .querySelectorAll("path")
-    .forEach((p) => p.setAttribute("fill", fillColor));
+function colorSVG(e) {
+  const [t, n] = themePairs[currentTheme],
+    a = e.contentDocument;
+  if (!a) return;
+  const o = e.classList.contains("darker") ? n : t;
+  a.querySelectorAll("path").forEach((e) => e.setAttribute("fill", o));
 }
 
-function setFaviconFromFile(color) {
+function setFaviconFromFile(e) {
   fetch("/icons/favicon.svg")
-    .then((res) => res.text())
-    .then((svgText) => {
-      // Replace all fill attributes with your color
-      const newSvg = svgText.replace(/<path /g, `<path fill="${color}" `);
-
-      // Encode SVG for data URL
-      const url =
-        "data:image/svg+xml;charset=utf-8," + encodeURIComponent(newSvg);
-
-      let link = document.querySelector("link[rel~='icon']");
-      if (!link) {
-        link = document.createElement("link");
-        link.rel = "icon";
-        document.head.appendChild(link);
-      }
-      link.href = url;
+    .then((e) => e.text())
+    .then((t) => {
+      const n = t.replace(/<path /g, `<path fill="${e}" `),
+        a = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(n);
+      let o = document.querySelector("link[rel~='icon']");
+      o ||
+        ((o = document.createElement("link")),
+        (o.rel = "icon"),
+        document.head.appendChild(o)),
+        (o.href = a);
     });
 }
 
-// Applies theme colors to page elements
 function applyTheme() {
-  const [lightColor, darkColor] = themePairs[currentTheme];
-  document.body.style.color = lightColor;
-  document.body.style.backgroundColor = lightColor;
-  setFaviconFromFile(darkColor);
-
-  document.querySelectorAll(".darker").forEach((el) => {
-    el.style.color = lightColor;
-    if (el.tagName.toLowerCase() !== "object") {
-      el.style.backgroundColor = darkColor;
-      el.style.borderColor = lightColor;
-    }
-  });
-
-  document.querySelectorAll(".lighter").forEach((el) => {
-    el.style.color = darkColor;
-    if (el.tagName.toLowerCase() !== "object") {
-      el.style.backgroundColor = lightColor;
-      el.style.borderColor = darkColor;
-    }
-  });
-
-  document.querySelectorAll('object[id^="mySVG"]').forEach(colorSVG);
+  const [e, t] = themePairs[currentTheme];
+  (document.body.style.color = e),
+    (document.body.style.backgroundColor = e),
+    setFaviconFromFile(t),
+    document.querySelectorAll(".darker").forEach((n) => {
+      (n.style.color = e),
+        "object" !== n.tagName.toLowerCase() &&
+          ((n.style.backgroundColor = t), (n.style.borderColor = e));
+    }),
+    document.querySelectorAll(".lighter").forEach((n) => {
+      (n.style.color = t),
+        "object" !== n.tagName.toLowerCase() &&
+          ((n.style.backgroundColor = e), (n.style.borderColor = t));
+    }),
+    document.querySelectorAll('object[id^="mySVG"]').forEach(colorSVG);
 }
 
-// Sets the current theme and applies it
-function setTheme(themeName) {
-  if (themePairs[themeName]) {
-    currentTheme = themeName;
-    applyTheme();
-  }
+function setTheme(e) {
+  themePairs[e] && ((currentTheme = e), applyTheme());
 }
 
-// On DOM ready, color SVGs and apply theme
+function createIconsDiv(e) {
+  const t = document.getElementById("skill").getBoundingClientRect().width,
+    n = e.split(",").map((e) => e.trim()),
+    a = document.createElement("div");
+  a.classList.add("software-icons");
+  const o = document.createElement("p");
+  return (
+    (o.textContent = "Tools"),
+    a.appendChild(o),
+    n.forEach((e) => {
+      const n = e.toLowerCase().replace(/\s+/g, "") + ".svg",
+        o = document.createElement("img");
+      (o.src = `icons/${n}`),
+        (o.alt = e),
+        (o.width = o.height = t / 20),
+        o.classList.add("software-icon"),
+        a.appendChild(o);
+    }),
+    a
+  );
+}
+function createSoftwareP(e) {
+  const t = document.createElement("p");
+  return t.classList.add("sorfware"), (t.textContent = e), t;
+}
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll('object[id^="mySVG"]').forEach((obj) => {
-    obj.addEventListener("load", () => colorSVG(obj));
+  document.querySelectorAll('object[id^="mySVG"]').forEach((e) => {
+    e.addEventListener("load", () => colorSVG(e));
+  }),
+    applyTheme();
+}),
+  document.querySelectorAll("#skill > div").forEach((e) => {
+    const t = e.querySelector("p.sorfware");
+    t && (e.dataset.softwareText = t.textContent),
+      e.addEventListener("click", (t) => {
+        t.stopPropagation(),
+          e.classList.contains("selected") ||
+            document.querySelectorAll("#skill > div").forEach((t) => {
+              if (t === e) {
+                t.classList.add("selected");
+                const e = t.querySelector("p.sorfware");
+                e && e.replaceWith(createIconsDiv(t.dataset.softwareText));
+              } else {
+                t.classList.remove("selected");
+                const e = t.querySelector(".software-icons");
+                e && e.replaceWith(createSoftwareP(t.dataset.softwareText));
+              }
+            });
+      });
   });
-  applyTheme();
-});
-
-// Creates a div of software icons from a comma-separated string
-function createIconsDiv(text) {
-  const width = document.getElementById("skill").getBoundingClientRect().width;
-  const softwares = text.split(",").map((s) => s.trim());
-  const div = document.createElement("div");
-  div.classList.add("software-icons");
-  const toolsLabel = document.createElement("p");
-  toolsLabel.textContent = "Tools";
-  div.appendChild(toolsLabel);
-
-  softwares.forEach((name) => {
-    const fileName = name.toLowerCase().replace(/\s+/g, "") + ".svg";
-    const img = document.createElement("img");
-    img.src = `icons/${fileName}`;
-    img.alt = name;
-    img.width = img.height = width / 20;
-    img.classList.add("software-icon");
-    div.appendChild(img);
-  });
-
-  return div;
-}
-
-// Creates a <p> element for software text
-function createSoftwareP(text) {
-  const p = document.createElement("p");
-  p.classList.add("sorfware");
-  p.textContent = text;
-  return p;
-}
-
-// Handles click events for skill divs to toggle icons/text
-document.querySelectorAll("#skill > div").forEach((skillDiv) => {
-  const p = skillDiv.querySelector("p.sorfware");
-  if (p) skillDiv.dataset.softwareText = p.textContent;
-
-  skillDiv.addEventListener("click", (event) => {
-    event.stopPropagation();
-    if (skillDiv.classList.contains("selected")) return;
-
-    document.querySelectorAll("#skill > div").forEach((d) => {
-      if (d === skillDiv) {
-        d.classList.add("selected");
-        const p = d.querySelector("p.sorfware");
-        if (p) p.replaceWith(createIconsDiv(d.dataset.softwareText));
-      } else {
-        d.classList.remove("selected");
-        const iconsDiv = d.querySelector(".software-icons");
-        if (iconsDiv)
-          iconsDiv.replaceWith(createSoftwareP(d.dataset.softwareText));
-      }
-    });
-  });
-});
-
-// Select all clickable info sections once
 const infoSections = document.querySelectorAll(
   "#my-info .job, #my-info .school, #my-info .certifications, #my-info .awards, .about-bio"
 );
-
-// Add click toggle for each section
-infoSections.forEach((parent) => {
-  parent.addEventListener("click", (e) => {
-    e.stopPropagation(); // Prevent document click from immediately deselecting
-
-    // Deselect all other sections
-    infoSections.forEach((other) => {
-      if (other !== parent) {
-        other.classList.remove("info-selected");
-      }
-    });
-
-    // Toggle the clicked section
-    parent.classList.toggle("info-selected");
+infoSections.forEach((e) => {
+  e.addEventListener("click", (t) => {
+    t.stopPropagation(),
+      infoSections.forEach((t) => {
+        t !== e && t.classList.remove("info-selected");
+      }),
+      e.classList.toggle("info-selected");
   });
-});
-
-// Existing document click handler
-document.addEventListener("click", (e) => {
-  // Keep existing skill logic
-
-  if (e.target.closest(".side-bar, #year-buttons", "#visualize")) {
-    startAnimation(100);
-    return;
-  }
-
-  // Deselect skill divs
-  document.querySelectorAll("#skill > div.selected").forEach((div) => {
-    div.classList.remove("selected");
-    const iconsDiv = div.querySelector(".software-icons");
-    if (iconsDiv)
-      iconsDiv.replaceWith(createSoftwareP(div.dataset.softwareText));
+}),
+  document.addEventListener("click", (e) => {
+    e.target.closest(".side-bar, #year-buttons", "#visualize") ||
+      (document.querySelectorAll("#skill > div.selected").forEach((e) => {
+        e.classList.remove("selected");
+        const t = e.querySelector(".software-icons");
+        t && t.replaceWith(createSoftwareP(e.dataset.softwareText));
+      }),
+      infoSections.forEach((t) => {
+        t.classList.contains("info-selected") &&
+          !t.contains(e.target) &&
+          t.classList.remove("info-selected");
+      })),
+      startAnimation(100);
+  }),
+  window.addEventListener("resize", () => {
+    const e = document.getElementById("skill").getBoundingClientRect().width;
+    document.querySelectorAll(".software-icons img").forEach((t) => {
+      t.width = t.height = e / 20;
+    }),
+      document.querySelectorAll(".software-item img").forEach((t) => {
+        t.width = t.height = e / 10;
+      });
   });
-
-  // Deselect all info sections if click outside
-  infoSections.forEach((parent) => {
-    if (
-      parent.classList.contains("info-selected") &&
-      !parent.contains(e.target)
-    ) {
-      parent.classList.remove("info-selected");
-    }
-  });
-
-  startAnimation(100);
-});
-
-// Resizes icons on window resize
-window.addEventListener("resize", () => {
-  const skillWidth = document
-    .getElementById("skill")
-    .getBoundingClientRect().width;
-  document.querySelectorAll(".software-icons img").forEach((img) => {
-    img.width = img.height = skillWidth / 20;
-  });
-  document.querySelectorAll(".software-item img").forEach((img) => {
-    img.width = img.height = skillWidth / 10;
-  });
-});
-
-// ===== DATA =====
 const softwareSkillsNow = [
-  { name: "Photoshop", value: 80 },
-  { name: "Illustrator", value: 80 },
-  { name: "InDesign", value: 50 },
-  { name: "AfterEffects", value: 55 },
-  { name: "PowerPoint", value: 80 },
-  { name: "JavaScript", value: 60 },
-  { name: "HTML", value: 70 },
-  { name: "CSS", value: 70 },
-  { name: "Blender", value: 25 },
-  { name: "Cinema4D", value: 30 },
-  { name: "UK", value: 60 },
-  { name: "RU", value: 70 },
-];
-
-const diffsByYear = {
-  2023: [
     { name: "Photoshop", value: 80 },
     { name: "Illustrator", value: 80 },
-    { name: "InDesign", value: 30 },
-    { name: "AfterEffects", value: 45 },
+    { name: "InDesign", value: 50 },
+    { name: "AfterEffects", value: 55 },
     { name: "PowerPoint", value: 80 },
     { name: "JavaScript", value: 60 },
     { name: "HTML", value: 70 },
     { name: "CSS", value: 70 },
     { name: "Blender", value: 25 },
-    { name: "Cinema4D", value: 25 },
+    { name: "Cinema4D", value: 30 },
     { name: "UK", value: 60 },
     { name: "RU", value: 70 },
   ],
-  2021: [
-    { name: "Photoshop", value: 70 },
-    { name: "Illustrator", value: 70 },
-    { name: "InDesign", value: 0 },
-    { name: "AfterEffects", value: 30 },
-    { name: "PowerPoint", value: 70 },
-    { name: "JavaScript", value: 50 },
-    { name: "HTML", value: 50 },
-    { name: "CSS", value: 50 },
-    { name: "Blender", value: 0 },
-    { name: "Cinema4D", value: 15 },
-    { name: "UK", value: 50 },
-    { name: "RU", value: 70 },
-  ],
-  2018: [
-    { name: "Photoshop", value: 50 },
-    { name: "Illustrator", value: 50 },
-    { name: "InDesign", value: 0 },
-    { name: "AfterEffects", value: 20 },
-    { name: "PowerPoint", value: 60 },
-    { name: "JavaScript", value: 30 },
-    { name: "HTML", value: 30 },
-    { name: "CSS", value: 30 },
-    { name: "Blender", value: 0 },
-    { name: "Cinema4D", value: 0 },
-    { name: "UK", value: 30 },
-    { name: "RU", value: 50 },
-  ],
-};
-
-function sortSkills(skills) {
-  // Find skills with names of length 2
-  const fixedIndexes = skills
-    .map((skill, i) => ({ skill, i }))
-    .filter(({ skill }) => skill.name.length === 2);
-
-  // Extract sortable skills
-  const sortable = skills.filter((skill) => skill.name.length !== 2);
-
-  // Sort descending by value
-  sortable.sort((a, b) => b.value - a.value);
-
-  // Reinsert fixed skills at their original positions
-  fixedIndexes.forEach(({ skill, i }) => {
-    sortable.splice(i, 0, skill);
-  });
-
-  return sortable;
-}
-
-const years = [2018, 2021, 2023, 2025];
-let currentYear = 2025;
-let currentYearIndex = years.indexOf(currentYear);
-let visualizedState = false;
-
-function getSkillsForYear(targetYear) {
-  // If the year has diffs defined, use them
-  if (diffsByYear[targetYear]) {
-    return sortSkills(diffsByYear[targetYear]);
-  }
-
-  // Otherwise, return current skills
-  return sortSkills(softwareSkillsNow);
-}
-
-// Get mapping of skill -> software for loading bars
-function getSkillSoftwares() {
-  const skills = document.querySelectorAll('div[id^="skill-"]');
-  const skillSoftwares = {};
-  skills.forEach((skillDiv) => {
-    const p = skillDiv.querySelector("p.sorfware");
-    if (p) {
-      skillSoftwares[skillDiv.id] = p.textContent
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-    }
-  });
-  return skillSoftwares;
-}
-
-const skillSoftwares = getSkillSoftwares();
-
-function getSoftwareValue(name) {
-  const skill = getSkillsForYear(currentYear).find((s) => s.name === name);
-  return skill ? skill.value : 0;
-}
-
-function createYearCarousel() {
-  const container = document.getElementById("year-buttons");
-  container.innerHTML = "";
-
-  const prevBtn = document.createElement("button");
-  prevBtn.textContent = "◀";
-
-  const yearLabel = document.createElement("span");
-  yearLabel.id = "year-label";
-  yearLabel.textContent = currentYear;
-
-  const nextBtn = document.createElement("button");
-  nextBtn.textContent = "▶";
-
-  function updateArrows() {
-    if (currentYearIndex === 0) {
-      prevBtn.style.opacity = "0";
-      prevBtn.style.pointerEvents = "none"; // disable clicks
-    } else {
-      prevBtn.style.opacity = "1";
-      prevBtn.style.pointerEvents = "auto"; // enable clicks
-    }
-
-    if (currentYearIndex === years.length - 1) {
-      nextBtn.style.opacity = "0";
-      nextBtn.style.pointerEvents = "none"; // disable clicks
-    } else {
-      nextBtn.style.opacity = "1";
-      nextBtn.style.pointerEvents = "auto"; // enable clicks
-    }
-  }
-
-  prevBtn.addEventListener("click", () => {
-    if (currentYearIndex > 0) {
-      currentYearIndex--;
-      currentYear = years[currentYearIndex];
-      updateYearDisplay();
-
-      updateArrows();
-    }
-  });
-
-  nextBtn.addEventListener("click", () => {
-    if (currentYearIndex < years.length - 1) {
-      currentYearIndex++;
-      currentYear = years[currentYearIndex];
-      updateYearDisplay();
-      updateArrows();
-    }
-  });
-
-  container.append(prevBtn, yearLabel, nextBtn);
-  updateArrows(); // initial arrow state
-}
-
-createYearCarousel();
-
-function updateYearDisplay() {
-  document.getElementById("year-label").textContent = currentYear;
-  renderSoftwareSkills(currentYear);
-}
-
-// ===== SOFTWARE RENDERING =====
-function renderSoftwareSkills(year) {
-  const container = document.getElementById("sorfware-0");
-  container.innerHTML = "";
-  const skills = document.querySelectorAll('[id^="skill-"]');
-
-  getSkillsForYear(year).forEach(({ name, value }) => {
-    const id = name.toLowerCase().replace(/\s+/g, "");
-    const div = document.createElement("div");
-    div.classList.add("software-item");
-    div.style.position = "relative";
-    if (value == 0) return;
-
-    // Image
-    const img = document.createElement("img");
-    img.src = `icons/${id}.svg`;
-    img.alt = name;
-
-    // Circle
-    const circleDiv = document.createElement("div");
-    circleDiv.classList.add("circle-shape");
-    circleDiv.style.clipPath = angleToClipPath(value * 3.6);
-
-    // Value text
-    const valueP = document.createElement("p");
-    valueP.classList.add("value-style");
-    valueP.textContent = value + "/100";
-
-    div.append(img, circleDiv, valueP);
-    div.id = `software-${id}`;
-
-    // Apply visualized state
-    if (visualizedState) {
-      div.classList.add("visualized", "lighter");
-      div.style.width = value + "%";
-      if (value == 0) {
-        div.style.display = "none";
-      }
-    } else {
-      div.classList.add("darker");
-      div.style.width = "90%";
-    }
-
-    container.appendChild(div);
-  });
-
-  let selectedDiv = Array.from(skills).find(
-    (el) => el.tagName === "DIV" && el.classList.contains("selected")
-  );
-
-  if (selectedDiv) {
-    startAnimation(speed);
-  }
-
-  // Loading bars only if not visualized
-  if (!visualizedState) {
-    document.querySelectorAll('div[class^="loading-"]').forEach((div) => {
-      const skillId = div.parentElement.id;
-      const softwares = skillSoftwares[skillId] || [];
-      const avg = Math.max(
-        softwares.length
-          ? softwares.reduce((sum, soft) => sum + getSoftwareValue(soft), 0) /
-              softwares.length
-          : 0,
-        0
-      );
-      div.style.clipPath = `polygon(0 0, ${avg}% 0, ${avg}% 100%, 0 100%)`;
-    });
-  }
-
-  applyTheme();
-}
-
-// ===== VISUALIZATION TOGGLE =====
-function toggleVisualization(year) {
-  const skillLines = document.getElementById("skill-lines");
-  const skillDivs = document.querySelectorAll("#skill > div[id^='skill-']");
-  visualizedState = !visualizedState;
-  skillLines.classList.toggle("visualized");
-
-  skillDivs.forEach((div) => div.classList.toggle("visualized"));
-
-  renderSoftwareSkills(year);
-
-  skillDivs.forEach((div) => {
-    div.addEventListener("click", () => {
-      if (!div.classList.contains("visualized")) return;
-      startAnimation(speed);
-    });
-  });
-}
-
-// ===== INIT =====
-renderSoftwareSkills(currentYear);
-
-document.getElementById("visualize").addEventListener("click", () => {
-  toggleVisualization(currentYear);
-});
-
-// Converts an angle to a CSS polygon clipPath for circular progress
-function angleToClipPath(angle) {
-  angle = Math.max(0, Math.min(angle, 360));
-  const points = [
-    [100, 0],
-    [100, 50],
-    [100, 100],
-    [50, 100],
-    [0, 100],
-    [0, 50],
-    [0, 0],
-    [50, 0],
-    [100, 0],
-  ];
-  const sector = Math.floor(angle / 45);
-  const remainder = angle % 45;
-  const start = points[sector];
-  const end = points[sector + 1];
-  const interp = remainder / 45;
-  const interpX = start[0] + (end[0] - start[0]) * interp;
-  const interpY = start[1] + (end[1] - start[1]) * interp;
-  const polygonPoints = ["100% 0%"];
-  for (let i = 1; i <= sector; i++)
-    polygonPoints.push(points[i][0] + "% " + points[i][1] + "%");
-  polygonPoints.push(interpX + "% " + interpY + "%", "50% 50%");
-  return `polygon(${polygonPoints.join(", ")})`;
-}
-
-let speed = 0.05; // animation speed (0 < speed <= 1)
-
-// Gets center coordinates for skills and softwares, and their mapping
-function getCentersWithMapping() {
-  const container = document.getElementById("skill-sorfwares");
-  const containerRect = container.getBoundingClientRect();
-
-  const skills = Array.from(container.querySelectorAll('[id^="skill-"]'))
-    .map((el) => {
-      if (el.classList.contains("selected")) {
-        const rect = el.getBoundingClientRect();
-        return [
-          el.id.replace(/^skill-/, ""),
-          rect.right - containerRect.left - rect.width / 2,
-          rect.top - containerRect.top + rect.height / 2,
-        ];
-      }
-      return null;
-    })
-    .filter(Boolean);
-
-  const softwares = Array.from(container.querySelectorAll('[id^="software-"]'))
-    .filter((el) => window.getComputedStyle(el).display !== "none") // keep only visible
-    .map((el) => {
-      const rect = el.getBoundingClientRect();
-      return [
-        el.id.replace(/^software-/, ""), // software name
-        rect.left - containerRect.left, // x position
-        rect.top - containerRect.top + rect.height / 2, // y center
-      ];
-    });
-
-  return { skills, softwares };
-}
-
-let mapping = {};
-
-function afterMappingReady() {}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("skill-sorfwares");
-  const mapArray = Array.from(container.querySelectorAll('[id^="skill-"]')).map(
-    (skillEl) => {
-      const skillId = skillEl.id.replace(/^skill-/, "");
-      const linkedSoftwareIds = (
-        skillEl.getAttribute("data-software-text") || ""
-      )
-        .split(",")
-        .map((s) => s.trim().toLowerCase())
-        .filter(Boolean);
-      return [skillId.toLowerCase(), linkedSoftwareIds];
-    }
-  );
-
-  mapping = {};
-  mapArray.forEach(([key, value]) => {
-    mapping[key] = value;
-  });
-
-  afterMappingReady();
-});
-
-// Animates drawing lines/arrows between skills and softwares
-function animateLines(s) {
-  const { skills, softwares } = getCentersWithMapping();
-  const canvas = document.getElementById("skill-lines");
-  const ctx = canvas.getContext("2d");
-  const container = document.getElementById("skill-sorfwares");
-  const containerRect = container.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = containerRect.width * dpr;
-  canvas.height = containerRect.height * dpr;
-  canvas.style.width = containerRect.width + "px";
-  canvas.style.height = containerRect.height + "px";
-  const headLength = containerRect.width / 200;
-
-  ctx.scale(dpr, dpr);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const lines = [];
-  if (!skills[0]) return null;
-  const skillCenter = skills[0];
-  const softwareIds = softwares.filter((s) =>
-    new Set(mapping[skillCenter[0]] || []).has(s[0])
-  );
-
-  const color = darkenColor(themePairs[currentTheme][0], 5);
-
-  softwareIds.forEach((softwareId) => {
-    const softwareCenter = softwares.find((s) => s[0] === softwareId[0]);
-    lines.push({
-      from: { x: skillCenter[1], y: skillCenter[2] },
-      to: { x: softwareCenter[1], y: softwareCenter[2] },
-      color,
-    });
-  });
-
-  let currentLine = 0;
-  let progress = 0;
-  const speed = s;
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.lineWidth = containerRect.width / 500;
-    ctx.lineCap = "round";
-
-    for (let i = 0; i < currentLine; i++) {
-      const line = lines[i];
-      ctx.strokeStyle = line.color;
-      drawArrow(
-        ctx,
-        line.from.x,
-        line.from.y,
-        line.to.x,
-        line.to.y,
-        headLength
-      );
-    }
-
-    if (currentLine < lines.length) {
-      const line = lines[currentLine];
-      const x = line.from.x + (line.to.x - line.from.x) * progress;
-      const y = line.from.y + (line.to.y - line.from.y) * progress;
-      ctx.strokeStyle = line.color;
-      drawOrganicArrow(ctx, line.from.x, line.from.y, x, y, headLength);
-      progress += speed;
-      if (progress >= 1) {
-        progress = 0;
-        currentLine++;
-      }
-      requestAnimationFrame(draw);
-    }
-  }
-
-  draw();
-}
-
-function drawOrganicArrow(
-  ctx,
-  fromX,
-  fromY,
-  toX,
-  toY,
-  headLength,
-  segments = 10,
-  amp = 10
-) {
-  const dx = (toX - fromX) / segments;
-  const dy = (toY - fromY) / segments;
-  ctx.beginPath();
-  ctx.moveTo(fromX, fromY);
-
-  for (let i = 1; i < segments; i++) {
-    const t = i / segments;
-    const x = fromX + dx * i;
-    const y = fromY + dy * i;
-    const noiseAmp = amp * Math.sin(t * Math.PI);
-    const offsetX = (Math.random() - 0.25) * noiseAmp;
-    const offsetY = (Math.random() - 0.25) * noiseAmp;
-    ctx.lineTo(x + offsetX, y + offsetY);
-  }
-
-  ctx.lineTo(toX, toY);
-  ctx.stroke();
-  drawArrowhead(ctx, fromX, fromY, toX, toY, headLength);
-}
-
-function drawArrowhead(ctx, fromX, fromY, toX, toY, headLength) {
-  const angle = Math.atan2(toY - fromY, toX - fromX);
-  ctx.beginPath();
-  ctx.moveTo(toX, toY);
-  ctx.lineTo(
-    toX - headLength * Math.cos(angle - Math.PI / 6),
-    toY - headLength * Math.sin(angle - Math.PI / 6)
-  );
-  ctx.moveTo(toX, toY);
-  ctx.lineTo(
-    toX - headLength * Math.cos(angle + Math.PI / 6),
-    toY - headLength * Math.sin(angle + Math.PI / 6)
-  );
-  ctx.stroke();
-}
-
-function drawArrow(ctx, fromX, fromY, toX, toY, headLength) {
-  const dx = toX - fromX;
-  const dy = toY - fromY;
-  const angle = Math.atan2(dy, dx);
-
-  ctx.beginPath();
-  ctx.moveTo(fromX, fromY);
-  ctx.lineTo(toX, toY);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(toX, toY);
-  ctx.lineTo(
-    toX - headLength * Math.cos(angle - Math.PI / 6),
-    toY - headLength * Math.sin(angle - Math.PI / 6)
-  );
-  ctx.lineTo(
-    toX - headLength * Math.cos(angle + Math.PI / 6),
-    toY - headLength * Math.sin(angle + Math.PI / 6)
-  );
-  ctx.lineTo(toX, toY);
-  ctx.fillStyle = ctx.strokeStyle;
-  ctx.fill();
-}
-
-// Shuffles array in place (Fisher-Yates)
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-let animationFrameId;
-
-// Starts the line animation, cancels previous if running
-function startAnimation(speed) {
-  if (animationFrameId) cancelAnimationFrame(animationFrameId);
-  animateLines(speed);
-}
-
-// Redraws lines on window resize
-window.addEventListener("resize", () => {
-  startAnimation(100);
-});
-
-const likeInfo = document.getElementById("like-info");
-
-likeInfo.addEventListener("click", (e) => {
-  const btn = e.currentTarget;
-
-  btn.classList.remove("heartbeat");
-  void btn.offsetWidth;
-  btn.classList.add("heartbeat");
-  setTimeout(() => {
-    createHeartBurst(btn);
-  }, 100);
-  changeAvatar();
-});
-
-function createHeartBurst(element) {
-  const rect = element.getBoundingClientRect();
-  const count = Math.round(Math.random() * 10);
-
-  const centerX = rect.left + window.scrollX + rect.width / 2;
-  const centerY = rect.top + window.scrollY + rect.height / 2;
-
-  for (let i = 0; i < count; i++) {
-    const heart = document.createElement("span");
-    heart.className = "flying-heart";
-    heart.textContent = "❤︎";
-    const size = Math.max(12, rect.width * 0.25) * (0.8 + Math.random());
-    const dx = (Math.random() - 0.5) * size * 5;
-    const duration = 300 + Math.random() * 1200 + "ms";
-    heart.style.left = centerX - size / 2 + "px";
-    heart.style.top = centerY - size / 2 + "px";
-    heart.style.fontSize = size + "px";
-    heart.style.color = themePairs[currentTheme][1];
-    heart.style.filter = `saturate(${1 + Math.random() * 2})`;
-    heart.style.setProperty("--dx", dx + "px");
-    heart.style.setProperty("--duration", duration);
-    document.body.appendChild(heart);
-    requestAnimationFrame(() => heart.classList.add("animate"));
-    heart.addEventListener("animationend", () => heart.remove());
-  }
-  element.classList.remove("heartbeat");
-  void element.offsetWidth;
-  element.classList.add("heartbeat");
-}
-
-document.querySelectorAll(".nav-links a").forEach((link) => {
-  link.addEventListener("click", (e) => {
-    e.preventDefault();
-    const targetId = link.getAttribute("href").slice(1);
-    const targetEl = document.getElementById(targetId);
-    if (targetEl) {
-      const offset = window.innerHeight / 25;
-      const elementPosition =
-        targetEl.getBoundingClientRect().top + window.pageYOffset;
-      const scrollToPosition = elementPosition - offset;
-      window.scrollTo({
-        top: scrollToPosition,
-        behavior: "smooth",
-      });
-    }
-  });
-});
-
-const backHome = document.getElementById("back-home");
-
-window.addEventListener("scroll", () => {
-  if (window.scrollY > window.innerHeight / 20) {
-    backHome.classList.add("scrolled");
-  } else {
-    backHome.classList.remove("scrolled");
-  }
-});
-
-backHome.addEventListener("click", () => {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-});
-
-function darkenColor(color, percent) {
-  if (color.startsWith("#")) {
-    let r, g, b;
-    if (color.length === 4) {
-      r = parseInt(color[1] + color[1], 16);
-      g = parseInt(color[2] + color[2], 16);
-      b = parseInt(color[3] + color[3], 16);
-    } else {
-      r = parseInt(color[1] + color[2], 16);
-      g = parseInt(color[3] + color[4], 16);
-      b = parseInt(color[5] + color[6], 16);
-    }
-    return darkenRGB(r, g, b, percent);
-  }
-  const rgbMatch = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-  if (rgbMatch) {
-    return darkenRGB(+rgbMatch[1], +rgbMatch[2], +rgbMatch[3], percent);
-  }
-  throw new Error("Unsupported color format: " + color);
-}
-
-function darkenRGB(r, g, b, percent) {
-  const factor = 1 - percent / 100;
-  r = Math.round(r * factor);
-  g = Math.round(g * factor);
-  b = Math.round(b * factor);
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
-function alignAndClipAvatar() {
-  const svgObject = document.getElementById("mySVG1");
-  const avatar = document.getElementById("avatar");
-  if (!svgObject.contentDocument) return;
-  if (!avatar.naturalWidth || !avatar.naturalHeight) return;
-  const rect = svgObject.getBoundingClientRect();
-  const imgRatio = avatar.naturalWidth / avatar.naturalHeight;
-  const svgRatio = rect.width / rect.height;
-  let width, height;
-  if (imgRatio > svgRatio) {
-    height = rect.height;
-    width = height * imgRatio;
-  } else {
-    width = rect.width;
-    height = width / imgRatio;
-  }
-  avatar.style.width = width + "px";
-  avatar.style.height = height + "px";
-  const pathData = getClip(svgObject, avatar);
-  if (pathData) {
-    avatar.style.clipPath = `path("${pathData}")`;
-    avatar.style.webkitClipPath = `path("${pathData}")`;
-  }
-}
-
-function getClip(svgObject, avatar) {
-  const svgDoc = svgObject.contentDocument;
-  if (!svgDoc) return null;
-  const svgEl = svgDoc.querySelector("svg");
-  const pathEl = svgDoc.querySelector("path");
-  if (!svgEl || !pathEl) return null;
-  const d = pathEl.getAttribute("d");
-  const vb = svgEl.viewBox.baseVal;
-  const svgRect = svgObject.getBoundingClientRect();
-  const avatarRect = avatar.getBoundingClientRect();
-  const targetW = svgRect.width;
-  const targetH = svgRect.height;
-  const offsetX = svgRect.left - avatarRect.left;
-  const offsetY = svgRect.top - avatarRect.top;
-  return scalePathToPixels(
-    d,
-    vb.x,
-    vb.y,
-    vb.width,
-    vb.height,
-    targetW,
-    targetH,
-    offsetX,
-    offsetY
-  );
-}
-
-function scalePathToPixels(
-  d,
-  vbX,
-  vbY,
-  vbW,
-  vbH,
-  targetW,
-  targetH,
-  offsetX = 0,
-  offsetY = 0
-) {
-  const sx = targetW / vbW;
-  const sy = targetH / vbH;
-  const tokens = d.match(/[a-zA-Z]|-?\d*\.?\d+(?:e[-+]?\d+)?/g);
-  if (!tokens) return d;
-  let i = 0,
-    out = "",
-    cmd = "";
-  const isCmd = (t) => /^[a-zA-Z]$/.test(t);
-  const fmt = (n) => (Math.round(n * 100) / 100).toString();
-  const num = () => parseFloat(tokens[i++]);
-  const writePairs = (count, mapAbs, mapRel) => {
-    while (i < tokens.length && !isCmd(tokens[i])) {
-      const vals = [];
-      for (let k = 0; k < count; k++) vals.push(num());
-      const abs = cmd === cmd.toUpperCase();
-      const mapped = abs ? mapAbs(vals) : mapRel(vals);
-      out += mapped.join(" ") + " ";
-    }
+  diffsByYear = {
+    2023: [
+      { name: "Photoshop", value: 80 },
+      { name: "Illustrator", value: 80 },
+      { name: "InDesign", value: 30 },
+      { name: "AfterEffects", value: 45 },
+      { name: "PowerPoint", value: 80 },
+      { name: "JavaScript", value: 60 },
+      { name: "HTML", value: 70 },
+      { name: "CSS", value: 70 },
+      { name: "Blender", value: 25 },
+      { name: "Cinema4D", value: 25 },
+      { name: "UK", value: 60 },
+      { name: "RU", value: 70 },
+    ],
+    2021: [
+      { name: "Photoshop", value: 70 },
+      { name: "Illustrator", value: 70 },
+      { name: "InDesign", value: 0 },
+      { name: "AfterEffects", value: 30 },
+      { name: "PowerPoint", value: 70 },
+      { name: "JavaScript", value: 50 },
+      { name: "HTML", value: 50 },
+      { name: "CSS", value: 50 },
+      { name: "Blender", value: 0 },
+      { name: "Cinema4D", value: 15 },
+      { name: "UK", value: 50 },
+      { name: "RU", value: 70 },
+    ],
+    2018: [
+      { name: "Photoshop", value: 50 },
+      { name: "Illustrator", value: 50 },
+      { name: "InDesign", value: 0 },
+      { name: "AfterEffects", value: 20 },
+      { name: "PowerPoint", value: 60 },
+      { name: "JavaScript", value: 30 },
+      { name: "HTML", value: 30 },
+      { name: "CSS", value: 30 },
+      { name: "Blender", value: 0 },
+      { name: "Cinema4D", value: 0 },
+      { name: "UK", value: 30 },
+      { name: "RU", value: 50 },
+    ],
   };
-  while (i < tokens.length) {
-    if (isCmd(tokens[i])) {
-      cmd = tokens[i++];
-      out += cmd + " ";
+function sortSkills(e) {
+  const t = e
+      .map((e, t) => ({ skill: e, i: t }))
+      .filter(({ skill: e }) => 2 === e.name.length),
+    n = e.filter((e) => 2 !== e.name.length);
+  return (
+    n.sort((e, t) => t.value - e.value),
+    t.forEach(({ skill: e, i: t }) => {
+      n.splice(t, 0, e);
+    }),
+    n
+  );
+}
+const years = [2018, 2021, 2023, 2025];
+let currentYear = 2025,
+  currentYearIndex = years.indexOf(currentYear),
+  visualizedState = !1;
+function getSkillsForYear(e) {
+  return sortSkills(diffsByYear[e] ? diffsByYear[e] : softwareSkillsNow);
+}
+function getSkillSoftwares() {
+  const e = document.querySelectorAll('div[id^="skill-"]'),
+    t = {};
+  return (
+    e.forEach((e) => {
+      const n = e.querySelector("p.sorfware");
+      n &&
+        (t[e.id] = n.textContent
+          .split(",")
+          .map((e) => e.trim())
+          .filter(Boolean));
+    }),
+    t
+  );
+}
+const skillSoftwares = getSkillSoftwares();
+function getSoftwareValue(e) {
+  const t = getSkillsForYear(currentYear).find((t) => t.name === e);
+  return t ? t.value : 0;
+}
+function createYearCarousel() {
+  const e = document.getElementById("year-buttons");
+  e.innerHTML = "";
+  const t = document.createElement("button");
+  t.textContent = "◀";
+  const n = document.createElement("span");
+  (n.id = "year-label"), (n.textContent = currentYear);
+  const a = document.createElement("button");
+  function o() {
+    0 === currentYearIndex
+      ? ((t.style.opacity = "0"), (t.style.pointerEvents = "none"))
+      : ((t.style.opacity = "1"), (t.style.pointerEvents = "auto")),
+      currentYearIndex === years.length - 1
+        ? ((a.style.opacity = "0"), (a.style.pointerEvents = "none"))
+        : ((a.style.opacity = "1"), (a.style.pointerEvents = "auto"));
+  }
+  (a.textContent = "▶"),
+    t.addEventListener("click", () => {
+      currentYearIndex > 0 &&
+        (currentYearIndex--,
+        (currentYear = years[currentYearIndex]),
+        updateYearDisplay(),
+        o());
+    }),
+    a.addEventListener("click", () => {
+      currentYearIndex < years.length - 1 &&
+        (currentYearIndex++,
+        (currentYear = years[currentYearIndex]),
+        updateYearDisplay(),
+        o());
+    }),
+    e.append(t, n, a),
+    o();
+}
+function updateYearDisplay() {
+  (document.getElementById("year-label").textContent = currentYear),
+    renderSoftwareSkills(currentYear);
+}
+function renderSoftwareSkills(e) {
+  const t = document.getElementById("sorfware-0");
+  t.innerHTML = "";
+  const n = document.querySelectorAll('[id^="skill-"]');
+  getSkillsForYear(e).forEach(({ name: e, value: n }) => {
+    const a = e.toLowerCase().replace(/\s+/g, ""),
+      o = document.createElement("div");
+    if (
+      (o.classList.add("software-item"),
+      (o.style.position = "relative"),
+      0 == n)
+    )
+      return;
+    const r = document.createElement("img");
+    (r.src = `icons/${a}.svg`), (r.alt = e);
+    const l = document.createElement("div");
+    l.classList.add("circle-shape"),
+      (l.style.clipPath = angleToClipPath(3.6 * n));
+    const i = document.createElement("p");
+    i.classList.add("value-style"),
+      (i.textContent = n + "/100"),
+      o.append(r, l, i),
+      (o.id = `software-${a}`),
+      visualizedState
+        ? (o.classList.add("visualized", "lighter"),
+          (o.style.width = n + "%"),
+          0 == n && (o.style.display = "none"))
+        : (o.classList.add("darker"), (o.style.width = "90%")),
+      t.appendChild(o);
+  }),
+    Array.from(n).find(
+      (e) => "DIV" === e.tagName && e.classList.contains("selected")
+    ) && startAnimation(speed),
+    visualizedState ||
+      document.querySelectorAll('div[class^="loading-"]').forEach((e) => {
+        const t = e.parentElement.id,
+          n = skillSoftwares[t] || [],
+          a = Math.max(
+            n.length
+              ? n.reduce((e, t) => e + getSoftwareValue(t), 0) / n.length
+              : 0,
+            0
+          );
+        e.style.clipPath = `polygon(0 0, ${a}% 0, ${a}% 100%, 0 100%)`;
+      }),
+    applyTheme();
+}
+function toggleVisualization(e) {
+  const t = document.getElementById("skill-lines"),
+    n = document.querySelectorAll("#skill > div[id^='skill-']");
+  (visualizedState = !visualizedState),
+    t.classList.toggle("visualized"),
+    n.forEach((e) => e.classList.toggle("visualized")),
+    renderSoftwareSkills(e),
+    n.forEach((e) => {
+      e.addEventListener("click", () => {
+        e.classList.contains("visualized") && startAnimation(speed);
+      });
+    });
+}
+function angleToClipPath(e) {
+  e = Math.max(0, Math.min(e, 360));
+  const t = [
+      [100, 0],
+      [100, 50],
+      [100, 100],
+      [50, 100],
+      [0, 100],
+      [0, 50],
+      [0, 0],
+      [50, 0],
+      [100, 0],
+    ],
+    n = Math.floor(e / 45),
+    a = t[n],
+    o = t[n + 1],
+    r = (e % 45) / 45,
+    l = a[0] + (o[0] - a[0]) * r,
+    i = a[1] + (o[1] - a[1]) * r,
+    s = ["100% 0%"];
+  for (let e = 1; e <= n; e++) s.push(t[e][0] + "% " + t[e][1] + "%");
+  return s.push(l + "% " + i + "%", "50% 50%"), `polygon(${s.join(", ")})`;
+}
+createYearCarousel(),
+  renderSoftwareSkills(currentYear),
+  document.getElementById("visualize").addEventListener("click", () => {
+    toggleVisualization(currentYear);
+  });
+let speed = 0.05;
+function getCentersWithMapping() {
+  const e = document.getElementById("skill-sorfwares"),
+    t = e.getBoundingClientRect();
+  return {
+    skills: Array.from(e.querySelectorAll('[id^="skill-"]'))
+      .map((e) => {
+        if (e.classList.contains("selected")) {
+          const n = e.getBoundingClientRect();
+          return [
+            e.id.replace(/^skill-/, ""),
+            n.right - t.left - n.width / 2,
+            n.top - t.top + n.height / 2,
+          ];
+        }
+        return null;
+      })
+      .filter(Boolean),
+    softwares: Array.from(e.querySelectorAll('[id^="software-"]'))
+      .filter((e) => "none" !== window.getComputedStyle(e).display)
+      .map((e) => {
+        const n = e.getBoundingClientRect();
+        return [
+          e.id.replace(/^software-/, ""),
+          n.left - t.left,
+          n.top - t.top + n.height / 2,
+        ];
+      }),
+  };
+}
+let animationFrameId,
+  mapping = {};
+function afterMappingReady() {}
+function animateLines(e) {
+  const { skills: t, softwares: n } = getCentersWithMapping(),
+    a = document.getElementById("skill-lines"),
+    o = a.getContext("2d"),
+    r = document.getElementById("skill-sorfwares").getBoundingClientRect(),
+    l = window.devicePixelRatio || 1;
+  (a.width = r.width * l),
+    (a.height = r.height * l),
+    (a.style.width = r.width + "px"),
+    (a.style.height = r.height + "px");
+  const i = r.width / 200;
+  o.scale(l, l), o.clearRect(0, 0, a.width, a.height);
+  const s = [];
+  if (!t[0]) return null;
+  const c = t[0],
+    d = n.filter((e) => new Set(mapping[c[0]] || []).has(e[0])),
+    u = darkenColor(themePairs[currentTheme][0], 5);
+  d.forEach((e) => {
+    const t = n.find((t) => t[0] === e[0]);
+    s.push({ from: { x: c[1], y: c[2] }, to: { x: t[1], y: t[2] }, color: u });
+  });
+  let h = 0,
+    m = 0;
+  const g = e;
+  !(function e() {
+    o.clearRect(0, 0, a.width, a.height),
+      (o.lineWidth = r.width / 500),
+      (o.lineCap = "round");
+    for (let e = 0; e < h; e++) {
+      const t = s[e];
+      (o.strokeStyle = t.color),
+        drawArrow(o, t.from.x, t.from.y, t.to.x, t.to.y, i);
     }
-    switch (cmd) {
+    if (h < s.length) {
+      const t = s[h],
+        n = t.from.x + (t.to.x - t.from.x) * m,
+        a = t.from.y + (t.to.y - t.from.y) * m;
+      (o.strokeStyle = t.color),
+        drawOrganicArrow(o, t.from.x, t.from.y, n, a, i),
+        (m += g),
+        m >= 1 && ((m = 0), h++),
+        requestAnimationFrame(e);
+    }
+  })();
+}
+function drawOrganicArrow(e, t, n, a, o, r, l = 10, i = 10) {
+  const s = (a - t) / l,
+    c = (o - n) / l;
+  e.beginPath(), e.moveTo(t, n);
+  for (let a = 1; a < l; a++) {
+    const o = a / l,
+      r = t + s * a,
+      d = n + c * a,
+      u = i * Math.sin(o * Math.PI),
+      h = (Math.random() - 0.25) * u,
+      m = (Math.random() - 0.25) * u;
+    e.lineTo(r + h, d + m);
+  }
+  e.lineTo(a, o), e.stroke(), drawArrowhead(e, t, n, a, o, r);
+}
+function drawArrowhead(e, t, n, a, o, r) {
+  const l = Math.atan2(o - n, a - t);
+  e.beginPath(),
+    e.moveTo(a, o),
+    e.lineTo(
+      a - r * Math.cos(l - Math.PI / 6),
+      o - r * Math.sin(l - Math.PI / 6)
+    ),
+    e.moveTo(a, o),
+    e.lineTo(
+      a - r * Math.cos(l + Math.PI / 6),
+      o - r * Math.sin(l + Math.PI / 6)
+    ),
+    e.stroke();
+}
+function drawArrow(e, t, n, a, o, r) {
+  const l = a - t,
+    i = o - n,
+    s = Math.atan2(i, l);
+  e.beginPath(),
+    e.moveTo(t, n),
+    e.lineTo(a, o),
+    e.stroke(),
+    e.beginPath(),
+    e.moveTo(a, o),
+    e.lineTo(
+      a - r * Math.cos(s - Math.PI / 6),
+      o - r * Math.sin(s - Math.PI / 6)
+    ),
+    e.lineTo(
+      a - r * Math.cos(s + Math.PI / 6),
+      o - r * Math.sin(s + Math.PI / 6)
+    ),
+    e.lineTo(a, o),
+    (e.fillStyle = e.strokeStyle),
+    e.fill();
+}
+function shuffleArray(e) {
+  for (let t = e.length - 1; t > 0; t--) {
+    const n = Math.floor(Math.random() * (t + 1));
+    [e[t], e[n]] = [e[n], e[t]];
+  }
+}
+function startAnimation(e) {
+  animationFrameId && cancelAnimationFrame(animationFrameId), animateLines(e);
+}
+document.addEventListener("DOMContentLoaded", () => {
+  const e = document.getElementById("skill-sorfwares"),
+    t = Array.from(e.querySelectorAll('[id^="skill-"]')).map((e) => {
+      const t = e.id.replace(/^skill-/, ""),
+        n = (e.getAttribute("data-software-text") || "")
+          .split(",")
+          .map((e) => e.trim().toLowerCase())
+          .filter(Boolean);
+      return [t.toLowerCase(), n];
+    });
+  (mapping = {}),
+    t.forEach(([e, t]) => {
+      mapping[e] = t;
+    }),
+    afterMappingReady();
+}),
+  window.addEventListener("resize", () => {
+    startAnimation(100);
+  });
+const likeInfo = document.getElementById("like-info");
+function createHeartBurst(e) {
+  const t = e.getBoundingClientRect(),
+    n = Math.round(10 * Math.random()),
+    a = t.left + window.scrollX + t.width / 2,
+    o = t.top + window.scrollY + t.height / 2;
+  for (let e = 0; e < n; e++) {
+    const e = document.createElement("span");
+    (e.className = "flying-heart"), (e.textContent = "❤︎");
+    const n = Math.max(12, 0.25 * t.width) * (0.8 + Math.random()),
+      r = (Math.random() - 0.5) * n * 5,
+      l = 300 + 1200 * Math.random() + "ms";
+    (e.style.left = a - n / 2 + "px"),
+      (e.style.top = o - n / 2 + "px"),
+      (e.style.fontSize = n + "px"),
+      (e.style.color = themePairs[currentTheme][1]),
+      (e.style.filter = `saturate(${1 + 2 * Math.random()})`),
+      e.style.setProperty("--dx", r + "px"),
+      e.style.setProperty("--duration", l),
+      document.body.appendChild(e),
+      requestAnimationFrame(() => e.classList.add("animate")),
+      e.addEventListener("animationend", () => e.remove());
+  }
+  e.classList.remove("heartbeat"), e.offsetWidth, e.classList.add("heartbeat");
+}
+likeInfo.addEventListener("click", (e) => {
+  const t = e.currentTarget;
+  t.classList.remove("heartbeat"),
+    t.offsetWidth,
+    t.classList.add("heartbeat"),
+    setTimeout(() => {
+      createHeartBurst(t);
+    }, 100),
+    changeAvatar();
+}),
+  document.querySelectorAll(".nav-links a").forEach((e) => {
+    e.addEventListener("click", (t) => {
+      t.preventDefault();
+      const n = e.getAttribute("href").slice(1),
+        a = document.getElementById(n);
+      if (a) {
+        const e = window.innerHeight / 25,
+          t = a.getBoundingClientRect().top + window.pageYOffset - e;
+        window.scrollTo({ top: t, behavior: "smooth" });
+      }
+    });
+  });
+const backHome = document.getElementById("back-home");
+function darkenColor(e, t) {
+  if (e.startsWith("#")) {
+    let n, a, o;
+    return (
+      4 === e.length
+        ? ((n = parseInt(e[1] + e[1], 16)),
+          (a = parseInt(e[2] + e[2], 16)),
+          (o = parseInt(e[3] + e[3], 16)))
+        : ((n = parseInt(e[1] + e[2], 16)),
+          (a = parseInt(e[3] + e[4], 16)),
+          (o = parseInt(e[5] + e[6], 16))),
+      darkenRGB(n, a, o, t)
+    );
+  }
+  const n = e.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+  if (n) return darkenRGB(+n[1], +n[2], +n[3], t);
+  throw new Error("Unsupported color format: " + e);
+}
+function darkenRGB(e, t, n, a) {
+  const o = 1 - a / 100;
+  return `rgb(${(e = Math.round(e * o))}, ${(t = Math.round(t * o))}, ${(n =
+    Math.round(n * o))})`;
+}
+function alignAndClipAvatar() {
+  const e = document.getElementById("mySVG1"),
+    t = document.getElementById("avatar");
+  if (!e.contentDocument) return;
+  if (!t.naturalWidth || !t.naturalHeight) return;
+  const n = e.getBoundingClientRect(),
+    a = t.naturalWidth / t.naturalHeight;
+  let o, r;
+  a > n.width / n.height
+    ? ((r = n.height), (o = r * a))
+    : ((o = n.width), (r = o / a)),
+    (t.style.width = o + "px"),
+    (t.style.height = r + "px");
+  const l = getClip(e, t);
+  l &&
+    ((t.style.clipPath = `path("${l}")`),
+    (t.style.webkitClipPath = `path("${l}")`));
+}
+function getClip(e, t) {
+  const n = e.contentDocument;
+  if (!n) return null;
+  const a = n.querySelector("svg"),
+    o = n.querySelector("path");
+  if (!a || !o) return null;
+  const r = o.getAttribute("d"),
+    l = a.viewBox.baseVal,
+    i = e.getBoundingClientRect(),
+    s = t.getBoundingClientRect(),
+    c = i.width,
+    d = i.height,
+    u = i.left - s.left,
+    h = i.top - s.top;
+  return scalePathToPixels(r, l.x, l.y, l.width, l.height, c, d, u, h);
+}
+function scalePathToPixels(e, t, n, a, o, r, l, i = 0, s = 0) {
+  const c = r / a,
+    d = l / o,
+    u = e.match(/[a-zA-Z]|-?\d*\.?\d+(?:e[-+]?\d+)?/g);
+  if (!u) return e;
+  let h = 0,
+    m = "",
+    g = "";
+  const f = (e) => /^[a-zA-Z]$/.test(e),
+    p = (e) => (Math.round(100 * e) / 100).toString(),
+    y = () => parseFloat(u[h++]),
+    v = (e, t, n) => {
+      for (; h < u.length && !f(u[h]); ) {
+        const a = [];
+        for (let t = 0; t < e; t++) a.push(y());
+        const o = g === g.toUpperCase() ? t(a) : n(a);
+        m += o.join(" ") + " ";
+      }
+    };
+  for (; h < u.length; )
+    switch ((f(u[h]) && ((g = u[h++]), (m += g + " ")), g)) {
       case "M":
       case "L":
       case "T":
       case "m":
       case "l":
       case "t":
-        writePairs(
+        v(
           2,
-          ([x, y]) => [
-            fmt(offsetX + (x - vbX) * sx),
-            fmt(offsetY + (y - vbY) * sy),
-          ],
-          ([dx, dy]) => [fmt(dx * sx), fmt(dy * sy)]
+          ([e, a]) => [p(i + (e - t) * c), p(s + (a - n) * d)],
+          ([e, t]) => [p(e * c), p(t * d)]
         );
         break;
       case "H":
       case "h":
-        writePairs(
+        v(
           1,
-          ([x]) => [fmt(offsetX + (x - vbX) * sx)],
-          ([dx]) => [fmt(dx * sx)]
+          ([e]) => [p(i + (e - t) * c)],
+          ([e]) => [p(e * c)]
         );
         break;
       case "V":
       case "v":
-        writePairs(
+        v(
           1,
-          ([y]) => [fmt(offsetY + (y - vbY) * sy)],
-          ([dy]) => [fmt(dy * sy)]
+          ([e]) => [p(s + (e - n) * d)],
+          ([e]) => [p(e * d)]
         );
         break;
       case "C":
       case "c":
-        writePairs(
+        v(
           6,
-          ([x1, y1, x2, y2, x, y]) => [
-            fmt(offsetX + (x1 - vbX) * sx),
-            fmt(offsetY + (y1 - vbY) * sy),
-            fmt(offsetX + (x2 - vbX) * sx),
-            fmt(offsetY + (y2 - vbY) * sy),
-            fmt(offsetX + (x - vbX) * sx),
-            fmt(offsetY + (y - vbY) * sy),
+          ([e, a, o, r, l, u]) => [
+            p(i + (e - t) * c),
+            p(s + (a - n) * d),
+            p(i + (o - t) * c),
+            p(s + (r - n) * d),
+            p(i + (l - t) * c),
+            p(s + (u - n) * d),
           ],
-          ([dx1, dy1, dx2, dy2, dx, dy]) => [
-            fmt(dx1 * sx),
-            fmt(dy1 * sy),
-            fmt(dx2 * sx),
-            fmt(dy2 * sy),
-            fmt(dx * sx),
-            fmt(dy * sy),
+          ([e, t, n, a, o, r]) => [
+            p(e * c),
+            p(t * d),
+            p(n * c),
+            p(a * d),
+            p(o * c),
+            p(r * d),
           ]
         );
         break;
       case "S":
       case "s":
-        writePairs(
+        v(
           4,
-          ([x2, y2, x, y]) => [
-            fmt(offsetX + (x2 - vbX) * sx),
-            fmt(offsetY + (y2 - vbY) * sy),
-            fmt(offsetX + (x - vbX) * sx),
-            fmt(offsetY + (y - vbY) * sy),
+          ([e, a, o, r]) => [
+            p(i + (e - t) * c),
+            p(s + (a - n) * d),
+            p(i + (o - t) * c),
+            p(s + (r - n) * d),
           ],
-          ([dx2, dy2, dx, dy]) => [
-            fmt(dx2 * sx),
-            fmt(dy2 * sy),
-            fmt(dx * sx),
-            fmt(dy * sy),
-          ]
+          ([e, t, n, a]) => [p(e * c), p(t * d), p(n * c), p(a * d)]
         );
         break;
       case "Q":
       case "q":
-        writePairs(
+        v(
           4,
-          ([x1, y1, x, y]) => [
-            fmt(offsetX + (x1 - vbX) * sx),
-            fmt(offsetY + (y1 - vbY) * sy),
-            fmt(offsetX + (x - vbX) * sx),
-            fmt(offsetY + (y - vbY) * sy),
+          ([e, a, o, r]) => [
+            p(i + (e - t) * c),
+            p(s + (a - n) * d),
+            p(i + (o - t) * c),
+            p(s + (r - n) * d),
           ],
-          ([dx1, dy1, dx, dy]) => [
-            fmt(dx1 * sx),
-            fmt(dy1 * sy),
-            fmt(dx * sx),
-            fmt(dy * sy),
-          ]
+          ([e, t, n, a]) => [p(e * c), p(t * d), p(n * c), p(a * d)]
         );
         break;
       case "A":
       case "a":
-        while (i < tokens.length && !isCmd(tokens[i])) {
-          const rx = num(),
-            ry = num(),
-            rot = num(),
-            laf = num(),
-            sf = num(),
-            x = num(),
-            y = num();
-          if (cmd === "A") {
-            out +=
-              [
-                fmt(Math.abs(rx) * sx),
-                fmt(Math.abs(ry) * sy),
-                fmt(rot),
-                fmt(laf),
-                fmt(sf),
-                fmt(offsetX + (x - vbX) * sx),
-                fmt(offsetY + (y - vbY) * sy),
-              ].join(" ") + " ";
-          } else {
-            out +=
-              [
-                fmt(Math.abs(rx) * sx),
-                fmt(Math.abs(ry) * sy),
-                fmt(rot),
-                fmt(laf),
-                fmt(sf),
-                fmt(x * sx),
-                fmt(y * sy),
-              ].join(" ") + " ";
-          }
+        for (; h < u.length && !f(u[h]); ) {
+          const e = y(),
+            a = y(),
+            o = y(),
+            r = y(),
+            l = y(),
+            u = y(),
+            h = y();
+          m +=
+            "A" === g
+              ? [
+                  p(Math.abs(e) * c),
+                  p(Math.abs(a) * d),
+                  p(o),
+                  p(r),
+                  p(l),
+                  p(i + (u - t) * c),
+                  p(s + (h - n) * d),
+                ].join(" ") + " "
+              : [
+                  p(Math.abs(e) * c),
+                  p(Math.abs(a) * d),
+                  p(o),
+                  p(r),
+                  p(l),
+                  p(u * c),
+                  p(h * d),
+                ].join(" ") + " ";
         }
         break;
       case "Z":
       case "z":
         break;
       default:
-        while (i < tokens.length && !isCmd(tokens[i])) out += tokens[i++] + " ";
+        for (; h < u.length && !f(u[h]); ) m += u[h++] + " ";
         break;
     }
-  }
-  return out.trim();
+  return m.trim();
 }
-
 function setupAlignment() {
-  const svgObject = document.getElementById("mySVG1");
-  const avatar = document.getElementById("avatar");
-  let svgReady = false;
-  let imgReady = false;
-  function tryAlign() {
-    if (svgReady && imgReady) {
+  const e = document.getElementById("mySVG1"),
+    t = document.getElementById("avatar");
+  let n = !1,
+    a = !1;
+  function o() {
+    n &&
+      a &&
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          alignAndClipAvatar();
-          avatar.style.opacity = 1;
+          alignAndClipAvatar(), (t.style.opacity = 1);
         });
       });
-    }
   }
-  function markSvgReady() {
-    svgReady = true;
-    tryAlign();
-  }
-  function markImgReady() {
-    imgReady = true;
-    tryAlign();
-  }
-  svgObject.addEventListener("load", markSvgReady);
-  avatar.addEventListener("load", markImgReady);
-  if (avatar.complete) imgReady = true;
-  if (svgObject.contentDocument) svgReady = true;
-  tryAlign();
-  const observer = new MutationObserver(() => {
-    svgReady = false;
-    imgReady = false;
+  e.addEventListener("load", function () {
+    (n = !0), o();
+  }),
+    t.addEventListener("load", function () {
+      (a = !0), o();
+    }),
+    t.complete && (a = !0),
+    e.contentDocument && (n = !0),
+    o();
+  const r = new MutationObserver(() => {
+    (n = !1), (a = !1);
   });
-  observer.observe(svgObject, { attributes: true, attributeFilter: ["data"] });
-  observer.observe(avatar, { attributes: true, attributeFilter: ["src"] });
+  r.observe(e, { attributes: !0, attributeFilter: ["data"] }),
+    r.observe(t, { attributes: !0, attributeFilter: ["src"] });
 }
-
-window.addEventListener("load", setupAlignment);
-window.addEventListener("resize", alignAndClipAvatar);
-
+window.addEventListener("scroll", () => {
+  window.scrollY > window.innerHeight / 20
+    ? backHome.classList.add("scrolled")
+    : backHome.classList.remove("scrolled");
+}),
+  backHome.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }),
+  window.addEventListener("load", setupAlignment),
+  window.addEventListener("resize", alignAndClipAvatar);
 const circle = document.getElementById("avatar-circle");
-
-function updateRotation(x, y) {
-  const rect = circle.getBoundingClientRect();
-  const circleX = rect.left + rect.width / 2;
-  const circleY = rect.top + rect.height / 2;
-
-  const angle = Math.atan2(y - circleY, x - circleX) * (180 / Math.PI);
-  circle.style.transform = `rotate(${angle}deg)`;
+function updateRotation(e, t) {
+  const n = circle.getBoundingClientRect(),
+    a = n.left + n.width / 2,
+    o = n.top + n.height / 2,
+    r = Math.atan2(t - o, e - a) * (180 / Math.PI);
+  circle.style.transform = `rotate(${r}deg)`;
 }
-
+function applyParentHighlight(e) {
+  const [t, n] = themePairs[currentTheme];
+  e.classList.add("search-parent-highlight"),
+    (e.style.backgroundColor = t),
+    (e.style.color = n);
+}
 document.addEventListener("mousemove", (e) => {
   updateRotation(e.clientX, e.clientY);
-});
-
-document.addEventListener("scroll", () => {
-  // Optional: keep pointing to cursor while scrolling
-  const mouseEvent = window.MouseEvent;
-  if (mouseEvent) {
-    updateRotation(mouseEvent.clientX, mouseEvent.clientY);
-  }
-});
-
-// Track last mouse position
-document.addEventListener("mousemove", (e) => {
-  window.MouseEvent = e;
-});
-
-function applyParentHighlight(el) {
-  const [lightColor, darkColor] = themePairs[currentTheme];
-  el.classList.add("search-parent-highlight");
-
-  // inline styling
-  el.style.backgroundColor = lightColor;
-  el.style.color = darkColor;
+}),
+  document.addEventListener("scroll", () => {
+    const e = window.MouseEvent;
+    e && updateRotation(e.clientX, e.clientY);
+  }),
+  document.addEventListener("mousemove", (e) => {
+    window.MouseEvent = e;
+  });
+const searchBox = document.getElementById("search-box"),
+  searchIcon = document.querySelector(".search-icon");
+let currentIndex = 0,
+  matches = [],
+  lastMatch = null;
+function clearParentHighlight(e) {
+  e &&
+    (e.classList.remove("search-parent-highlight"),
+    (e.style.backgroundColor = ""),
+    (e.style.border = ""),
+    (e.style.color = ""));
 }
-
-const searchBox = document.getElementById("search-box");
-const searchIcon = document.querySelector(".search-icon");
-
-let currentIndex = 0;
-let matches = [];
-let lastMatch = null;
-
-function clearParentHighlight(el) {
-  if (!el) return;
-  el.classList.remove("search-parent-highlight");
-  el.style.backgroundColor = "";
-  el.style.border = "";
-  el.style.color = "";
-}
-function findVisibleHighlightTarget(node) {
-  // text node → start from parent
-  let el = node.nodeType === 3 ? node.parentNode : node;
-
-  while (el && el !== document.body) {
-    const style = getComputedStyle(el);
-
-    // if this element or any ancestor is hidden → skip it
-    if (style.display === "none" || style.visibility === "hidden") {
-      // climb further up
-      el = el.parentNode;
+function findVisibleHighlightTarget(e) {
+  let t = 3 === e.nodeType ? e.parentNode : e;
+  for (; t && t !== document.body; ) {
+    const e = getComputedStyle(t);
+    if ("none" === e.display || "hidden" === e.visibility) {
+      t = t.parentNode;
       continue;
     }
-
-    // check ancestors to make sure none of them are hidden
-    let ancestor = el.parentNode;
-    let hidden = false;
-    while (ancestor && ancestor !== document.body) {
-      const ancestorStyle = getComputedStyle(ancestor);
-      if (
-        ancestorStyle.display === "none" ||
-        ancestorStyle.visibility === "hidden"
-      ) {
-        hidden = true;
+    let n = t.parentNode,
+      a = !1;
+    for (; n && n !== document.body; ) {
+      const e = getComputedStyle(n);
+      if ("none" === e.display || "hidden" === e.visibility) {
+        a = !0;
         break;
       }
-      ancestor = ancestor.parentNode;
+      n = n.parentNode;
     }
-
-    if (!hidden) return el;
-
-    el = el.parentNode;
+    if (!a) return t;
+    t = t.parentNode;
   }
-
-  return null; // no visible ancestor found
+  return null;
 }
-
-// remove child matches if ancestor already included
-function pruneMatches(list) {
-  return list.filter(
-    (el) => !list.some((other) => other !== el && other.contains(el))
-  );
+function pruneMatches(e) {
+  return e.filter((t) => !e.some((e) => e !== t && e.contains(t)));
 }
-
 function highlightNextParent() {
-  const text = searchBox.value.trim().toLowerCase();
-  if (!text) return;
-
-  // new search
-  if (!matches.length || matches[0].dataset.searchText !== text) {
-    // Clear old
-    matches.forEach(clearParentHighlight);
-    matches = [];
-    const seen = new Set();
-
-    function searchInNode(node) {
-      if (node.nodeType === 3) {
-        if (node.data.toLowerCase().includes(text)) {
-          let target = findVisibleHighlightTarget(node);
-          if (target && !seen.has(target)) {
-            target.dataset.searchText = text;
-            matches.push(target);
-            seen.add(target);
-          }
+  const e = searchBox.value.trim().toLowerCase();
+  if (!e) return;
+  if (!matches.length || matches[0].dataset.searchText !== e) {
+    matches.forEach(clearParentHighlight), (matches = []);
+    const t = new Set();
+    !(function n(a) {
+      if (3 === a.nodeType) {
+        if (a.data.toLowerCase().includes(e)) {
+          let n = findVisibleHighlightTarget(a);
+          n &&
+            !t.has(n) &&
+            ((n.dataset.searchText = e), matches.push(n), t.add(n));
         }
-      } else if (
-        node.nodeType === 1 &&
-        node.childNodes &&
-        !["SCRIPT", "STYLE"].includes(node.tagName)
-      ) {
-        node.childNodes.forEach(searchInNode);
-      }
-    }
-
-    searchInNode(document.body);
-
-    // search <img> src
-    document.querySelectorAll("img").forEach((img) => {
-      if (img.src.toLowerCase().includes(text)) {
-        // start from parent so the container gets highlighted
-        let target = findVisibleHighlightTarget(img.parentNode);
-        if (target && !seen.has(target)) {
-          target.dataset.searchText = text;
-          matches.push(target);
-          seen.add(target);
+      } else
+        1 === a.nodeType &&
+          a.childNodes &&
+          !["SCRIPT", "STYLE"].includes(a.tagName) &&
+          a.childNodes.forEach(n);
+    })(document.body),
+      document.querySelectorAll("img").forEach((n) => {
+        if (n.src.toLowerCase().includes(e)) {
+          let a = findVisibleHighlightTarget(n.parentNode);
+          a &&
+            !t.has(a) &&
+            ((a.dataset.searchText = e), matches.push(a), t.add(a));
         }
-      }
-    });
-
-    matches = pruneMatches(matches);
-    currentIndex = 0;
+      }),
+      (matches = pruneMatches(matches)),
+      (currentIndex = 0);
   }
-
   if (!matches.length) return;
-
-  if (lastMatch) clearParentHighlight(lastMatch);
-
-  const match = matches[currentIndex];
-  applyParentHighlight(match);
-  match.scrollIntoView({ behavior: "smooth", block: "center" });
-
-  lastMatch = match;
-  currentIndex = (currentIndex + 1) % matches.length;
+  lastMatch && clearParentHighlight(lastMatch);
+  const t = matches[currentIndex];
+  applyParentHighlight(t),
+    t.scrollIntoView({ behavior: "smooth", block: "center" }),
+    (lastMatch = t),
+    (currentIndex = (currentIndex + 1) % matches.length);
 }
-
-// Enter triggers search
-searchBox.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") highlightNextParent();
-});
-
-// Click icon triggers search
-searchIcon.addEventListener("click", highlightNextParent);
-
 function clearAllHighlights() {
-  matches.forEach(clearParentHighlight);
-  matches = [];
-  lastMatch = null;
-  currentIndex = 0;
-  searchBox.value = ""; // <-- clear search box too
+  matches.forEach(clearParentHighlight),
+    (matches = []),
+    (lastMatch = null),
+    (currentIndex = 0),
+    (searchBox.value = "");
 }
-
-document.addEventListener(
-  "click",
-  (e) => {
-    searchBox.value = ""; // clear search box here too
-
-    const el = e.target.closest(".search-parent-highlight");
-    if (!el) return;
-
-    clearParentHighlight(el);
-    matches = matches.filter((m) => m !== el);
-    if (lastMatch === el) lastMatch = null;
-  },
-  true
-);
-
-const totalAvatars = 4; // if you want avatar0.jpg → avatar3.jpg
-const avatarEl = document.getElementById("avatar");
-let imageIndex = 0; // start at 0
-
+searchBox.addEventListener("keydown", (e) => {
+  "Enter" === e.key && highlightNextParent();
+}),
+  searchIcon.addEventListener("click", highlightNextParent),
+  document.addEventListener(
+    "click",
+    (e) => {
+      searchBox.value = "";
+      const t = e.target.closest(".search-parent-highlight");
+      t &&
+        (clearParentHighlight(t),
+        (matches = matches.filter((e) => e !== t)),
+        lastMatch === t && (lastMatch = null));
+    },
+    !0
+  );
+const totalAvatars = 4,
+  avatarEl = document.getElementById("avatar");
+let imageIndex = 0;
 function changeAvatar() {
   setTimeout(() => {
-    // go to next avatar in order
-    imageIndex = (imageIndex + 1) % totalAvatars;
-    avatarEl.src = `images/avatar${imageIndex}.jpg`;
-
-    // fade back in
-    avatarEl.style.opacity = 1;
-  }, 300); // wait for fade-out to finish (matches CSS transition)
+    (imageIndex = (imageIndex + 1) % 4),
+      (avatarEl.src = `images/avatar${imageIndex}.jpg`),
+      (avatarEl.style.opacity = 1);
+  }, 300);
 }
-
-setInterval(changeAvatar, 24000);
-
 function initGalleryAndMagnifier() {
-  // === Align & Clip Gallery ===
-  function alignAndClipGallery() {
-    const img = document.querySelector("#origin-container .origin");
-
-    if (img.complete && img.naturalWidth && img.naturalHeight) {
-      processImage(img);
-    } else {
-      img.addEventListener("load", () => processImage(img), { once: true });
-    }
+  function e() {
+    const e = document.querySelector("#origin-container .origin");
+    e.complete && e.naturalWidth && e.naturalHeight
+      ? t(e)
+      : e.addEventListener("load", () => t(e), { once: !0 });
   }
-
-  function processImage(img) {
-    const parent = img.closest('[id^="origin-container"]');
-    if (!parent) return;
-    alignAndClipElement(img, parent);
+  function t(e) {
+    const t = e.closest('[id^="origin-container"]');
+    t &&
+      (function (e, t) {
+        const n = t.closest('[id^="gallery-origin"]'),
+          a = n.getBoundingClientRect(),
+          o = e.naturalWidth / e.naturalHeight,
+          r = a.width / a.height,
+          l = 0.95;
+        let i, s;
+        o > r
+          ? ((i = a.width * l), (s = i / o))
+          : ((s = a.height * l), (i = s * o));
+        (e.style.width = i + "px"), (e.style.height = s + "px");
+        const c = n.querySelector(".blur-bg");
+        c && c.remove();
+        const d = document.createElement("img");
+        (d.src = e.src), (d.className = "blur-bg"), n.append(d);
+      })(e, t);
   }
-
-  function alignAndClipElement(element, parent) {
-    const parentparent = parent.closest('[id^="gallery-origin"]');
-    const rect = parentparent.getBoundingClientRect();
-    const ratio = element.naturalWidth / element.naturalHeight;
-    const parentRatio = rect.width / rect.height;
-    const percent = 0.95;
-
-    let width, height;
-    if (ratio > parentRatio) {
-      width = rect.width * percent;
-      height = width / ratio;
-    } else {
-      height = rect.height * percent;
-      width = height * ratio;
-    }
-
-    element.style.width = width + "px";
-    element.style.height = height + "px";
-
-    // blurred background
-    const oldBlur = parentparent.querySelector(".blur-bg");
-    if (oldBlur) {
-      oldBlur.remove(); // ✅ remove previous blur image
-    }
-
-    const blurImg = document.createElement("img");
-    blurImg.src = element.src;
-    blurImg.className = "blur-bg";
-    parentparent.append(blurImg);
-  }
-
-  // === Duplicate Gallery Images ===
-  function duplicateGalleryImages() {
-    const gallery = document.getElementById("gallery");
-    if (!gallery) return;
-
-    // 🔹 remove existing cloned images first
-    gallery.querySelectorAll("img.cloned").forEach((img) => img.remove());
-
-    const firstImg = gallery.querySelector(
+  function n() {
+    const e = document.getElementById("gallery");
+    if (!e) return;
+    e.querySelectorAll("img.cloned").forEach((e) => e.remove());
+    const t = e.querySelector(
       "#origin-container img:not(.blur-bg):not(.cloned)"
     );
-    if (!firstImg) return;
-
-    const items = gallery.querySelectorAll('[id^="gallery--"]');
-    items.forEach((parent) => {
-      const clone = firstImg.cloneNode(true);
-      clone.classList.add("cloned");
-      parent.appendChild(clone);
-
-      if (clone.complete) {
-        updateClone(clone, parent);
-      } else {
-        clone.addEventListener("load", () => updateClone(clone, parent), {
-          once: true,
-        });
-      }
+    if (!t) return;
+    e.querySelectorAll('[id^="gallery--"]').forEach((e) => {
+      const n = t.cloneNode(!0);
+      n.classList.add("cloned"),
+        e.appendChild(n),
+        n.complete
+          ? a(n, e)
+          : n.addEventListener("load", () => a(n, e), { once: !0 });
     });
   }
-
-  function updateClone(clone, parent) {
-    const parentRect = parent.getBoundingClientRect();
-    const parentRatio = parentRect.width / parentRect.height;
-    const imgRatio = clone.naturalWidth / clone.naturalHeight;
-
-    clone.style.position = "absolute";
-    clone.style.display = "block";
-    clone.style.margin = "0";
-    clone.style.padding = "0";
-    clone.style.transform = "none";
-
-    clone.classList.remove("slide-horizontal", "slide-vertical");
-
-    if (imgRatio > parentRatio) {
-      clone.style.height = parentRect.height + "px";
-      clone.style.width = "auto";
-
-      const overflow = clone.scrollWidth - parentRect.width;
-      const move = Math.max(0, overflow);
-
-      clone.style.setProperty("--move", `-${move}px`);
-      clone.classList.add("slide-horizontal");
+  function a(e, t) {
+    const n = t.getBoundingClientRect(),
+      a = n.width / n.height,
+      o = e.naturalWidth / e.naturalHeight;
+    if (
+      ((e.style.position = "absolute"),
+      (e.style.display = "block"),
+      (e.style.margin = "0"),
+      (e.style.padding = "0"),
+      (e.style.transform = "none"),
+      e.classList.remove("slide-horizontal", "slide-vertical"),
+      o > a)
+    ) {
+      (e.style.height = n.height + "px"), (e.style.width = "auto");
+      const t = e.scrollWidth - n.width,
+        a = Math.max(0, t);
+      e.style.setProperty("--move", `-${a}px`),
+        e.classList.add("slide-horizontal");
     } else {
-      clone.style.width = parentRect.width + "px";
-      clone.style.height = "auto";
-
-      const overflow = clone.scrollHeight - parentRect.height;
-      const move = -Math.max(0, overflow);
-
-      clone.style.setProperty("--move", `${move}px`);
-      clone.classList.add("slide-vertical");
+      (e.style.width = n.width + "px"), (e.style.height = "auto");
+      const t = e.scrollHeight - n.height,
+        a = -Math.max(0, t);
+      e.style.setProperty("--move", `${a}px`),
+        e.classList.add("slide-vertical");
     }
-
-    clone.style.left = "0px";
-    clone.style.top = "0px";
+    (e.style.left = "0px"), (e.style.top = "0px");
   }
-
-  // === Magnifier ===
-  function initMagnifier() {
-    const img = document.querySelector("#origin-container .origin");
-    const container = img?.parentElement;
-    const magnifier = document.getElementById("magnifier");
-    if (!img || !container || !magnifier) return;
-
-    magnifier.innerHTML = ""; // reset old zoom image
-    const zoomImg = img.cloneNode();
-    zoomImg.classList.add("zoom-2x");
-    magnifier.appendChild(zoomImg);
-
-    let lastMouse = { x: 0, y: 0 };
-
-    container.onmousemove = (e) => {
-      const rect = img.getBoundingClientRect();
-      const magWidth = magnifier.offsetWidth;
-      const magHeight = magnifier.offsetHeight;
-
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      const dx = mouseX - lastMouse.x;
-      const dy = mouseY - lastMouse.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      lastMouse = { x: mouseX, y: mouseY };
-
-      const baseZoom =
-        parseFloat(
-          getComputedStyle(zoomImg).getPropertyValue("--zoom-level")
-        ) || 2;
-      const zoomFactor = distance > 0 ? baseZoom * 0.95 : baseZoom;
-
-      zoomImg.style.width = rect.width * zoomFactor + "px";
-      zoomImg.style.height = rect.height * zoomFactor + "px";
-
-      magnifier.style.left = mouseX - magWidth / 2 + "px";
-      magnifier.style.top = mouseY - magHeight / 2 + "px";
-      magnifier.style.display = "block";
-
-      const offsetX = mouseX * zoomFactor - magWidth / 2;
-      const offsetY = mouseY * zoomFactor - magHeight / 2;
-
-      zoomImg.style.left = -offsetX + "px";
-      zoomImg.style.top = -offsetY + "px";
-    };
-
-    container.onmouseleave = () => {
-      magnifier.style.display = "none";
-    };
-  }
-
-  // === Run on load + resize ===
-  alignAndClipGallery();
-  duplicateGalleryImages();
-  initMagnifier();
-
-  window.addEventListener("resize", () => {
-    alignAndClipGallery();
-    duplicateGalleryImages();
-    initMagnifier();
-  });
-}
-
-let projectIndex = 0; // default project index
-let galleryIndex = 0; // -1 = cover, 0+ = inside gallery
-let projectsData = [];
-
-// === Show project info and reset gallery ===
-function showProject(index) {
-  const originImg = document.querySelector("#origin-container .origin");
-  const project = projectsData[index];
-  if (!project) return;
-
-  const container = document.getElementById("gallery-info");
-  container.querySelector(".project-title").textContent = project.title;
-  container.querySelector(".project-description").textContent =
-    project.description;
-  container.querySelector(".project-year").textContent = project.year || "";
-  container.querySelector(".project-category").textContent =
-    project.category || "";
-
-  // Tags
-  const tagsDiv = container.querySelector(".project-tags");
-  tagsDiv.innerHTML = "";
-  project.tags.forEach((tag) => {
-    const span = document.createElement("span");
-    span.textContent = tag;
-    span.className = "lighter border-box";
-    tagsDiv.appendChild(span);
-  });
-
-  // Link
-  const linkEl = container.querySelector(".project-link");
-  linkEl.href = project.link;
-  applyTheme();
-
-  // ✅ Reset galleryIndex to cover image
-  galleryIndex = -1;
-
-  originImg.src = project.coverImage;
-  originImg.alt = project.title;
-
-  if (originImg.complete) {
-    initGalleryAndMagnifier();
-    changeImg(true); // fade in new image
-  } else {
-    changeImg(false); // fade out current image
-    originImg.addEventListener("load", initGalleryAndMagnifier, { once: true });
-    changeImg(true); // fade in new image
-  }
-}
-
-// === Load data ===
-fetch("gallery/gallery-list.json")
-  .then((res) => res.json())
-  .then((projects) => {
-    const container = document.getElementById("gallery-list-text");
-    container.innerHTML = ""; // clear old content
-
-    projects.forEach((project) => {
-      const p = document.createElement("p");
-      p.textContent = project.id + ". " + project.title;
-      container.appendChild(p);
-    });
-
-    // translate all new element
-    projectsData = projects;
-    showProject(projectIndex);
-  })
-  .catch((err) => console.error("Error loading gallery:", err));
-
-// === Show next/prev image in gallery ===
-function showGalleryImage(step) {
-  changeImg(false); // fade out current image
-
-  const project = projectsData[projectIndex];
-  if (!project) return;
-
-  const originImg = document.querySelector("#origin-container .origin");
-
-  // If gallery empty → only cover available
-  if (!project.gallery || project.gallery.length === 0) return;
-
-  const total = project.gallery.length;
-  galleryIndex += step;
-
-  // wrap
-  if (galleryIndex < -1) galleryIndex = total - 1; // wrap backward
-  if (galleryIndex >= total) galleryIndex = -1; // wrap forward
-
-  if (galleryIndex === -1) {
-    originImg.src = project.coverImage;
-    originImg.alt = project.title;
-  } else {
-    originImg.src = project.gallery[galleryIndex];
-    originImg.alt = `${project.title} design ${galleryIndex + 1}`;
-  }
-
-  if (originImg.complete) {
-    initGalleryAndMagnifier();
-    changeImg(true); // fade in new image
-  } else {
-    originImg.addEventListener("load", initGalleryAndMagnifier, { once: true });
-    changeImg(true); // fade in new image
-  }
-}
-
-// === Hook buttons ===
-document.getElementById("prev-design").addEventListener("click", () => {
-  showGalleryImage(-1);
-});
-document.getElementById("next-design").addEventListener("click", () => {
-  showGalleryImage(1);
-});
-
-function changeImg(fadeIn) {
-  // Select all images inside #gallery
-  const galleryImgs = document.querySelectorAll("#gallery img");
-
-  // Select the .origin element(s)
-  const originImgs = document.querySelectorAll(".origin");
-
-  // Combine both NodeLists into one array
-  const imgs = [...galleryImgs, ...originImgs];
-  imgs.forEach((img) => {
-    img.style.opacity = 0.5; // or any other operation
-  });
-  imgs.forEach((img) => {
-    img.style.transition = "opacity 0.5s ease"; // smooth fade
-    img.style.opacity = fadeIn ? 1 : 0; // show or hide
-  });
-}
-
-// === Hook project prev/next ===
-document.getElementById("prev-project").addEventListener("click", () => {
-  projectIndex = (projectIndex - 1 + projectsData.length) % projectsData.length;
-  showProject(projectIndex);
-  applyTranslations(currentLang, document.getElementById("gallery-info"));
-});
-
-document.getElementById("next-project").addEventListener("click", () => {
-  projectIndex = (projectIndex + 1) % projectsData.length;
-  showProject(projectIndex);
-  applyTranslations(currentLang, document.getElementById("gallery-info"));
-});
-
-let translations = {};
-let currentLang = "en";
-const originalContent = new Map();
-
-fetch("vn.json")
-  .then((res) => res.json())
-  .then((data) => {
-    translations = data;
-    backupOriginalText();
-    const savedLang = localStorage.getItem("lang") || "en";
-    setLanguage(savedLang);
-  });
-
-function normalize(str) {
-  return String(str).replace(/\s+/g, " ").trim();
-}
-
-function backupOriginalText(root = document.body) {
-  const walker = document.createTreeWalker(
-    root,
-    NodeFilter.SHOW_TEXT,
-    null,
-    false
-  );
-  let node;
-  while ((node = walker.nextNode())) {
-    originalContent.set(node, node.nodeValue);
-  }
-  root
-    .querySelectorAll("[placeholder],[title],[alt],[value],[aria-label]")
-    .forEach((el) => {
-      ["placeholder", "title", "alt", "value", "aria-label"].forEach((attr) => {
-        if (el.hasAttribute(attr)) {
-          originalContent.set(el, { attr, value: el.getAttribute(attr) });
-        }
+  function o() {
+    const e = document.querySelector("#origin-container .origin"),
+      t = e?.parentElement,
+      n = document.getElementById("magnifier");
+    if (!e || !t || !n) return;
+    n.innerHTML = "";
+    const a = e.cloneNode();
+    a.classList.add("zoom-2x"), n.appendChild(a);
+    let o = { x: 0, y: 0 };
+    (t.onmousemove = (t) => {
+      const r = e.getBoundingClientRect(),
+        l = n.offsetWidth,
+        i = n.offsetHeight,
+        s = t.clientX - r.left,
+        c = t.clientY - r.top,
+        d = s - o.x,
+        u = c - o.y,
+        h = Math.sqrt(d * d + u * u);
+      o = { x: s, y: c };
+      const m =
+          parseFloat(getComputedStyle(a).getPropertyValue("--zoom-level")) || 2,
+        g = h > 0 ? 0.95 * m : m;
+      (a.style.width = r.width * g + "px"),
+        (a.style.height = r.height * g + "px"),
+        (n.style.left = s - l / 2 + "px"),
+        (n.style.top = c - i / 2 + "px"),
+        (n.style.display = "block");
+      const f = s * g - l / 2,
+        p = c * g - i / 2;
+      (a.style.left = -f + "px"), (a.style.top = -p + "px");
+    }),
+      (t.onmouseleave = () => {
+        n.style.display = "none";
       });
+  }
+  e(),
+    n(),
+    o(),
+    window.addEventListener("resize", () => {
+      e(), n(), o();
     });
 }
+setInterval(changeAvatar, 24e3);
+let projectIndex = 0,
+  galleryIndex = 0,
+  projectsData = [];
+function showProject(e) {
+  const t = document.querySelector("#origin-container .origin"),
+    n = projectsData[e];
+  if (!n) return;
 
-function translateTextNode(node, lang) {
-  const dict = translations[lang];
-  const raw = node.nodeValue;
-  const text = normalize(raw);
-  if (!text) return;
-  if (dict[text]) {
-    node.nodeValue = dict[text];
-    return;
+  const a = document.getElementById("gallery-info");
+
+  if (!n.gallery || 0 === n.gallery.length) {
+    a.querySelector(".project-next").style.display = "none";
+    a.querySelector(".project-link").style.display = "none";
+  } else {  
+    a.querySelector(".project-next").style.display = "flex";
+    a.querySelector(".project-link").style.display = "flex";
   }
-  const m = raw.match(/^(\s*\d+\.\s*)([\s\S]+)$/);
-  if (m) {
-    const prefix = m[1];
-    const rest = normalize(m[2]);
-    if (dict[rest]) {
-      node.nodeValue = prefix + dict[rest];
-    }
-  }
+  (a.querySelector(".project-title").textContent = n.title),
+    (a.querySelector(".project-description").textContent = n.description),
+    (a.querySelector(".project-year").textContent = n.year || ""),
+    (a.querySelector(".project-category").textContent = n.category || "");
+  const o = a.querySelector(".project-tags");
+  (o.innerHTML = ""),
+    n.tags.forEach((e) => {
+      const t = document.createElement("span");
+      (t.textContent = e),
+        (t.className = "lighter border-box"),
+        o.appendChild(t);
+    });
+  (a.querySelector(".project-link").href = n.link),
+    applyTheme(),
+    (galleryIndex = -1),
+    (t.src = n.coverImage),
+    (t.alt = n.title),
+    t.complete
+      ? (initGalleryAndMagnifier(), changeImg(!0))
+      : (changeImg(!1),
+        t.addEventListener("load", initGalleryAndMagnifier, { once: !0 }),
+        changeImg(!0));
 }
+function showGalleryImage(e) {
+  changeImg(!1);
+  const t = projectsData[projectIndex];
+  if (!t) return;
+  const n = document.querySelector("#origin-container .origin");
 
-function translateAttributes(el, lang) {
-  const dict = translations[lang];
-  ["placeholder", "title", "alt", "value", "aria-label"].forEach((attr) => {
-    if (!el.hasAttribute(attr)) return;
-    const orig = normalize(el.getAttribute(attr));
-    if (!orig) return;
-    if (dict[orig]) el.setAttribute(attr, dict[orig]);
+  const a = t.gallery.length;
+  (galleryIndex += e),
+    galleryIndex < -1 && (galleryIndex = a - 1),
+    galleryIndex >= a && (galleryIndex = -1),
+    -1 === galleryIndex
+      ? ((n.src = t.coverImage), (n.alt = t.title))
+      : ((n.src = t.gallery[galleryIndex]),
+        (n.alt = `${t.title} design ${galleryIndex + 1}`)),
+    n.complete
+      ? (initGalleryAndMagnifier(), changeImg(!0))
+      : (n.addEventListener("load", initGalleryAndMagnifier, { once: !0 }),
+        changeImg(!0));
+}
+function changeImg(e) {
+  const t = [
+    ...document.querySelectorAll("#gallery img"),
+    ...document.querySelectorAll(".origin"),
+  ];
+  t.forEach((e) => {
+    e.style.opacity = 0.5;
+  }),
+    t.forEach((t) => {
+      (t.style.transition = "opacity 0.5s ease"), (t.style.opacity = e ? 1 : 0);
+    });
+}
+fetch("gallery/gallery-list.json")
+  .then((e) => e.json())
+  .then((e) => {
+    const t = document.getElementById("gallery-list-text");
+    (t.innerHTML = ""),
+      e.forEach((e) => {
+        const n = document.createElement("p");
+        (n.textContent = e.id + ". " + e.title), t.appendChild(n);
+      }),
+      (projectsData = e),
+      showProject(projectIndex);
+  })
+  .catch((e) => {}),
+  document.getElementById("prev-design").addEventListener("click", () => {
+    showGalleryImage(-1);
+  }),
+  document.getElementById("next-design").addEventListener("click", () => {
+    showGalleryImage(1);
+  }),
+  document.getElementById("prev-project").addEventListener("click", () => {
+    (projectIndex =
+      (projectIndex - 1 + projectsData.length) % projectsData.length),
+      showProject(projectIndex),
+      applyTranslations(currentLang, document.getElementById("gallery-info"));
+  }),
+  document.getElementById("next-project").addEventListener("click", () => {
+    (projectIndex = (projectIndex + 1) % projectsData.length),
+      showProject(projectIndex),
+      applyTranslations(currentLang, document.getElementById("gallery-info"));
+  });
+let translations = {},
+  currentLang = "en";
+const originalContent = new Map();
+function normalize(e) {
+  return String(e).replace(/\s+/g, " ").trim();
+}
+function backupOriginalText(e = document.body) {
+  const t = document.createTreeWalker(e, NodeFilter.SHOW_TEXT, null, !1);
+  let n;
+  for (; (n = t.nextNode()); ) originalContent.set(n, n.nodeValue);
+  e.querySelectorAll(
+    "[placeholder],[title],[alt],[value],[aria-label]"
+  ).forEach((e) => {
+    ["placeholder", "title", "alt", "value", "aria-label"].forEach((t) => {
+      e.hasAttribute(t) &&
+        originalContent.set(e, { attr: t, value: e.getAttribute(t) });
+    });
   });
 }
-
-function applyTranslations(lang, root = document.body) {
-  if (!translations[lang]) return;
-  const walker = document.createTreeWalker(
-    root,
-    NodeFilter.SHOW_TEXT,
-    null,
-    false
-  );
-  let node;
-  while ((node = walker.nextNode())) {
-    translateTextNode(node, lang);
-  }
-  root
-    .querySelectorAll("[placeholder],[title],[alt],[value],[aria-label]")
-    .forEach((el) => {
-      translateAttributes(el, lang);
-    });
-}
-
-function restoreOriginal(root = document.body) {
-  for (const [node, value] of originalContent.entries()) {
-    if (node.nodeType === Node.TEXT_NODE) {
-      node.nodeValue = value;
-    } else if (typeof value === "object") {
-      node.setAttribute(value.attr, value.value);
-    }
+function translateTextNode(e, t) {
+  const n = translations[t],
+    a = e.nodeValue,
+    o = normalize(a);
+  if (!o) return;
+  if (n[o]) return void (e.nodeValue = n[o]);
+  const r = a.match(/^(\s*\d+\.\s*)([\s\S]+)$/);
+  if (r) {
+    const t = r[1],
+      a = normalize(r[2]);
+    n[a] && (e.nodeValue = t + n[a]);
   }
 }
-
-function setLanguage(lang) {
-  currentLang = lang;
-  localStorage.setItem("lang", lang);
-  if (lang === "en") {
-    restoreOriginal();
-  } else {
-    applyTranslations(lang);
-  }
+function translateAttributes(e, t) {
+  const n = translations[t];
+  ["placeholder", "title", "alt", "value", "aria-label"].forEach((t) => {
+    if (!e.hasAttribute(t)) return;
+    const a = normalize(e.getAttribute(t));
+    a && n[a] && e.setAttribute(t, n[a]);
+  });
 }
-
+function applyTranslations(e, t = document.body) {
+  if (!translations[e]) return;
+  const n = document.createTreeWalker(t, NodeFilter.SHOW_TEXT, null, !1);
+  let a;
+  for (; (a = n.nextNode()); ) translateTextNode(a, e);
+  t.querySelectorAll(
+    "[placeholder],[title],[alt],[value],[aria-label]"
+  ).forEach((t) => {
+    translateAttributes(t, e);
+  });
+}
+function restoreOriginal(e = document.body) {
+  for (const [e, t] of originalContent.entries())
+    e.nodeType === Node.TEXT_NODE
+      ? (e.nodeValue = t)
+      : "object" == typeof t && e.setAttribute(t.attr, t.value);
+}
+function setLanguage(e) {
+  (currentLang = e),
+    localStorage.setItem("lang", e),
+    "en" === e ? restoreOriginal() : applyTranslations(e);
+}
 function toggleLanguage() {
-  setLanguage(currentLang === "en" ? "vn" : "en");
+  setLanguage("en" === currentLang ? "vn" : "en");
 }
+fetch("vn.json")
+  .then((e) => e.json())
+  .then((e) => {
+    (translations = e), backupOriginalText();
+    setLanguage(localStorage.getItem("lang") || "en");
+  });
