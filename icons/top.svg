@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 283.46 481.89">
+    <defs>
+        <style>
+            .prefix__cls-1 {
+                fill: none;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-width: 24px
+            }
+        </style>
+    </defs>
+    <g id="prefix__Layer_2" data-name="Layer 2">
+        <g id="prefix__Layer_1-2" data-name="Layer 1">
+            <path class="prefix__cls-1"
+                d="M158 28.5q-7.61-10.63-16.23-21.41C-20.14 209.13 98.88 371.8 98.88 371.8h85.71s99.89-136.53-7.82-314.8" />
+            <path class="prefix__cls-1"
+                d="M57.31 237.32C-46.06 273 42.17 374.77 42.17 374.77c-4.48-35.15 32.47-51.84 32.47-51.84h134.19s36.95 16.69 32.46 51.84c0 0 88.23-101.81-15.14-137.45M174.47 163.89a33.52 33.52 0 10-4.16 25.56M88.52 90.64h106.42M141.73 234.63v28.72" />
+            <path class="prefix__cls-1" d="M162.31 371.8s23.76 47-20.58 103c-44.34-56-20.57-103-20.57-103" />
+        </g>
+    </g>
+</svg>

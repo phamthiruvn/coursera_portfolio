@@ -29,9 +29,7 @@ button {
   font: inherit;
   color: inherit;
 }
-.custom-cursor {
-  cursor: url("https://cdn-icons-png.flaticon.com/512/32/32349.png"), auto;
-}
+
 * {
   margin: 0;
   padding: 0;
@@ -49,6 +47,7 @@ body {
   padding: 2% 5%;
   gap: var(--gap-medium);
   min-width: 500px;
+
 }
 main {
   display: flex;
@@ -117,13 +116,13 @@ a {
 }
 .side-button:hover button {
   transform: rotate(-15deg);
-}
-#back-home span {
-  display: inline-block;
-  transform: rotate(-90deg);
   transition: transform 0.3s ease;
 }
-#back-home.scrolled span {
+#back-home {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+#back-home.scrolled {
   transform: rotate(-45deg);
 }
 .side-bar button {
@@ -465,7 +464,7 @@ a {
 }
 #skill [id^="skill-"].selected h3 {
   display: block;
-  padding: 0 7.5% 1% 2.5%;
+  padding: 0 10% 1% 2.5%;
   font-size: 0.75em;
   font-weight: 500;
 }
@@ -482,14 +481,17 @@ a {
 #skill [id^="skill-"].visualized:hover {
   padding: 1.25em;
 }
-#skill span {
+#skill object {
+  height: 75%;
   position: absolute;
   right: 5%;
   top: 50%;
   transform: translateY(-50%);
   transition: padding 0.3s ease, transform 0.3s ease, flex 0.3s ease;
 }
-#skill [id^="skill-"].visualized span {
+#skill [id^="skill-"].visualized object {
+  height: 45%;
+
   right: 50%;
   transform: translate(50%, -50%) scale(1.25);
 }
@@ -1046,4 +1048,11 @@ li {
 }
 .nav-links a:hover {
   text-decoration: underline;
+}
+
+.icon {
+  width: 1.5em;
+  height: 1.5em;
+  pointer-events: none;
+  transition: transform 0.3s ease;
 }

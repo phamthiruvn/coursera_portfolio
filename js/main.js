@@ -2,7 +2,7 @@
 
 const themePairs = {
   pink: ["#ffddf5ff", "#d86cbaff"],
-  orange: ["#f3e6c6ff", "#e3980cff"],
+  orange: ["#f3e6c6ff", "#d37f00ff"],
   green: ["#e5d9f0ff", "#7e57b4ff"],
   blue: ["#d5f3fcff", "#0083d4ff"],
 };
@@ -15,8 +15,16 @@ function colorSVG(e) {
   const [t, n] = themePairs[currentTheme],
     a = e.contentDocument;
   if (!a) return;
-  const o = e.classList.contains("darker") ? n : t;
-  a.querySelectorAll("path").forEach((e) => e.setAttribute("fill", o));
+
+  const isDarker = e.classList.contains("darker");
+  const fillColor = isDarker ? n : t;
+  const strokeColor = isDarker ? t : n; // opposite
+
+  a.querySelectorAll("path").forEach((p) => {
+    p.setAttribute("fill", fillColor);
+    p.setAttribute("stroke", strokeColor);
+    p.setAttribute("ellipse", strokeColor);
+  });
 }
 
 function setFaviconFromFile(e) {
@@ -49,7 +57,7 @@ function applyTheme() {
         "object" !== n.tagName.toLowerCase() &&
           ((n.style.backgroundColor = e), (n.style.borderColor = t));
     }),
-    document.querySelectorAll('object[id^="mySVG"]').forEach(colorSVG);
+    document.querySelectorAll("object").forEach(colorSVG);
 }
 
 function setTheme(e) {
@@ -82,7 +90,7 @@ function createSoftwareP(e) {
   return t.classList.add("sorfware"), (t.textContent = e), t;
 }
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll('object[id^="mySVG"]').forEach((e) => {
+  document.querySelectorAll("object").forEach((e) => {
     e.addEventListener("load", () => colorSVG(e));
   }),
     applyTheme();
@@ -1066,7 +1074,7 @@ function showProject(e) {
   if (!n.gallery || 0 === n.gallery.length) {
     a.querySelector(".project-next").style.display = "none";
     a.querySelector(".project-link").style.display = "none";
-  } else {  
+  } else {
     a.querySelector(".project-next").style.display = "flex";
     a.querySelector(".project-link").style.display = "flex";
   }
@@ -1218,7 +1226,13 @@ function setLanguage(e) {
 }
 function toggleLanguage() {
   setLanguage("en" === currentLang ? "vn" : "en");
+  const icon = document.querySelector("#lang-toggle .icon");
+  const current = icon.style.transform;
+
+  icon.style.transform =
+    current === "rotate(180deg)" ? "rotate(0deg)" : "rotate(180deg)";
 }
+
 fetch("vn.json")
   .then((e) => e.json())
   .then((e) => {

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 411.02 439.37">
+    <defs>
+        <style>
+            .prefix__cls-1 {
+                fill: none;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                stroke-width: 24px
+            }
+        </style>
+    </defs>
+    <g id="prefix__Layer_2" data-name="Layer 2">
+        <g id="prefix__Layer_1-2" data-name="Layer 1">
+            <path class="prefix__cls-1"
+                d="M336.49 362h50.83a16.64 16.64 0 0016.62-16.64V164.3a16.62 16.62 0 00-16.62-16.63H23.69a16.62 16.62 0 00-16.6 16.63v181.06A16.63 16.63 0 0023.69 362h50.84M34.42 147.67V69.39A16.63 16.63 0 0151 52.76h23.53M336.49 52.76H360a16.62 16.62 0 0116.61 16.63v78.28M336.49 41.9v105.77H74.53V7.09h227.19" />
+            <path class="prefix__cls-1"
+                d="M50.62 291.7H232.9 74.53v140.58h261.96V291.7h-61.41 78.64M336.49 41.9h-34.77V7.09l34.77 34.81zM136.25 338.56h138.53M136.25 385.42h138.53" />
+            <ellipse class="prefix__cls-1" cx="362.8" cy="204.12" rx="13.79" ry="13.81" />
+            <ellipse class="prefix__cls-1" cx="305.32" cy="204.12" rx="13.79" ry="13.81" />
+        </g>
+    </g>
+</svg>
