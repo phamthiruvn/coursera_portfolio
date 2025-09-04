@@ -1163,7 +1163,7 @@ fetch("gallery/gallery-list.json")
       applyTranslations(currentLang, document.getElementById("gallery-info"));
   });
 let translations = {},
-  currentLang = "en";
+  currentLang = "vn";
 const originalContent = new Map();
 function normalize(e) {
   return String(e).replace(/\s+/g, " ").trim();
